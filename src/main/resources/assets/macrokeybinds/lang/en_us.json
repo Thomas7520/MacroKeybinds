@@ -1,0 +1,38 @@
+{
+  "text.config.mainscreen": "Keybinds Menu",
+  "text.config.globalmacros": "Global Macros Options",
+  "text.config.servermacros": "Server Macros Options",
+  "text.config.needhelp": "Need Help? Bug? Discord Link",
+
+  "text.globalmacros.title": "Global Macros",
+  "text.createglobalmacros.title": "Create New Global Macro",
+  "text.globalmacros.back": "Cancel",
+
+  "text.createmacro": "Create Macro",
+  "text.editmacro": "Edit Macro",
+
+  "text.type.simple": "Simple",
+  "text.type.toggle": "Toggle",
+  "text.type.repeat": "Repeat",
+  "text.type.delayed": "Delayed",
+  "text.key": "Key",
+
+  "text.action.message": "Send Message",
+  "text.action.command": "Execute Command",
+
+  "text.tooltip.namebox": "Name",
+  "text.tooltip.actionbox": "Action",
+  "text.tooltip.timebox": "Cooldown/Delay between execution",
+  "text.tooltip.timeboxsub": "(in millisecond)",
+  "text.tooltip.macrotype": "Select between 4 types of macro.",
+  "text.tooltip.actiontype": "Select between 2 types of action.",
+  "text.tooltip.keybind": "Click and press the wanted key",
+
+  "text.macro.deleteQuestion": "Are you sure you want to delete this macro?",
+  "text.macro.deleteWarning": "It will be deleted permanently",
+  "text.macro.deleteButton": "Delete this macro",
+
+  "text.editglobalmacro.title": "Edit Global Macro"
+
+
+}

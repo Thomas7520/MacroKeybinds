@@ -1,0 +1,32 @@
+modLoader="javafml" #mandatory
+loaderVersion="[37,)" #mandatory
+license="All rights reserved"
+
+[[mods]] #mandatory
+modId="macrokeybinds" #mandatory
+version="${file.jarVersion}" #mandatory
+displayName="Simple Macro Mod" #mandatory
+description='''''' #mandatory
+displayURL="https://discord.gg/xTqj3ZSeH4"
+credits="All credits for Thomas7520"
+authors="Thomas7520"
+
+[[dependencies.examplemod]] #optional
+# the modid of the dependency
+modId="forge" #mandatory
+# Does this dependency have to exist - if not, ordering below must be specified
+mandatory=true #mandatory
+# The version range of the dependency
+versionRange="[37,)" #mandatory
+# An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+ordering="NONE"
+# Side this dependency is applied on - BOTH, CLIENT or SERVER
+side="BOTH"
+# Here's another dependency
+[[dependencies.examplemod]]
+modId="minecraft"
+mandatory=true
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="[1.17.1,1.18)"
+ordering="NONE"
+side="BOTH"
