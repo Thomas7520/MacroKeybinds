@@ -1,35 +1,38 @@
 package com.thomas7520.macrokeybinds.object;
 
-import com.google.gson.annotations.Expose;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 
 import java.util.UUID;
 
 public class DelayedMacro implements IMacro {
 
-    private UUID uuid;
-    private String name;
-    private String path;
-    private String actionText;
+    private final UUID uuid;
+    private final String name;
+    private final String actionText;
     private int key;
-    private KeyAction action;
-    private long delayedTime;
-    private String keyName;
+    private final KeyAction action;
+    private final long delayedTime;
+    private final String keyName;
+    private boolean enable;
+    private MacroType macroType = MacroType.DELAYED;
 
-    @Expose(deserialize = false)
-    private long startTime;
-    @Expose(deserialize = false)
-    private boolean start;
+    private transient long startTime;
+    private transient boolean start;
+    private long createdTime;
+    private MacroModifier modifier;
 
-    public DelayedMacro(UUID uuid, String name, String path, String actionText, int key, KeyAction action, long delayedTime, String keyName) {
+    public DelayedMacro(UUID uuid, String name, String actionText, int key, KeyAction action, long delayedTime, String keyName, boolean enable, long createdTime, MacroModifier modifier) {
         this.uuid = uuid;
         this.name = name;
-        this.path = path;
         this.actionText = actionText;
         this.key = key;
         this.action = action;
         this.delayedTime = delayedTime;
         this.keyName = keyName;
+        this.enable = enable;
+        this.createdTime = createdTime;
+        this.modifier = modifier;
     }
 
 
@@ -44,8 +47,13 @@ public class DelayedMacro implements IMacro {
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    @Override
+    public MacroType getType() {
+        return macroType;
     }
 
     @Override
@@ -83,6 +91,30 @@ public class DelayedMacro implements IMacro {
         this.start = start;
     }
 
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
+    @Override
+    public void setKey(int key) {
+        this.key = key;
+    }
+
+    @Override
+    public MacroModifier getModifier() {
+        return modifier == null ? MacroModifier.NONE : modifier;
+    }
+
+    @Override
+    public void setModifier(MacroModifier modifier) {
+        this.modifier = modifier;
+    }
+
     @Override
     public KeyAction getAction() {
         return action;
@@ -95,8 +127,16 @@ public class DelayedMacro implements IMacro {
         setStart(false);
 
         switch (action) {
-            case COMMAND -> Minecraft.getInstance().player.chat(getActionText().startsWith("/") ? getActionText() : "/" + getActionText());
-            case MESSAGE -> Minecraft.getInstance().player.chat(getActionText());
+            case COMMAND :
+                Minecraft.getInstance().player.chat(getActionText().startsWith("/") ? getActionText() : "/" + getActionText());
+                break;
+            case MESSAGE :
+                Minecraft.getInstance().player.chat(getActionText());
+                break;
+            case FILL_CHAT :
+                Minecraft.getInstance().setScreen(new ChatScreen(getActionText()));
+                break;
+
         }
     }
 

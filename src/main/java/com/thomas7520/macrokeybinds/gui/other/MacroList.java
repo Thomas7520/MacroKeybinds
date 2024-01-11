@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.EditMacroScreen;
-import com.thomas7520.macrokeybinds.gui.GlobalMacroScreen;
+import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
@@ -21,19 +21,38 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.loading.FMLConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
 
+import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.File;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Supplier;
 
 public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
-    final GlobalMacroScreen macroScreen;
+    final Screen macroScreen;
+    private final boolean isServer;
     int maxNameWidth;
 
-    public MacroList(GlobalMacroScreen p_97399_, Minecraft p_97400_) {
+    @Nullable
+    private List<IMacro> cachedList;
+
+    private List<IMacro> macroList;
+
+    public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
         super(p_97400_, p_97399_.width + 45, p_97399_.height, 43, p_97399_.height - 30, 20);
         this.macroScreen = p_97399_;
 
-        MacroUtil.getGlobalKeybindsMap().keySet().forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen)));
+
+        macros.sort(Comparator.comparingLong(IMacro::getCreatedTime));
+
+        macroList = macros;
+        this.isServer = isServer;
+        macros.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
 
     }
 
@@ -45,7 +64,29 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         return super.getRowWidth() + 32;
     }
 
+    public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
+        this.clearEntries();
+   //     LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
+        if (this.cachedList == null || p_101678_) {
+            this.cachedList = macroList;
 
+
+            macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
+        }
+
+        if (this.cachedList.isEmpty()) {
+            //this.minecraft.setScreen(CreateWorldScreen.create(null));
+        } else {
+            String s = p_101677_.get().toLowerCase(Locale.ROOT);
+
+            for (IMacro macro : this.cachedList) {
+                if (macro.getName().toLowerCase(Locale.ROOT).contains(s) || macro.getName().toLowerCase(Locale.ROOT).contains(s)) {
+                    this.addEntry(new KeyEntry(macro, MacroList.this.macroScreen, isServer));
+                }
+            }
+
+        }
+    }
 
     @OnlyIn(Dist.CLIENT)
     public abstract static class Entry extends ContainerObjectSelectionList.Entry<MacroList.Entry> {
@@ -58,33 +99,36 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         private final Checkbox stateButton;
         private final ImageButton deleteButton;
 
-        KeyEntry(final IMacro p_97451_, final Screen lastScreen) {
+        KeyEntry(final IMacro p_97451_, final Screen lastScreen, final boolean isMacroServer) {
 
             this.macro = p_97451_;
 
-            this.editButton = new ImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) -> {
-                MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro));
-                System.out.println("tt");
-            });
+            this.editButton = new ImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
+                    MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro, lastScreen instanceof ServerMacroScreen)));
 
-            this.stateButton = new Checkbox(0, 0, 20 , 20, new TextComponent(""), true) {
+            this.stateButton = new Checkbox(0, 0, 20 , 20, new TextComponent(""), macro.isEnable()) {
                 @Override
                 public void onPress() {
-
+                    macro.setEnable(!selected());
                     super.onPress();
                 }
             };
 
-            this.deleteButton = new ImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> {
-                MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = new ImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
-                    if (p_170322_) {
-                        MacroUtil.getGlobalKeybindsMap().remove(macro);
+                if (p_170322_) {
+                    if(isMacroServer) {
+                        MacroUtil.getServerKeybinds().remove(macro.getUUID());
+                    } else {
+                        MacroUtil.getGlobalKeybindsMap().remove(macro.getUUID());
                     }
 
-                    MacroList.this.minecraft.setScreen(lastScreen);
-                }, new TranslatableComponent("text.macro.deleteQuestion"), new TranslatableComponent("text.macro.deleteWarning"), new TranslatableComponent("text.macro.deleteButton"), CommonComponents.GUI_CANCEL));
-            });
+                    String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                    new File(FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory + "/" + macro.getUUID().toString() + ".json").delete();
+                }
+
+                MacroList.this.minecraft.setScreen(lastScreen);
+            }, new TranslatableComponent("text.macro.deleteQuestion"), new TranslatableComponent("text.macro.deleteWarning"), new TranslatableComponent("text.macro.deleteButton"), CommonComponents.GUI_CANCEL)));
         }
 
         public void render(PoseStack p_97463_, int p_97464_, int p_97465_, int p_97466_, int p_97467_, int p_97468_, int p_97469_, int p_97470_, boolean p_97471_, float p_97472_) {
@@ -99,6 +143,23 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             this.editButton.render(p_97463_, p_97469_, p_97470_, p_97472_);
             this.stateButton.render(p_97463_, p_97469_, p_97470_, p_97472_);
             this.deleteButton.render(p_97463_, p_97469_, p_97470_, p_97472_);
+            if(stateButton.isHovered()) {
+                fill(p_97463_, stateButton.x, stateButton.y, stateButton.x + 20, stateButton.y + 1, Color.WHITE.getRGB());
+                fill(p_97463_, stateButton.x, stateButton.y + 19, stateButton.x + 20, stateButton.y + 20, Color.WHITE.getRGB());
+                fill(p_97463_, stateButton.x, stateButton.y + 20, stateButton.x + 1, stateButton.y, Color.WHITE.getRGB());
+                fill(p_97463_, stateButton.x + 19, stateButton.y, stateButton.x + 20, stateButton.y + 20, Color.WHITE.getRGB());
+                MacroList.this.macroScreen.renderTooltip(p_97463_, Minecraft.getInstance().font.split(new TranslatableComponent("text.tooltip.editmacro.state"), 150), p_97469_, p_97470_);
+            }
+
+            if(editButton.isHovered()) {
+                MacroList.this.macroScreen.renderTooltip(p_97463_, Minecraft.getInstance().font.split(new TranslatableComponent("text.tooltip.editmacro.edit"), 150), p_97469_, p_97470_);
+            }
+
+            if(deleteButton.isHovered()) {
+                MacroList.this.macroScreen.renderTooltip(p_97463_, Minecraft.getInstance().font.split(new TranslatableComponent("text.tooltip.editmacro.delete"), 150), p_97469_, p_97470_);
+            }
+
+
         }
 
         public List<? extends GuiEventListener> children() {

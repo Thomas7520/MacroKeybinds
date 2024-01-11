@@ -8,7 +8,9 @@ public interface IMacro {
 
     String getName();
 
-    String getPath();
+    long getCreatedTime();
+
+    MacroType getType();
 
     String getActionText();
 
@@ -19,4 +21,14 @@ public interface IMacro {
     int getKey();
 
     String getKeyName();
+
+    boolean isEnable();
+
+    void setEnable(boolean state);
+
+    void setKey(int key);
+
+    MacroModifier getModifier();
+
+    void setModifier(MacroModifier macroModifierSelect);
 }

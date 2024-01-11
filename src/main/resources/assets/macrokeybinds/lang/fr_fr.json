@@ -1,3 +1,54 @@
 {
+  "text.config.mainscreen": "Keybinds Menu",
+  "text.config.globalmacros": "Global Macros Options",
+  "text.config.servermacros": "Serveur Macros Options",
+  "text.config.needhelp": "Besoin d'aide? Bug? Lien Discord",
+  "text.tooltip.main.noserver": "Vous n'êtes pas sur un serveur",
+
+  "key.openoptions.desc": "Ouvrir Gui Option" ,
+  "key.macrokeybinds.category": "MacroKeybinds",
+
+  "text.globalmacros.title": "Global Macros",
+  "text.createglobalmacros.title": "Créer Nouvelle Macro Global",
+  "text.globalmacros.back": "Annuler",
+
+  "text.servermacros.title": "Serveur Macros",
+  "text.createservermacros.title": "Créer Nouvelle Macro Serveur",
+  "text.servermacros.back": "Annuler",
+
+  "text.createmacro": "Créer Macro",
+  "text.editmacro": "Modifier Macro",
+
+  "text.type.simple": "Simple",
+  "text.type.toggle": "Toggle",
+  "text.type.repeat": "Repeat",
+  "text.type.delayed": "Delayed",
+  "text.key": "Key",
+
+  "text.action.message": "Envoyer message",
+  "text.action.command": "Executer Commande",
+  "text.action.fillchat": "Remplir Chat Sans Envoyer",
+
+  "text.tooltip.namebox": "Nom",
+  "text.tooltip.actionbox": "Action",
+  "text.tooltip.timebox": "Cooldown/Delay entre execution",
+  "text.tooltip.timeboxsub": "(en milliseconde)",
+  "text.tooltip.macrotype": "Selectionner entre 4 types de macro.",
+  "text.tooltip.actiontype": "Selectionner entre 3 types de action.",
+  "text.tooltip.keybind": "Cliquer et appuyer sur la key souhaitée",
+  "text.tooltip.editmacro.state": "Désactiver/Activer Macro",
+  "text.tooltip.editmacro.edit": "Modifier Macro",
+  "text.tooltip.editmacro.delete": "Supprimer Macro",
+  "text.tooltip.editmacro.forgotvalue": "Vous avez oublié de completer un/plusieurs champ(s)",
+  "text.tooltip.editmacro.keyalreadyassigned": "Cette key est déjà utilisée (cependant vous pouvez l'assigner)",
+  "text.macro.deleteQuestion": "Êtes-vous sûr de vouloir supprimer cette macro?",
+  "text.macro.deleteWarning": "Ce sera permanent",
+  "text.macro.deleteButton": "Supprimer cette macro",
+
+  "text.editglobalmacro.title": "Modifier Macro Global",
+  "text.editservermacro.title": "Modifier Macro Server"
+
+
+
 
 }
