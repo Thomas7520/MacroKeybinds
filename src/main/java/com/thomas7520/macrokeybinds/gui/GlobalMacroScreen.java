@@ -35,8 +35,12 @@ public class GlobalMacroScreen extends OptionsSubScreen {
 
     protected void init() {
 
-        if(macroList == null)
+        if(macroList == null) {
             this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
+        } else {
+            macroList.setWidth(width + 45);
+            macroList.setHeight(height - 52 - 33);
+        }
         this.addWidget(this.macroList);
 
         addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), p_93751_ -> minecraft.setScreen(new EditMacroScreen(this, null, false)))
