@@ -119,7 +119,7 @@ public class ServerMacroScreen extends OptionsSubScreen {
 
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-        this.renderBackground(p_281549_);
+        this.renderDirtBackground(p_281549_);
         this.macroList.render(p_281549_, p_281550_, p_282878_, p_282465_);
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 8, 16777215);
 
