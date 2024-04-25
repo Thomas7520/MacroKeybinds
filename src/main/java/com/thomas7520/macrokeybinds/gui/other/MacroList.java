@@ -5,7 +5,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.EditMacroScreen;
 import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
+import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
+import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,7 +46,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     public List<IMacro> macroList;
 
     public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
-        super(p_97400_, p_97399_.width + 45, p_97399_.height, 43, p_97399_.height - 30, 20);
+        super(p_97400_, p_97399_.width + 45, p_97399_.height - 52 - 33, 43, p_97399_.height - 30, 20);
         this.macroScreen = p_97399_;
 
 
@@ -65,7 +67,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
     public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
         this.clearEntries();
-   //     LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
+
         if (this.cachedList == null || p_101678_) {
             this.cachedList = macroList;
 
@@ -73,9 +75,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
         }
 
-        if (this.cachedList.isEmpty()) {
-            //this.minecraft.setScreen(CreateWorldScreen.create(null));
-        } else {
+        if (!this.cachedList.isEmpty()) {
             String s = p_101677_.get().toLowerCase(Locale.ROOT);
 
             for (IMacro macro : this.cachedList) {
@@ -131,32 +131,53 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         }
 
         @Override
-        public void render(GuiGraphics p_281805_, int p_281298_, int p_282357_, int p_281373_, int p_283433_, int p_281932_, int p_282224_, int p_282053_, boolean p_282605_, float p_281432_) {
-            float f = (float) (p_281373_ - MacroList.this.maxNameWidth);
-            p_281805_.drawString(minecraft.font, this.macro.getName(), f, (float) p_282357_ + (float) p_281932_ / 2 - (float) 9 / 2, 16777215, false);
-            this.deleteButton.setX(p_281373_ + 190 + 20);
-            this.deleteButton.setY(p_282357_);
-            this.editButton.setX(p_281373_ + 190);
-            this.editButton.setY(p_282357_);
-            this.stateButton.setX(p_281373_ + 170);
-            this.stateButton.setY(p_282357_);
-            this.editButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
-            this.stateButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
-            this.deleteButton.render(p_281805_, p_282224_, p_282053_, p_281432_);
+        public void render(GuiGraphics guiGraphics, int p_281298_, int y, int x, int p_283433_, int p_281932_, int mouseX, int mouseY, boolean p_282605_, float p_281432_) {
+            float f = (float) (x - MacroList.this.maxNameWidth);
+            guiGraphics.drawString(minecraft.font, this.macro.getName(), f, (float) y + (float) p_281932_ / 2 - (float) 9 / 2, 16777215, false);
+            this.deleteButton.setX(x + 190 + 20);
+            this.deleteButton.setY(y);
+            this.editButton.setX(x + 190);
+            this.editButton.setY(y);
+            this.stateButton.setX(x + 170);
+            this.stateButton.setY(y);
+            this.editButton.render(guiGraphics, mouseX, mouseY, p_281432_);
+            this.stateButton.render(guiGraphics, mouseX, mouseY, p_281432_);
+            this.deleteButton.render(guiGraphics, mouseX, mouseY, p_281432_);
             if(stateButton.isHoveredOrFocused()) {
-                p_281805_.fill(stateButton.getX(), stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 1, Color.WHITE.getRGB());
-                p_281805_.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
-                p_281805_.fill(stateButton.getX(), stateButton.getY() + 20, stateButton.getX() + 1, stateButton.getY(), Color.WHITE.getRGB());
-                p_281805_.fill(stateButton.getX() + 19, stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
-                p_281805_.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.state"), 150), p_282224_, p_282053_);
+                guiGraphics.fill(stateButton.getX(), stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 1, Color.WHITE.getRGB());
+                guiGraphics.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
+                guiGraphics.fill(stateButton.getX(), stateButton.getY() + 20, stateButton.getX() + 1, stateButton.getY(), Color.WHITE.getRGB());
+                guiGraphics.fill(stateButton.getX() + 19, stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
+                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
             }
 
             if(editButton.isHoveredOrFocused()) {
-                p_281805_.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.edit"), 150), p_282224_, p_282053_);
+                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
             }
 
             if(deleteButton.isHoveredOrFocused()) {
-                p_281805_.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.delete"), 150), p_282224_, p_282053_);
+                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
+            }
+
+            boolean running = false;
+
+            if(macro instanceof DelayedMacro delayedMacro) {
+                if(delayedMacro.isStart()) {
+                    running = true;
+                }
+            }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
+                    running = true;
+                }
+            }
+
+            if(running) {
+                if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
+                    guiGraphics.renderTooltip(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
+                }
+                guiGraphics.drawString(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB());
             }
         }
 

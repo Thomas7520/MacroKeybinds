@@ -45,6 +45,11 @@
   "text.macro.deleteWarning": "It will be deleted permanently",
   "text.macro.deleteButton": "Delete this macro",
 
+  "text.running": "R",
+  "text.tooltip.running": "Running",
+  "text.stopmacro": "Stop All Delayed/Repeat macros",
+
   "text.editglobalmacro.title": "Edit Global Macro",
   "text.editservermacro.title": "Edit Server Macro"
+
 }
