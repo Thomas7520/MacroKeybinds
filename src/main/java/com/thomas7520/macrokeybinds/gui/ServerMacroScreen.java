@@ -1,15 +1,24 @@
 package com.thomas7520.macrokeybinds.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.other.MacroList;
+import com.thomas7520.macrokeybinds.object.DelayedMacro;
+import com.thomas7520.macrokeybinds.object.IMacro;
+import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 
@@ -17,13 +26,25 @@ public class ServerMacroScreen extends OptionsSubScreen {
 
     private MacroList macroList;
 
+    private EditBox searchBox;
+    private ImageButton stopMacroButton;
+
     public ServerMacroScreen(Screen p_97519_, Options p_97520_) {
         super(p_97519_, p_97520_, Component.translatable("text.servermacros.title"));
     }
 
     protected void init() {
-        this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
+        if(macroList == null) {
+            this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
+        } else {
+            macroList.updateSize(width + 45, height - 52 - 33, 43, height - 30);
+        }
+
+        this.searchBox = new EditBox(this.font, this.width / 2 - 100, 20, 200, 18, this.searchBox, Component.translatable("selectWorld.search"));
+        this.searchBox.setResponder((p_101362_) -> this.macroList.refreshList(() -> p_101362_, false));
+
         this.addWidget(this.macroList);
+
 
         this.addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), p_93751_ -> this.minecraft.setScreen(new EditMacroScreen(this, null, true)))
                 .bounds(this.width / 2 - 155, this.height - 29, 150, 20)
@@ -32,6 +53,67 @@ public class ServerMacroScreen extends OptionsSubScreen {
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, p_93751_ -> this.minecraft.setScreen(this.lastScreen))
                 .bounds(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
                 .build());
+
+        stopMacroButton = addRenderableWidget(new ImageButton(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, 0, 0, 20, new ResourceLocation(MacroMod.MODID, "textures/stop_icon.png"), (p_97479_) -> {
+            for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
+                if(macro instanceof DelayedMacro delayedMacro) {
+                    if(delayedMacro.isStart()) {
+                        delayedMacro.setStart(false);
+                    }
+                }
+
+                if(macro instanceof RepeatMacro repeatMacro) {
+                    if(repeatMacro.isRepeat()) {
+                        repeatMacro.setRepeat(false);
+                    }
+                }
+            }
+            stopMacroButton.active = false;
+
+        }) {
+            @Override
+            public void renderWidget(GuiGraphics p_283502_, int p_281473_, int p_283021_, float p_282518_) {
+                p_283502_.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+                RenderSystem.enableBlend();
+                RenderSystem.enableDepthTest();
+                p_283502_.blitNineSliced(WIDGETS_LOCATION, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, getTextureY());
+                p_283502_.blit(this.resourceLocation, this.getX() + 2, this.getY() + 2, 0, 0, 16,16, 16,16);
+
+                p_283502_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+                super.renderWidget(p_283502_, p_281473_, p_283021_, p_282518_);
+            }
+
+            private int getTextureY() {
+                int i = 1;
+                if (!this.active) {
+                    i = 0;
+                } else if (this.isHoveredOrFocused()) {
+                    i = 2;
+                }
+
+                return 46 + i * 20;
+            }
+        });
+
+        stopMacroButton.setTooltip(Tooltip.create(Component.translatable("text.stopmacro")));
+
+        stopMacroButton.active = false;
+
+        for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
+            if(macro instanceof DelayedMacro delayedMacro) {
+                if(delayedMacro.isStart()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+        }
     }
 
 
