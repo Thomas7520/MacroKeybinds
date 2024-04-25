@@ -34,13 +34,14 @@ public class GlobalMacroScreen extends OptionsSubScreen {
     }
 
     protected void init() {
-        this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
+
+        if(macroList == null)
+            this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
         this.addWidget(this.macroList);
 
         addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), p_93751_ -> minecraft.setScreen(new EditMacroScreen(this, null, false)))
                 .bounds(this.width / 2 - 155, this.height - 29, 150, 20)
                 .build());
-
 
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, p_93751_ -> this.minecraft.setScreen(this.lastScreen))
@@ -51,6 +52,10 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         this.searchBox.setResponder((p_101362_) -> this.macroList.refreshList(() -> p_101362_, false));
 
         addRenderableWidget(searchBox);
+
+        if(!searchBox.getValue().isEmpty()) {
+            this.macroList.refreshList(() -> searchBox.getValue(), false);
+        }
 
 
 

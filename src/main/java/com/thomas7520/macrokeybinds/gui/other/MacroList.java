@@ -59,7 +59,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
 
     public int getMaxScroll() {
-        return Math.max(0, this.getMaxPosition() - (this.height - 30));
+        return Math.max(0, this.getMaxPosition() - (this.height - 30 + 20));
     }
 
     protected int getScrollbarPosition() {
