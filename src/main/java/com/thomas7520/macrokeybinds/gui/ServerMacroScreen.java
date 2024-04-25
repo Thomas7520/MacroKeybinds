@@ -35,7 +35,12 @@ public class ServerMacroScreen extends OptionsSubScreen {
     }
 
     protected void init() {
-        this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
+        if(macroList == null) {
+            this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
+        } else {
+            macroList.updateSize(width + 45, height - 52 - 33, 43, height - 30);
+        }
+
         this.addRenderableWidget(this.macroList);
 
         this.addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), p_93751_ -> this.minecraft.setScreen(new EditMacroScreen(this, null, true)))
