@@ -42,7 +42,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     @Nullable
     private List<IMacro> cachedList;
 
-    private List<IMacro> macroList;
+    private final List<IMacro> macroList;
 
     public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
         super(p_97400_, p_97399_.width + 45, p_97399_.height - 52 - 33, 43, 20);
@@ -72,17 +72,13 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
     public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
         this.clearEntries();
-   //     LevelStorageSource levelstoragesource = this.minecraft.getLevelSource();
+
         if (this.cachedList == null || p_101678_) {
             this.cachedList = macroList;
-
-
             macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
         }
 
-        if (this.cachedList.isEmpty()) {
-            //this.minecraft.setScreen(CreateWorldScreen.create(null));
-        } else {
+        if (!this.cachedList.isEmpty()) {
             String s = p_101677_.get().toLowerCase(Locale.ROOT);
 
             for (IMacro macro : this.cachedList) {
@@ -90,7 +86,6 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                     this.addEntry(new KeyEntry(macro, MacroList.this.macroScreen, isServer));
                 }
             }
-
         }
     }
 
