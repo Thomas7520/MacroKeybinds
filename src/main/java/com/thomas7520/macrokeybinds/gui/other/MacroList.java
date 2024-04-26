@@ -71,6 +71,10 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     }
 
     public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
+
+        if(searchBoxInput.equalsIgnoreCase(p_101677_.get()) || (searchBoxInput.isEmpty() && p_101677_.get().isEmpty())) return;
+        searchBoxInput = p_101677_.get();
+
         this.clearEntries();
 
         if (this.cachedList == null || p_101678_) {
@@ -94,6 +98,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
     public void updateList(List<IMacro> list) {
         macroList = list;
+        if(cachedList != null) cachedList.clear();
         this.clearEntries();
         macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
         macroList.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
