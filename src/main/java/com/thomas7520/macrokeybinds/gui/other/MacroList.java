@@ -8,6 +8,7 @@ import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
+import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Checkbox;
@@ -120,6 +121,9 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                 @Override
                 public void onPress() {
                     macro.setEnable(!selected());
+
+                    String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                    MacroFlow.writeMacro(macro, directory);
                     super.onPress();
                 }
             };
