@@ -8,6 +8,7 @@ import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.CheckboxEdit;
+import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -119,7 +120,12 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
             this.stateButton = CheckboxEdit.builder(Component.empty(), minecraft.font)
                     .pos(0,0)
-                    .onValueChange((p_309925_, p_310656_) ->  macro.setEnable(p_310656_))
+                    .onValueChange((p_309925_, p_310656_) ->  {
+                        macro.setEnable(p_310656_);
+
+                        String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                        MacroFlow.writeMacro(macro, directory);
+                    })
                     .selected(macro.isEnable())
                     .build();
 
