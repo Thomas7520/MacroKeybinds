@@ -34,7 +34,7 @@ public class ServerMacroScreen extends OptionsSubScreen {
         if(macroList == null) {
             this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
         } else {
-            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
             macroList.updateSize(width + 45, height, 43, height - 30);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
