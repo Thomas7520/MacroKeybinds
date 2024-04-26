@@ -1,6 +1,5 @@
 package com.thomas7520.macrokeybinds.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -10,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 public class MainMacroScreen extends Screen {
@@ -83,8 +81,4 @@ public class MainMacroScreen extends Screen {
 
 
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
 }
