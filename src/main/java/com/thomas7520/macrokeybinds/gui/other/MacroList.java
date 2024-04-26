@@ -98,8 +98,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
     public void updateList(List<IMacro> list) {
         macroList = list;
-        if(cachedList != null) cachedList.clear();
-
+        cachedList = null;
         this.clearEntries();
         macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
         macroList.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
