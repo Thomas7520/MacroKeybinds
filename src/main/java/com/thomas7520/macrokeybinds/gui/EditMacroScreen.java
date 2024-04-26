@@ -19,6 +19,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class EditMacroScreen extends Screen {
@@ -140,29 +141,34 @@ public class EditMacroScreen extends Screen {
 
 
         addRenderableWidget(confirmButton = Button.builder(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), p_93751_ -> {
-            UUID macroUUID = macroData == null ? UUID.randomUUID() : macroData.getUUID();
-            IMacro macro = switch (macroTypeSelectId) {
-                case 0 ->
-                        new SimpleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
-                case 1 ->
-                        new ToggleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
-                case 2 ->
-                        new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
-                case 3 ->
-                        new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
-                default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
-            };
+                    UUID macroUUID = macroData == null ? UUID.randomUUID() : macroData.getUUID();
+                    IMacro macro = switch (macroTypeSelectId) {
+                        case 0 ->
+                                new SimpleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                        case 1 ->
+                                new ToggleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                        case 2 ->
+                                new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                        case 3 ->
+                                new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                        default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
+                    };
 
-            if(serverMacro) {
-                MacroUtil.getServerKeybinds().put(macroUUID, macro);
-            } else {
-                MacroUtil.getGlobalKeybindsMap().put(macroUUID, macro);
-            }
-            String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-            MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
+                    if(serverMacro) {
+                        MacroUtil.getServerKeybinds().put(macroUUID, macro);
+                    } else {
+                        MacroUtil.getGlobalKeybindsMap().put(macroUUID, macro);
+                    }
+                    String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                    MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
 
-            this.minecraft.setScreen(this.lastScreen);
-        })
+                    if(lastScreen instanceof GlobalMacroScreen globalMacroScreen) {
+                        globalMacroScreen.updateMacroList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+                    } else if (lastScreen instanceof  ServerMacroScreen serverMacroScreen) {
+                        serverMacroScreen.updateMacroList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+                    }
+                    this.minecraft.setScreen(this.lastScreen);
+                })
                 .bounds(this.width / 2 - 155, this.height - 38, 150, 20)
                 .build());
 
