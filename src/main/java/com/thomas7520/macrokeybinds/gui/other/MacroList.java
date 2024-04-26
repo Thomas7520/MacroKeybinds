@@ -31,6 +31,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +47,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     private List<IMacro> macroList;
+    private String searchBoxInput = "";
 
     public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
         super(p_97400_, p_97399_.width + 45, p_97399_.height, 43, p_97399_.height - 30, 20);
@@ -69,11 +71,15 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     }
 
     public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
+
+        if(searchBoxInput.equalsIgnoreCase(p_101677_.get()) || (searchBoxInput.isEmpty() && p_101677_.get().isEmpty())) return;
+        searchBoxInput = p_101677_.get();
+
         this.clearEntries();
+        setScrollAmount(0);
 
         if (this.cachedList == null || p_101678_) {
             this.cachedList = macroList;
-
 
             macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
         }
@@ -86,8 +92,14 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                     this.addEntry(new KeyEntry(macro, MacroList.this.macroScreen, isServer));
                 }
             }
-
         }
+    }
+
+    public void updateList(List<IMacro> list) {
+        macroList = list;
+        this.clearEntries();
+        macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
+        macroList.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
     }
 
 
