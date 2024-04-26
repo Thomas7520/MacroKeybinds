@@ -123,7 +123,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                     macro.setEnable(!selected());
 
                     String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-                    MacroFlow.writeMacro(macro, directory);
+                    MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
                     super.onPress();
                 }
             };
