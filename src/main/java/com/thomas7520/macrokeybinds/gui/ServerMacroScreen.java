@@ -150,10 +150,4 @@ public class ServerMacroScreen extends OptionsSubScreen {
 
         super.render(p_281549_, p_281550_, p_282878_, p_282465_);
     }
-
-    public void updateMacroList(List<IMacro> list) {
-        if(macroList != null) {
-            macroList.updateList(list);
-        }
-    }
 }
