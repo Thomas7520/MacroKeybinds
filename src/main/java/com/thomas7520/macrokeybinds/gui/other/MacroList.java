@@ -124,7 +124,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                         macro.setEnable(p_310656_);
 
                         String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-                        MacroFlow.writeMacro(macro, directory);
+                        MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
                     })
                     .selected(macro.isEnable())
                     .build();
