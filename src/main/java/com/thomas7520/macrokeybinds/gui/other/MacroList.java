@@ -68,15 +68,15 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         return super.getRowWidth() + 32;
     }
 
-    public void refreshList(Supplier<String> p_101677_, boolean p_101678_) {
-        if(searchBoxInput.equalsIgnoreCase(p_101677_.get()) || (searchBoxInput.isEmpty() && p_101677_.get().isEmpty())) return;
+    public void refreshList(Supplier<String> p_101677_, boolean update) {
+        if(!update && (searchBoxInput.equalsIgnoreCase(p_101677_.get()) || (searchBoxInput.isEmpty() && p_101677_.get().isEmpty()))) return;
         searchBoxInput = p_101677_.get();
 
         this.clearEntries();
         setScrollAmount(0);
 
 
-        if (this.cachedList == null || p_101678_) {
+        if (this.cachedList == null) {
             this.cachedList = macroList;
 
             macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
