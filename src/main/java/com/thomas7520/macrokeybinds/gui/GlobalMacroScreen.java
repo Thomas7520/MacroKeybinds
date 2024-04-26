@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GlobalMacroScreen extends OptionsSubScreen {
 
@@ -149,5 +150,10 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         }
     }
 
+    public void updateMacroList(List<IMacro> list) {
+        if(macroList != null) {
+            macroList.updateList(list);
+        }
+    }
 
 }
