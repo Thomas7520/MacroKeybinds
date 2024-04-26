@@ -123,6 +123,27 @@ public class ServerMacroScreen extends OptionsSubScreen {
         }
     }
 
+    @Override
+    public void tick() {
+        for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
+            if(macro instanceof DelayedMacro delayedMacro) {
+                if(delayedMacro.isStart()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+        }
+        super.tick();
+    }
+
+
     public void render(PoseStack p_97530_, int p_97531_, int p_97532_, float p_97533_) {
         this.renderDirtBackground(p_97530_);
         this.macroList.render(p_97530_, p_97531_, p_97532_, p_97533_);
