@@ -151,9 +151,4 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         super.render(p_97530_, p_97531_, p_97532_, p_97533_);
     }
 
-    public void updateMacroList(List<IMacro> list) {
-        if(macroList != null) {
-            macroList.updateList(list);
-        }
-    }
 }
