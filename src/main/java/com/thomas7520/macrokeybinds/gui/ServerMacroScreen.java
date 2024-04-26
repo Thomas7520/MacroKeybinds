@@ -42,10 +42,12 @@ public class ServerMacroScreen extends OptionsSubScreen {
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
 
+        this.addWidget(this.macroList);
+
         this.searchBox = new EditBox(this.font, this.width / 2 - 100, 20, 200, 18, this.searchBox, Component.translatable("selectWorld.search"));
         this.searchBox.setResponder((p_101362_) -> this.macroList.refreshList(() -> p_101362_, false));
 
-        this.addWidget(this.macroList);
+        this.addRenderableWidget(searchBox);
 
 
         this.addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), p_93751_ -> this.minecraft.setScreen(new EditMacroScreen(this, null, true)))
