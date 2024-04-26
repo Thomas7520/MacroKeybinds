@@ -1,12 +1,12 @@
 modLoader="javafml" #mandatory
 loaderVersion="[36,)" #mandatory
-license="All rights reserved"
+license="Attribution-NonCommercial-ShareAlike 4.0 International"
 
 [[mods]] #mandatory
 modId="macrokeybinds" #mandatory
 version="${file.jarVersion}" #mandatory
-displayName="MacroKeybinds Mod" #mandatory
-description='''''' #mandatory
+displayName="Macro Keybinds" #mandatory
+description='''MacroKeybinds is a mod that allows the user to create macros in order to execute a task faster.n.\nNewline characters can be used and will be replaced properly.''' #mandatory
 displayURL="https://discord.gg/xTqj3ZSeH4"
 credits="All credits for Thomas7520"
 authors="Thomas7520"

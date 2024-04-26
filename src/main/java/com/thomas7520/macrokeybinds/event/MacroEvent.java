@@ -45,7 +45,7 @@ public class MacroEvent {
 
     @SubscribeEvent
     public static void onMouseInputEvent(InputEvent.MouseInputEvent event) {
-        if(Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+        if(Minecraft.getInstance().level == null) return;
 
         boolean isPress = event.getAction() == GLFW.GLFW_PRESS;
         boolean isRelease = event.getAction() == GLFW.GLFW_RELEASE;
@@ -80,8 +80,7 @@ public class MacroEvent {
                 bind.doAction();
             }
 
-            if(bind instanceof DelayedMacro) {
-                DelayedMacro keybind = (DelayedMacro) bind;
+            if(bind instanceof DelayedMacro keybind) {
 
                 if(!keybind.isEnable()) {
                     keybind.setStart(false);
