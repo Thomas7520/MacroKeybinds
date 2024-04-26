@@ -39,6 +39,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     final Screen macroScreen;
     private final boolean isServer;
     int maxNameWidth;
+    private String searchBoxInput = "";
 
     @Nullable
     public List<IMacro> cachedList;
@@ -85,6 +86,13 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             }
 
         }
+    }
+
+    public void updateList(List<IMacro> list) {
+        macroList = list;
+        this.clearEntries();
+        macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
+        macroList.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
     }
 
     @OnlyIn(Dist.CLIENT)
