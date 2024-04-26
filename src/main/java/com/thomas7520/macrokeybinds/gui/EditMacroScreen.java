@@ -20,6 +20,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class EditMacroScreen extends Screen {
@@ -155,6 +156,12 @@ public class EditMacroScreen extends Screen {
                     }
                     String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
                     MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
+
+                    if(lastScreen instanceof GlobalMacroScreen globalMacroScreen) {
+                        globalMacroScreen.updateMacroList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+                    } else if (lastScreen instanceof  ServerMacroScreen serverMacroScreen) {
+                        serverMacroScreen.updateMacroList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+                    }
 
                     this.minecraft.setScreen(this.lastScreen);
                 })

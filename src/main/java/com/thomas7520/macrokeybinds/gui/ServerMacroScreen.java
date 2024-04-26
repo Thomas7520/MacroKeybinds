@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ServerMacroScreen extends OptionsSubScreen {
@@ -153,5 +154,9 @@ public class ServerMacroScreen extends OptionsSubScreen {
         drawCenteredString(p_97530_, this.font, this.title, this.width / 2, 8, 16777215);
 
         super.render(p_97530_, p_97531_, p_97532_, p_97533_);
+    }
+
+    public void updateMacroList(List<IMacro> list) {
+        macroList.updateList(list);
     }
 }
