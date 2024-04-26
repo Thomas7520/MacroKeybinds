@@ -1,23 +1,23 @@
 {
   "text.config.mainscreen": "Keybinds Menu",
   "text.config.globalmacros": "Global Macros Options",
-  "text.config.servermacros": "Server Macros Options",
-  "text.config.needhelp": "Need Help? Bug? Discord Link",
-  "text.tooltip.main.noserver": "You are not on a server",
+  "text.config.servermacros": "Serveur Macros Options",
+  "text.config.needhelp": "Besoin d'aide? Bug? Lien Discord",
+  "text.tooltip.main.noserver": "Vous n'êtes pas sur un serveur",
 
-  "key.macrokeybinds.openoptions.desc": "Open Gui Option" ,
-  "key.macrokeybinds.category": "MacroKeybinds",
+  "key.macrokeybinds.openoptions.desc": "Ouvrir Gui Option" ,
+  "key.categories.macrokeybinds": "MacroKeybinds",
 
   "text.globalmacros.title": "Global Macros",
-  "text.createglobalmacros.title": "Create New Global Macro",
-  "text.globalmacros.back": "Cancel",
+  "text.createglobalmacros.title": "Créer Nouvelle Macro Global",
+  "text.globalmacros.back": "Annuler",
 
-  "text.servermacros.title": "Server Macros",
-  "text.createservermacros.title": "Create New Server Macro",
-  "text.servermacros.back": "Cancel",
+  "text.servermacros.title": "Serveur Macros",
+  "text.createservermacros.title": "Créer Nouvelle Macro Serveur",
+  "text.servermacros.back": "Annuler",
 
-  "text.createmacro": "Create Macro",
-  "text.editmacro": "Edit Macro",
+  "text.createmacro": "Créer Macro",
+  "text.editmacro": "Modifier Macro",
 
   "text.type.simple": "Simple",
   "text.type.toggle": "Toggle",
@@ -25,30 +25,30 @@
   "text.type.delayed": "Delayed",
   "text.key": "Key",
 
-  "text.action.message": "Send Message",
-  "text.action.command": "Execute Command",
-  "text.action.fillchat": "Fill Chat Without Send",
+  "text.action.message": "Envoyer message",
+  "text.action.command": "Executer Commande",
+  "text.action.fillchat": "Remplir Chat Sans Envoyer",
 
-  "text.tooltip.namebox": "Name",
+  "text.tooltip.namebox": "Nom",
   "text.tooltip.actionbox": "Action",
-  "text.tooltip.timebox": "Cooldown/Delay between execution",
-  "text.tooltip.timeboxsub": "(in millisecond)",
-  "text.tooltip.macrotype": "Select between 4 types of macro.",
-  "text.tooltip.actiontype": "Select between 3 types of action.",
-  "text.tooltip.keybind": "Click and press the wanted key",
-  "text.tooltip.editmacro.state": "Disable/Enable Macro",
-  "text.tooltip.editmacro.edit": "Edit Macro",
-  "text.tooltip.editmacro.delete": "Delete Macro",
-  "text.tooltip.editmacro.forgotvalue": "You forgot to complete one or more fields",
-  "text.tooltip.editmacro.keyalreadyassigned": "This key is already assigned ! (However you can assign it)",
-  "text.macro.deleteQuestion": "Are you sure you want to delete this macro?",
-  "text.macro.deleteWarning": "It will be deleted permanently",
-  "text.macro.deleteButton": "Delete this macro",
+  "text.tooltip.timebox": "Cooldown/Delay entre execution",
+  "text.tooltip.timeboxsub": "(en milliseconde)",
+  "text.tooltip.macrotype": "Selectionner entre 4 types de macro.",
+  "text.tooltip.actiontype": "Selectionner entre 3 types de action.",
+  "text.tooltip.keybind": "Cliquer et appuyer sur la key souhaitée",
+  "text.tooltip.editmacro.state": "Désactiver/Activer Macro",
+  "text.tooltip.editmacro.edit": "Modifier Macro",
+  "text.tooltip.editmacro.delete": "Supprimer Macro",
+  "text.tooltip.editmacro.forgotvalue": "Vous avez oublié de completer un/plusieurs champ(s)",
+  "text.tooltip.editmacro.keyalreadyassigned": "Cette key est déjà utilisée (cependant vous pouvez l'assigner)",
+  "text.macro.deleteQuestion": "Êtes-vous sûr de vouloir supprimer cette macro?",
+  "text.macro.deleteWarning": "Ce sera permanent",
+  "text.macro.deleteButton": "Supprimer cette macro",
 
-  "text.editglobalmacro.title": "Edit Global Macro",
-  "text.editservermacro.title": "Edit Server Macro"
+  "text.running": "L",
+  "text.tooltip.running": "Lancé",
+  "text.stopmacro": "Arrête toutes les macros Delayed/Repeat",
 
-
-
-
+  "text.editglobalmacro.title": "Modifier Macro Global",
+  "text.editservermacro.title": "Modifier Macro Server"
 }
