@@ -37,7 +37,9 @@ public class ServerMacroScreen extends OptionsSubScreen {
         if(macroList == null) {
             this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
         } else {
-            macroList.updateSize(width + 45, height - 52 - 33, 43, height - 30);
+            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
+            macroList.updateSize(width + 45, height, 43, height - 30);
+            macroList.setScrollAmount(macroList.getScrollAmount());
         }
 
         this.searchBox = new EditBox(this.font, this.width / 2 - 100, 20, 200, 18, this.searchBox, Component.translatable("selectWorld.search"));
