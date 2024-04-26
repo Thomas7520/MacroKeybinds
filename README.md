@@ -46,7 +46,12 @@ __**MacroKeybinds has 4 mode:**__
 **However you can create macros for each server, useful when you play on more than one server.**  
 **You can assign several macros to the same key.**
 
- 
+DOWNLOAD LINK:
+
+https://www.curseforge.com/minecraft/mc-mods/macrokeybinds/files
+
+https://modrinth.com/mod/macrokeybinds/versions
 
 **Be careful! Some servers do not tolerate this type of mod. Make sure you don't get banned for cheating! I won't be held responsible for your actions.**
+
 
