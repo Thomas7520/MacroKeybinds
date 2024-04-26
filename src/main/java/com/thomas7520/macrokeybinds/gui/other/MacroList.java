@@ -76,6 +76,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         searchBoxInput = p_101677_.get();
 
         this.clearEntries();
+        setScrollAmount(0);
 
         if (this.cachedList == null || p_101678_) {
             this.cachedList = macroList;
