@@ -46,6 +46,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     private List<IMacro> macroList;
+    private String searchBoxInput = "";
 
     public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
         super(p_97400_, p_97399_.width + 45, p_97399_.height, 43, p_97399_.height - 30, 20);
@@ -88,6 +89,13 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             }
 
         }
+    }
+
+    public void updateList(List<IMacro> list) {
+        macroList = list;
+        this.clearEntries();
+        macroList.sort(Comparator.comparingLong(IMacro::getCreatedTime));
+        macroList.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
     }
 
 
