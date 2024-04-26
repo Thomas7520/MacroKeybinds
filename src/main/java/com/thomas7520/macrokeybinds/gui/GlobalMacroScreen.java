@@ -116,6 +116,26 @@ public class GlobalMacroScreen extends OptionsSubScreen {
 
     }
 
+    @Override
+    public void tick() {
+        for (IMacro macro : MacroUtil.getGlobalKeybindsMap().values()) {
+            if(macro instanceof DelayedMacro delayedMacro) {
+                if(delayedMacro.isStart()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+        }
+        super.tick();
+    }
+
 
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
