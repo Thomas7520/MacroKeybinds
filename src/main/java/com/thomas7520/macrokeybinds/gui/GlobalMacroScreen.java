@@ -42,6 +42,7 @@ public class GlobalMacroScreen extends OptionsSubScreen {
             this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
         } else {
             macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.refreshList(() -> searchBox.getValue(), true);
             macroList.updateSize(width + 45, height, 43, height - 30);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
