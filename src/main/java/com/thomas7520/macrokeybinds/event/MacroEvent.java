@@ -47,7 +47,7 @@ public class MacroEvent {
 
     @SubscribeEvent
     public static void onMouseInputEvent(InputEvent.MouseButton event) {
-        if(Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+        if(Minecraft.getInstance().level == null) return;
 
         boolean isPress = event.getAction() == GLFW.GLFW_PRESS;
         boolean isRelease = event.getAction() == GLFW.GLFW_RELEASE;
@@ -59,7 +59,7 @@ public class MacroEvent {
 
     @SubscribeEvent
     public static void onTick(TickEvent.ClientTickEvent event) {
-        if(Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+        if(Minecraft.getInstance().level == null) return;
 
         Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
         macros.addAll(MacroUtil.getServerKeybinds().values());
