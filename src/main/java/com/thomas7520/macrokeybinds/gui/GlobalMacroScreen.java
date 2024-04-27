@@ -41,7 +41,8 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         } else {
             macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
             macroList.refreshList(() -> searchBox.getValue(), true);
-            macroList.updateSize(width + 45, height, 43, height - 30);
+            macroList.setWidth(width + 45);
+            macroList.setHeight(height - 52 - 33);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
 

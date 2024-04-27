@@ -47,7 +47,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     public List<IMacro> macroList;
 
     public MacroList(Screen p_97399_, Minecraft p_97400_, List<IMacro> macros, boolean isServer) {
-        super(p_97400_, p_97399_.width + 45, p_97399_.height - 52 - 33, 43, p_97399_.height - 30, 20);
+        super(p_97400_, p_97399_.width + 45, p_97399_.height - 52 - 33, 43, 20);
         this.macroScreen = p_97399_;
 
 
@@ -118,16 +118,18 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
                     MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro, lastScreen instanceof ServerMacroScreen)));
 
-            this.stateButton = new Checkbox(0, 0, 20 , 20, Component.empty(), macro.isEnable()) {
-                @Override
-                public void onPress() {
-                    macro.setEnable(!selected());
+            // TODO USE CHECKBOX EDIT FROM MY FORGE BRANCH
+            this.stateButton = Checkbox.builder(Component.empty(), minecraft.font)
+                    .selected(macro.isEnable())
+                    .onValueChange((pCheckbox, pValue) -> {
+                        macro.setEnable(pValue);
 
-                    String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-                    MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
-                    super.onPress();
-                }
-            };
+                        String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                        MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
+
+                    })
+                    .pos(0,0)
+                    .build();
 
             this.deleteButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
