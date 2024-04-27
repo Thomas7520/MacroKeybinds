@@ -8,6 +8,7 @@ import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
+import com.thomas7520.macrokeybinds.util.CheckboxEdit;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
@@ -108,7 +109,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
     public class KeyEntry extends MacroList.Entry {
         private final IMacro macro;
         private final OldImageButton editButton;
-        private final Checkbox stateButton;
+        private final CheckboxEdit stateButton;
         private final OldImageButton deleteButton;
 
         KeyEntry(final IMacro p_97451_, final Screen lastScreen, final boolean isMacroServer) {
@@ -118,8 +119,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
                     MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro, lastScreen instanceof ServerMacroScreen)));
 
-            // TODO USE CHECKBOX EDIT FROM MY FORGE BRANCH
-            this.stateButton = Checkbox.builder(Component.empty(), minecraft.font)
+            this.stateButton = CheckboxEdit.builder(Component.empty(), minecraft.font)
                     .selected(macro.isEnable())
                     .onValueChange((pCheckbox, pValue) -> {
                         macro.setEnable(pValue);
