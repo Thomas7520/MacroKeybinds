@@ -26,8 +26,10 @@ public class MacroEvent {
 
             if(MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().currentScreen != null) return;
 
+            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
+            macros.addAll(MacroUtil.getServerKeybinds().values());
 
-            List<Integer> macroKeys = MacroUtil.getGlobalKeybindsMap().values().stream().filter(IMacro::isEnable).map(IMacro::getKey).toList();
+            List<Integer> macroKeys = macros.stream().filter(IMacro::isEnable).map(IMacro::getKey).toList();
 
             for (Integer key : macroKeys) {
                 MacroModifier modifier = switch (getAnyModifierKeyPressed()) {
@@ -137,7 +139,10 @@ public class MacroEvent {
     public void onServerDisconnect() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 
-            for (IMacro bind : MacroUtil.getGlobalKeybindsMap().values()) {
+            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
+            macros.addAll(MacroUtil.getServerKeybinds().values());
+
+            for (IMacro bind : macros) {
 
                 if (bind instanceof ToggleMacro keybind) {
                     keybind.setToggled(false);
