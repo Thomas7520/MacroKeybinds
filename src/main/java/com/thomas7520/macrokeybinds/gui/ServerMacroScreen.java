@@ -74,7 +74,7 @@ public class ServerMacroScreen extends Screen {
 
         this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
 
-        this.addSelectableChild(searchBox);
+        this.addDrawableChild(searchBox);
 
         stopMacroButton = addDrawableChild(new ButtonWidget(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, Text.empty(), button -> {
             for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
