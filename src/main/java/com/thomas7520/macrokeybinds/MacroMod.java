@@ -29,8 +29,7 @@ public class MacroMod implements ModInitializer {
 
         MacroEvent event = new MacroEvent();
 
-        event.onKeyInputEvent();
-        event.onMouseInputEvent();
+        event.onInputEvent();
         event.onServerConnect();
         event.onServerDisconnect();
         event.onTick();
