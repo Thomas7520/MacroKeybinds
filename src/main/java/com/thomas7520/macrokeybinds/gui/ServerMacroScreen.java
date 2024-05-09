@@ -69,7 +69,7 @@ public class ServerMacroScreen extends Screen {
         this.searchBox = new TextFieldWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, this.searchBox, Text.translatable("text.searchbox.shadow"));
 
 
-        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
+        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, true));
 
 
         addDrawableChild(searchBox);
