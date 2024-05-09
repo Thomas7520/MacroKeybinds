@@ -43,7 +43,7 @@ public class GlobalMacroScreen extends GameOptionsScreen {
         } else {
             macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
             macroList.update(() -> searchBox.getText(), true);
-            macroList.setPosition(width + 45, height - 52);
+            macroList.updateSize(width + 45, height - 52 , 40, height - 32);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
 
@@ -81,10 +81,10 @@ public class GlobalMacroScreen extends GameOptionsScreen {
         }, Supplier::get) {
 
             @Override
-            public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+            public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
                 int i = 16;
                 int j = 16;
-                super.renderWidget(context, mouseX, mouseY, delta);
+                super.renderButton(context, mouseX, mouseY, delta);
                 context.drawTexture(STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });
@@ -135,15 +135,16 @@ public class GlobalMacroScreen extends GameOptionsScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
-
-
         this.macroList.render(context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
+    }
 
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
     }
 
 

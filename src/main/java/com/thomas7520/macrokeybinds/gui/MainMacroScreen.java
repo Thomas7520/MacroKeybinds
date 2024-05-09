@@ -52,7 +52,6 @@ public class MainMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
 
@@ -71,8 +70,6 @@ public class MainMacroScreen extends Screen {
         }
     }
 
-
-
     private ButtonWidget createButton(Text text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
         return ButtonWidget.builder(text, button -> this.client.setScreen(screenSupplier.get()))
                 .dimensions(x,y,width,height)
@@ -80,15 +77,15 @@ public class MainMacroScreen extends Screen {
     }
 
     private ButtonWidget createUrlButton(Text text, int x, int y, int width, int height, String url) {
-        return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, url))
+        return ButtonWidget.builder(text, ConfirmLinkScreen.opening(url, this, false))
                 .dimensions(x,y,width,height)
                 .build();
     }
 
     protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus.getNavigationFocus());
+            return new FocusedTooltipPositioner(focus);
         }
-        return new WidgetTooltipPositioner(focus.getNavigationFocus());
+        return new WidgetTooltipPositioner(focus);
     }
 }

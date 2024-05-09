@@ -189,8 +189,6 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 16, 16777215, false);
@@ -231,7 +229,10 @@ public class EditMacroScreen extends Screen {
 
     }
 
-
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
+    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -419,9 +420,9 @@ public class EditMacroScreen extends Screen {
 
     protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus.getNavigationFocus());
+            return new FocusedTooltipPositioner(focus);
         }
-        return new WidgetTooltipPositioner(focus.getNavigationFocus());
+        return new WidgetTooltipPositioner(focus);
     }
 
     private boolean isKeyCodeModifier(int key) {
