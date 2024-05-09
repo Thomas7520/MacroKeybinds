@@ -48,6 +48,10 @@ public class GlobalMacroScreen extends Screen {
 
         this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
 
+        if(searchBox != null) {
+            macroList.update(() -> searchBox.getText(), true);
+        }
+
         this.addDrawableChild(this.macroList);
 
 

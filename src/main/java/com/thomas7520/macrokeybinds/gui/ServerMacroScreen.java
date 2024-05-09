@@ -48,6 +48,10 @@ public class ServerMacroScreen extends Screen {
 
         this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
 
+        if(searchBox != null) {
+            macroList.update(() -> searchBox.getText(), true);
+        }
+        
         this.addDrawableChild(this.macroList);
 
 
