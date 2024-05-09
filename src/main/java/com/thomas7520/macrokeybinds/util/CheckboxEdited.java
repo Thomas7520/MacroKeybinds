@@ -6,11 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
@@ -21,8 +19,10 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value= EnvType.CLIENT)
 public class CheckboxEdited
         extends PressableWidget {
-
-    private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
+    private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = new Identifier("widget/checkbox_selected_highlighted");
+    private static final Identifier SELECTED_TEXTURE = new Identifier("widget/checkbox_selected");
+    private static final Identifier HIGHLIGHTED_TEXTURE = new Identifier("widget/checkbox_highlighted");
+    private static final Identifier TEXTURE = new Identifier("widget/checkbox");
     private static final int TEXT_COLOR = 0xE0E0E0;
     private static final int field_47105 = 4;
     private static final int field_47106 = 8;
@@ -73,12 +73,11 @@ public class CheckboxEdited
         TextRenderer textRenderer = minecraftClient.textRenderer;
         context.setShaderColor(1.0f, 1.0f, 1.0f, this.alpha);
         RenderSystem.enableBlend();
+        Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (textRenderer.fontHeight >> 1);
-
-        context.drawTexture(TEXTURE, this.getX(), this.getY(), this.isHovered() ? 20.0F : 0.0F, this.checked ? 20.0F : 0.0F, i,i, 64, 64);
-
+        context.drawGuiTexture(identifier, this.getX(), this.getY(), i, i);
         context.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         context.drawTextWithShadow(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }

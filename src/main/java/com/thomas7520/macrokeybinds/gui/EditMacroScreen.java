@@ -189,8 +189,6 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderDarkening(context);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 16, 16777215, false);
@@ -231,7 +229,10 @@ public class EditMacroScreen extends Screen {
 
     }
 
-
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderBackground(context, mouseX, mouseY, delta);
+    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

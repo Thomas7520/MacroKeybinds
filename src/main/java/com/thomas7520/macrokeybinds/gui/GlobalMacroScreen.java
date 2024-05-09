@@ -18,6 +18,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.IconWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -29,42 +30,40 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-public class GlobalMacroScreen extends GameOptionsScreen {
+public class GlobalMacroScreen extends Screen {
 
     public static final Identifier STOP_ICON = new Identifier(MacroMod.MODID, "textures/stop_icon.png");
+    private final Screen parent;
     private MacroList macroList;
-    private EditBoxWidget searchBox;
+    private TextFieldWidget searchBox;
     private ButtonWidget stopMacroButton;
 
-    public GlobalMacroScreen(Screen p_97519_, GameOptions p_97520_) {
-        super(p_97519_, p_97520_, Text.translatable("text.globalmacros.title"));
+    public GlobalMacroScreen(Screen parent) {
+        super(Text.translatable("text.globalmacros.title"));
+
+        this.parent = parent;
     }
 
     public void init() {
-        if(macroList == null) {
-            this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
-        } else {
-            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
-            macroList.update(() -> searchBox.getText(), true);
-            macroList.setPosition(width + 45, height - 52);
-            macroList.setScrollAmount(macroList.getScrollAmount());
-        }
+
+        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
 
         this.addDrawableChild(this.macroList);
 
-        addDrawableChild(createButton(Text.translatable("text.createmacro"), this.width / 2 - 155, this.height - 29, 150, 20, () -> new EditMacroScreen(this, null, false)));
 
-        addDrawableChild(createButton(ScreenTexts.DONE, this.width / 2 - 155 + 160, this.height - 29, 150, 20, () -> parent));
+        addDrawableChild(ButtonWidget.builder(Text.translatable("text.createmacro"), button -> client.setScreen(new EditMacroScreen(this, null, false)))
+                .dimensions(this.width / 2 - 155, this.height - 25, 150, 20)
+                .build());
 
-        if(this.searchBox == null) {
-            this.searchBox = new EditBoxWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, Text.translatable("text.searchbox.shadow"), Text.empty());
-        } else {
-            searchBox.setPosition(this.width / 2 - 100, 20);
-        }
-        this.searchBox.setChangeListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
+        addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> client.setScreen(parent))
+                .dimensions(this.width / 2 - 155 + 160, this.height - 25, 150, 20)
+                .build());
 
+        this.searchBox = new TextFieldWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, this.searchBox, Text.translatable("text.searchbox.shadow"));
 
-        addDrawableChild(searchBox);
+        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
+
+        addSelectableChild(searchBox);
 
         stopMacroButton = addDrawableChild(new ButtonWidget(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, Text.empty(), button -> {
             for (IMacro macro : MacroUtil.getGlobalKeybindsMap().values()) {
@@ -116,7 +115,6 @@ public class GlobalMacroScreen extends GameOptionsScreen {
 
     @Override
     public void tick() {
-
         if(stopMacroButton.active) return;
 
         for (IMacro macro : MacroUtil.getGlobalKeybindsMap().values()) {
@@ -138,23 +136,15 @@ public class GlobalMacroScreen extends GameOptionsScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderDarkening(context);
-
-        this.macroList.render(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
 
+        searchBox.render(context, mouseX, mouseY, delta);
+
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
-
     }
 
-
-    private ButtonWidget createButton(Text text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return ButtonWidget.builder(text, button -> this.client.setScreen(screenSupplier.get()))
-                .dimensions(x,y,width,height)
-                .build();
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderBackground(context, mouseX, mouseY, delta);
     }
-
-
-
 }

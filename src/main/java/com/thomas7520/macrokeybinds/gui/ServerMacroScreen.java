@@ -6,62 +6,64 @@ import com.thomas7520.macrokeybinds.gui.other.MacroList;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
+import com.thomas7520.macrokeybinds.util.ButtonImageWidget;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.screen.option.KeybindsScreen;
+import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.option.VideoOptionsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
+import net.minecraft.client.gui.widget.IconWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import org.apache.commons.codec.language.bm.Languages;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-public class ServerMacroScreen extends GameOptionsScreen {
+public class ServerMacroScreen extends Screen {
 
-    private MacroList macroList;
-    private EditBoxWidget searchBox;
-    private ClickableWidget stopMacroButton;
     public static final Identifier STOP_ICON = new Identifier(MacroMod.MODID, "textures/stop_icon.png");
+    private final Screen parent;
+    private MacroList macroList;
+    private TextFieldWidget searchBox;
+    private ButtonWidget stopMacroButton;
 
-    public ServerMacroScreen(Screen p_97519_, GameOptions p_97520_) {
-        super(p_97519_, p_97520_, Text.translatable("text.servermacros.title"));
+    public ServerMacroScreen(Screen parent) {
+        super(Text.translatable("text.servermacros.title"));
+
+        this.parent = parent;
     }
 
-    @Override
     public void init() {
-        if(macroList == null) {
-            this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
-        } else {
-            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
-            macroList.update(() -> searchBox.getText(), true);
-            macroList.setPosition(width + 45, height - 52);
-            macroList.setScrollAmount(macroList.getScrollAmount());
-        }
 
+        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
 
         this.addDrawableChild(this.macroList);
 
-        addDrawableChild(createButton(Text.translatable("text.createmacro"), this.width / 2 - 155, this.height - 29, 150, 20, () -> new EditMacroScreen(this, null, true)));
 
-        addDrawableChild(createButton(ScreenTexts.DONE, this.width / 2 - 155 + 160, this.height - 29, 150, 20, () -> parent));
+        addDrawableChild(ButtonWidget.builder(Text.translatable("text.createmacro"), button -> client.setScreen(new EditMacroScreen(this, null, true)))
+                .dimensions(this.width / 2 - 155, this.height - 25, 150, 20)
+                .build());
 
+        addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> client.setScreen(parent))
+                .dimensions(this.width / 2 - 155 + 160, this.height - 25, 150, 20)
+                .build());
 
-        if(this.searchBox == null) {
-            this.searchBox = new EditBoxWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, Text.translatable("text.searchbox.shadow"), Text.empty());
-        } else {
-            searchBox.setPosition(this.width / 2 - 100, 20);
-        }
-        this.searchBox.setChangeListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
+        this.searchBox = new TextFieldWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, this.searchBox, Text.translatable("text.searchbox.shadow"));
 
+        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
 
-        addDrawableChild(searchBox);
+        addSelectableChild(searchBox);
 
         stopMacroButton = addDrawableChild(new ButtonWidget(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, Text.empty(), button -> {
             for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
@@ -87,8 +89,8 @@ public class ServerMacroScreen extends GameOptionsScreen {
                 super.renderWidget(context, mouseX, mouseY, delta);
                 context.drawTexture(STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
-
         });
+
 
         stopMacroButton.setTooltip(Tooltip.of(Text.translatable("text.stopmacro")));
 
@@ -109,8 +111,6 @@ public class ServerMacroScreen extends GameOptionsScreen {
                 }
             }
         }
-
-        super.init();
     }
 
     @Override
@@ -136,21 +136,15 @@ public class ServerMacroScreen extends GameOptionsScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderDarkening(context);
-
-
-        this.macroList.render(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
+
+        searchBox.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
     }
 
-    private ButtonWidget createButton(Text text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return ButtonWidget.builder(text, button -> this.client.setScreen(screenSupplier.get()))
-                .dimensions(x,y,width,height)
-                .build();
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderBackground(context, mouseX, mouseY, delta);
     }
-
-
 }

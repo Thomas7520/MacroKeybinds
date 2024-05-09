@@ -37,14 +37,11 @@ public class MainMacroScreen extends Screen {
         Text serverMacros = Text.translatable("text.config.servermacros");
         Text discordLink = Text.translatable("text.config.needhelp");
 
-        addDrawableChild(createButton(globalMacros, guiLeft - 100, guiTop / 2, 200, 20, () -> new GlobalMacroScreen(this, client.options)));
+        addDrawableChild(createButton(globalMacros, guiLeft - 100, guiTop / 2, 200, 20, () -> new GlobalMacroScreen(this)));
 
-        addDrawableChild(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this, client.options)));
+        addDrawableChild(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
 
         addDrawableChild(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
-
-
-
 
         super.init();
     }
@@ -52,8 +49,6 @@ public class MainMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, title, width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);

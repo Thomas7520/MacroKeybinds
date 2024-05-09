@@ -20,6 +20,7 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
@@ -54,12 +55,11 @@ extends ElementListWidget<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     public MacroList(Screen parent, MinecraftClient client, List<IMacro> macros, boolean isServer) {
-        super(client, parent.width + 45, parent.height - 52 , 40, parent.height - 32);
+        super(client, parent.width, parent.height - 20 - 53, 43, 20);
         this.parent = parent;
         this.macroList = macros;
         this.isServer = isServer;
         macros.sort(Comparator.comparingLong(IMacro::getCreatedTime));
-
 
         macros.stream().map(bind -> new KeyBindingEntry(bind, parent, isServer)).forEach(this::addEntry);
     }
@@ -101,7 +101,6 @@ extends ElementListWidget<MacroList.Entry> {
     protected int getScrollbarX() {
         return super.getScrollbarX() + 15 + 20;
     }
-
 
     @Environment(value=EnvType.CLIENT)
     public class KeyBindingEntry
