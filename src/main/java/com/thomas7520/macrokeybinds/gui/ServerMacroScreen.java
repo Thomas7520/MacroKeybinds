@@ -54,7 +54,7 @@ public class ServerMacroScreen extends Screen {
         this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
 
         if(searchBox != null) {
-            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
             macroList.update(() -> searchBox.getText(), true);
             macroList.setScrollAmount(scrollAmount);
         }
