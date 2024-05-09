@@ -89,6 +89,7 @@ public class MainMacroScreen extends Screen {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
             return new FocusedTooltipPositioner(focus.getNavigationFocus());
         }
+
         return new WidgetTooltipPositioner(focus.getNavigationFocus());
     }
 }

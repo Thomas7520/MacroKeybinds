@@ -65,6 +65,7 @@ public class CheckboxEdited
         }
     }
 
+
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();

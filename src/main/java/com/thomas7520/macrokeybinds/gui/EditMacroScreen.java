@@ -347,7 +347,6 @@ public class EditMacroScreen extends Screen {
         if (this.commandSuggestions.mouseScrolled(verticalAmount)) {
             return true;
         }
-
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
