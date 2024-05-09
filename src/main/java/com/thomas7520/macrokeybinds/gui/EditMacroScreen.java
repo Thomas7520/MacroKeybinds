@@ -350,12 +350,6 @@ public class EditMacroScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
-    @Override
-    public void resize(MinecraftClient p_96575_, int p_96576_, int p_96577_) {
-        MinecraftClient.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
-        super.resize(p_96575_, p_96576_, p_96577_);
-    }
-
     public void initDataMacro() {
         nameBox.setText(macroData.getName());
         actionTypeSelectId = (byte) macroData.getAction().ordinal();
@@ -424,7 +418,6 @@ public class EditMacroScreen extends Screen {
     }
 
     private boolean isKeyCodeModifier(int key) {
-        // Liste des boutons de la souris
         int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
 
         for (int modifierKey : modifierKeys) {
