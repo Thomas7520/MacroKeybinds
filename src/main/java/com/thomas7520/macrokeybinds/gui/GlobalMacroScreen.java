@@ -45,11 +45,18 @@ public class GlobalMacroScreen extends Screen {
     }
 
     public void init() {
+        double scrollAmount = 0;
 
-        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
+        if(macroList != null) {
+            scrollAmount = macroList.getScrollAmount();
+        }
+
+        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), true);
 
         if(searchBox != null) {
-            macroList.update(() -> searchBox.getText(), true);
+            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.update(() -> searchBox.getText(), false);
+            macroList.setScrollAmount(scrollAmount);
         }
 
         this.addDrawableChild(this.macroList);
@@ -65,7 +72,7 @@ public class GlobalMacroScreen extends Screen {
 
         this.searchBox = new TextFieldWidget(textRenderer, this.width / 2 - 100, 20, 200, 18, this.searchBox, Text.translatable("text.searchbox.shadow"));
 
-        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, false));
+        this.searchBox.setChangedListener((p_101362_) -> this.macroList.update(() -> p_101362_, true));
 
         addSelectableChild(searchBox);
 
