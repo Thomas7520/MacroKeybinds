@@ -54,7 +54,7 @@ extends ElementListWidget<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     public MacroList(Screen parent, MinecraftClient client, List<IMacro> macros, boolean isServer) {
-        super(client, parent.width + 45, parent.height - 52 , 40, parent.height - 32);
+        super(client, parent.width + 45, parent.height - 20 - 53, 43, 20);
         this.parent = parent;
         this.macroList = macros;
         this.isServer = isServer;
