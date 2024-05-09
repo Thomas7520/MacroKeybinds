@@ -136,14 +136,15 @@ public class ServerMacroScreen extends GameOptionsScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
-
-
         this.macroList.render(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
+    }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackgroundTexture(context);
     }
 
     private ButtonWidget createButton(Text text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {

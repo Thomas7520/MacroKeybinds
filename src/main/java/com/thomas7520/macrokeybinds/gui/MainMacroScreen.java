@@ -52,8 +52,6 @@ public class MainMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, title, width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
