@@ -17,7 +17,7 @@ public class MacroEvent {
 
     private final List<Integer> keysPressed = new ArrayList<>();
 
-    public void onKeyInputEvent() {
+    public void onInputEvent() {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if(MacroUtil.guiBinding.isPressed()) {
@@ -26,8 +26,10 @@ public class MacroEvent {
 
             if(MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().currentScreen != null) return;
 
+            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
+            macros.addAll(MacroUtil.getServerKeybinds().values());
 
-            List<Integer> macroKeys = MacroUtil.getGlobalKeybindsMap().values().stream().filter(IMacro::isEnable).map(IMacro::getKey).toList();
+            List<Integer> macroKeys = macros.stream().filter(IMacro::isEnable).map(IMacro::getKey).toList();
 
             for (Integer key : macroKeys) {
                 MacroModifier modifier = switch (getAnyModifierKeyPressed()) {
@@ -59,17 +61,9 @@ public class MacroEvent {
                     keysPressed.add(key);
                 }
 
-
                 onInputEvent(isPress, isRelease, key, modifier);
             }
         });
-
-
-
-    }
-
-
-    public void onMouseInputEvent() {
     }
 
     public void onTick() {
@@ -99,8 +93,7 @@ public class MacroEvent {
                     bind.doAction();
                 }
 
-                if(bind instanceof DelayedMacro) {
-                    DelayedMacro keybind = (DelayedMacro) bind;
+                if(bind instanceof DelayedMacro keybind) {
 
                     if(!keybind.isEnable()) {
                         keybind.setStart(false);
@@ -137,7 +130,10 @@ public class MacroEvent {
     public void onServerDisconnect() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 
-            for (IMacro bind : MacroUtil.getGlobalKeybindsMap().values()) {
+            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
+            macros.addAll(MacroUtil.getServerKeybinds().values());
+
+            for (IMacro bind : macros) {
 
                 if (bind instanceof ToggleMacro keybind) {
                     keybind.setToggled(false);
