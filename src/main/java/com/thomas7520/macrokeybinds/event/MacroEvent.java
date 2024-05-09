@@ -17,7 +17,7 @@ public class MacroEvent {
 
     private final List<Integer> keysPressed = new ArrayList<>();
 
-    public void onKeyInputEvent() {
+    public void onInputEvent() {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if(MacroUtil.guiBinding.isPressed()) {
@@ -65,13 +65,6 @@ public class MacroEvent {
                 onInputEvent(isPress, isRelease, key, modifier);
             }
         });
-
-
-
-    }
-
-
-    public void onMouseInputEvent() {
     }
 
     public void onTick() {
