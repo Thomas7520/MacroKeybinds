@@ -343,11 +343,12 @@ public class EditMacroScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (this.commandSuggestions.mouseScrolled(amount)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (this.commandSuggestions.mouseScrolled(verticalAmount)) {
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, amount);
+
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     @Override
@@ -418,13 +419,12 @@ public class EditMacroScreen extends Screen {
 
     protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus);
+            return new FocusedTooltipPositioner(focus.getNavigationFocus());
         }
-        return new WidgetTooltipPositioner(focus);
+        return new WidgetTooltipPositioner(focus.getNavigationFocus());
     }
 
     private boolean isKeyCodeModifier(int key) {
-        // Liste des boutons de la souris
         int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
 
         for (int modifierKey : modifierKeys) {

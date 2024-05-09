@@ -41,7 +41,7 @@ public class ServerMacroScreen extends GameOptionsScreen {
         } else {
             macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
             macroList.update(() -> searchBox.getText(), true);
-            macroList.updateSize(width + 45, height - 52 , 40, height - 32);
+            macroList.setPosition(width + 45, height - 52);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
 
@@ -81,10 +81,10 @@ public class ServerMacroScreen extends GameOptionsScreen {
         }, Supplier::get) {
 
             @Override
-            public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+            public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
                 int i = 16;
                 int j = 16;
-                super.renderButton(context, mouseX, mouseY, delta);
+                super.renderWidget(context, mouseX, mouseY, delta);
                 context.drawTexture(STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
 
@@ -115,8 +115,6 @@ public class ServerMacroScreen extends GameOptionsScreen {
 
     @Override
     public void tick() {
-        searchBox.tick();
-
         if(stopMacroButton.active) return;
 
         for (IMacro macro : MacroUtil.getServerKeybinds().values()) {

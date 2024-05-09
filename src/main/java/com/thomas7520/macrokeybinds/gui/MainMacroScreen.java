@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
@@ -51,7 +52,7 @@ public class MainMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
 
         super.render(context, mouseX, mouseY, delta);
 
@@ -79,15 +80,15 @@ public class MainMacroScreen extends Screen {
     }
 
     private ButtonWidget createUrlButton(Text text, int x, int y, int width, int height, String url) {
-        return ButtonWidget.builder(text, ConfirmLinkScreen.opening(url, this, true))
+        return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, url))
                 .dimensions(x,y,width,height)
                 .build();
     }
 
     protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus);
+            return new FocusedTooltipPositioner(focus.getNavigationFocus());
         }
-        return new WidgetTooltipPositioner(focus);
+        return new WidgetTooltipPositioner(focus.getNavigationFocus());
     }
 }

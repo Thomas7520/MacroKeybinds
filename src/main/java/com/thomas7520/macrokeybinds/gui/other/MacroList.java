@@ -54,7 +54,7 @@ extends ElementListWidget<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     public MacroList(Screen parent, MinecraftClient client, List<IMacro> macros, boolean isServer) {
-        super(client, parent.width + 45, parent.height - 52 , 40, parent.height - 32,20);
+        super(client, parent.width + 45, parent.height - 52 , 40, parent.height - 32);
         this.parent = parent;
         this.macroList = macros;
         this.isServer = isServer;
@@ -226,9 +226,9 @@ extends ElementListWidget<MacroList.Entry> {
 
     protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
         if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus);
+            return new FocusedTooltipPositioner(focus.getNavigationFocus());
         }
-        return new WidgetTooltipPositioner(focus);
+        return new WidgetTooltipPositioner(focus.getNavigationFocus());
     }
 }
 
