@@ -98,9 +98,10 @@ extends ElementListWidget<MacroList.Entry> {
     }
 
     @Override
-    protected int getScrollbarPositionX() {
-        return super.getScrollbarPositionX() + 15 + 20;
+    protected int getScrollbarX() {
+        return super.getScrollbarX() + 15 + 20;
     }
+
 
     @Environment(value=EnvType.CLIENT)
     public class KeyBindingEntry

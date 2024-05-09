@@ -136,7 +136,7 @@ public class ServerMacroScreen extends GameOptionsScreen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
+        renderDarkening(context);
 
 
         this.macroList.render(context, mouseX, mouseY, delta);
