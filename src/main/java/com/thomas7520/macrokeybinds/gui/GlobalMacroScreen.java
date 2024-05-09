@@ -43,7 +43,7 @@ public class GlobalMacroScreen extends GameOptionsScreen {
         } else {
             macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
             macroList.update(() -> searchBox.getText(), true);
-            macroList.updateSize(width + 45, 52, 40, height - 30);
+            macroList.updateSize(width + 45, height - 52 , 40, height - 32);
             macroList.setScrollAmount(macroList.getScrollAmount());
         }
 

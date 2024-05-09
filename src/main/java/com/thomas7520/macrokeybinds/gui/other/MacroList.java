@@ -102,17 +102,6 @@ extends ElementListWidget<MacroList.Entry> {
         return super.getScrollbarPositionX() + 15 + 20;
     }
 
-    @Override
-    public int getRowWidth() {
-        return super.getRowWidth() + 32;
-    }
-
-    @Override
-    public int getMaxScroll() {
-        return Math.max(0, this.getMaxPosition() - (this.height - 30));
-    }
-
-
     @Environment(value=EnvType.CLIENT)
     public class KeyBindingEntry
             extends MacroList.Entry {
