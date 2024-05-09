@@ -43,9 +43,6 @@ public class MainMacroScreen extends Screen {
 
         addDrawableChild(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
 
-
-
-
         super.init();
     }
 

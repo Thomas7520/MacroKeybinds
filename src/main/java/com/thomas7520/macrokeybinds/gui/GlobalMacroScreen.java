@@ -42,10 +42,18 @@ public class GlobalMacroScreen extends Screen {
     }
 
     public void init() {
-        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
+        double scrollAmount = 0;
+
+        if(macroList != null) {
+            scrollAmount = macroList.getScrollAmount();
+        }
+
+        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), true);
 
         if(searchBox != null) {
-            macroList.update(() -> searchBox.getText(), true);
+            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.update(() -> searchBox.getText(), false);
+            macroList.setScrollAmount(scrollAmount);
         }
 
         this.addDrawableChild(this.macroList);
@@ -138,8 +146,6 @@ public class GlobalMacroScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.macroList.render(context, mouseX, mouseY, delta);
-
         super.render(context, mouseX, mouseY, delta);
 
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
