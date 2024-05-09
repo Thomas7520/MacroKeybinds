@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "macrokeybinds",
+	"version": "${version}",
+	"name": "Macro Keybinds",
+	"description": "create macros in order to execute a task faster",
+	"authors": [
+		"Thomas7520"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "Attribution-NonCommercial-ShareAlike 4.0 International",
+	"icon": "assets/macrokeybinds/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.thomas7520.macrokeybinds.MacroMod"
+		]
+	},
+	"mixins": [
+	],
+	"depends": {
+		"fabricloader": ">=0.15.7",
+		"minecraft": ">=1.20",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
