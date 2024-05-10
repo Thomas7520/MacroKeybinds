@@ -102,6 +102,11 @@ extends ElementListWidget<MacroList.Entry> {
         return super.getScrollbarX() + 15 + 20;
     }
 
+    @Override
+    public int getRowWidth() {
+        return super.getRowWidth() + 15;
+    }
+
     @Environment(value=EnvType.CLIENT)
     public class KeyBindingEntry
             extends MacroList.Entry {
