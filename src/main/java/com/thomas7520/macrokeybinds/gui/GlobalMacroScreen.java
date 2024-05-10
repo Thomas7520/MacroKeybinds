@@ -51,7 +51,7 @@ public class GlobalMacroScreen extends Screen {
             scrollAmount = macroList.getScrollAmount();
         }
 
-        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), true);
+        this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
 
         if(searchBox != null) {
             macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
