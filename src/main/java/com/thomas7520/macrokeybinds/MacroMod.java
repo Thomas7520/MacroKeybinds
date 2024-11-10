@@ -27,10 +27,10 @@ public class MacroMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
 
-    public MacroMod()
+    public MacroMod(FMLJavaModLoadingContext context)
     {
 
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modEventBus = context.getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::registerKeybindingEvent);
         MinecraftForge.EVENT_BUS.register(this);
