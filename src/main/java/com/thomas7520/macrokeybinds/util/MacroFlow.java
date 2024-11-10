@@ -21,7 +21,6 @@ public class MacroFlow {
 
 
         JsonObject object = new GsonBuilder().create().fromJson(new BufferedReader(new FileReader(file)), JsonObject.class);
-        //net.minecraft.client.gui.screens.controls.ControlsScreen
 
         IMacro macro;
         switch (MacroType.valueOf(object.get("macroType").getAsString())) {

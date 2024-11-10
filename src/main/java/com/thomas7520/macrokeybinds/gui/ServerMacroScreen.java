@@ -36,15 +36,8 @@ public class ServerMacroScreen extends OptionsSubScreen {
     }
 
     protected void init() {
-        if(macroList == null) {
-            this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
-        } else {
-            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
-            macroList.refreshList(() -> searchBox.getValue(), true);
-            macroList.setWidth(width + 45);
-            macroList.setHeight(height - 52 - 33);
-            macroList.setScrollAmount(macroList.getScrollAmount());
-        }
+        this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
+
 
         this.addRenderableWidget(this.macroList);
 
@@ -132,9 +125,22 @@ public class ServerMacroScreen extends OptionsSubScreen {
         super.tick();
     }
 
+
+    @Override
+    public void added() {
+        if(macroList != null) {
+            macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
+            macroList.refreshList(() -> searchBox.getValue(), true);
+            macroList.setWidth(width + 45);
+            macroList.setHeight(height - 52 - 33);
+            macroList.setScrollAmount(macroList.getScrollAmount());
+        }
+        super.added();
+    }
+
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-        this.renderDirtBackground(p_281549_);
+        renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
 
         this.macroList.render(p_281549_, p_281550_, p_282878_, p_282465_);
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 8, 16777215);

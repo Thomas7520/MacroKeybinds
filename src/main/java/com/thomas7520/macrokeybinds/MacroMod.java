@@ -7,6 +7,7 @@ import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -26,9 +27,12 @@ public class MacroMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
 
-    public MacroMod() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::registerKeybindingEvent);
+    public MacroMod(FMLJavaModLoadingContext context)
+    {
+
+        IEventBus modEventBus = context.getModEventBus();
+        modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::registerKeybindingEvent);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

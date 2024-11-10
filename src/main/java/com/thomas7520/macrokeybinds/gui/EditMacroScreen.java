@@ -154,11 +154,13 @@ public class EditMacroScreen extends Screen {
                                 new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
                     };
+
                     if(serverMacro) {
                         MacroUtil.getServerKeybinds().put(macroUUID, macro);
                     } else {
                         MacroUtil.getGlobalKeybindsMap().put(macroUUID, macro);
                     }
+
                     String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
                     MacroFlow.writeMacro(macro, FMLPaths.GAMEDIR.get().resolve(FMLConfig.defaultConfigPath()) + directory);
 
@@ -191,9 +193,11 @@ public class EditMacroScreen extends Screen {
 
     }
 
+
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-        renderDirtBackground(p_281549_);
+        renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
+
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
 
 

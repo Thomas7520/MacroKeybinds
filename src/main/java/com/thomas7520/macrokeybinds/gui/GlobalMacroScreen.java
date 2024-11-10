@@ -34,8 +34,10 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         super(p_97519_, p_97520_, Component.translatable("text.globalmacros.title"));
     }
 
-    protected void init() {
 
+
+    protected void init() {
+        System.out.println(MacroUtil.getGlobalKeybindsMap().size());
         if(macroList == null) {
             this.macroList = new MacroList(this, this.minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
         } else {
@@ -118,6 +120,22 @@ public class GlobalMacroScreen extends OptionsSubScreen {
         }
     }
 
+
+
+    @Override
+    public void added() {
+
+        if(macroList != null) {
+            macroList.updateList(new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()));
+            macroList.refreshList(() -> searchBox.getValue(), true);
+            macroList.setWidth(width + 45);
+            macroList.setHeight(height - 52 - 33);
+            macroList.setScrollAmount(macroList.getScrollAmount());
+        }
+
+        super.added();
+    }
+
     @Override
     public void tick() {
         for (IMacro macro : MacroUtil.getGlobalKeybindsMap().values()) {
@@ -140,8 +158,7 @@ public class GlobalMacroScreen extends OptionsSubScreen {
 
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-
-        this.renderDirtBackground(p_281549_);
+        renderBackground(p_281549_, p_281550_, p_282878_, p_282465_);
 
         this.macroList.render(p_281549_, p_281550_, p_282878_, p_282465_);
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 8, 16777215);
