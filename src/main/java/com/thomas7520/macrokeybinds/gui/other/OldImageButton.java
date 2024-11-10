@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.gui.other;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -50,6 +51,6 @@ public class OldImageButton extends Button {
         }
 
         RenderSystem.enableDepthTest();
-        p_283502_.blit(this.resourceLocation, this.getX(), this.getY(), this.xTexStart, i, this.width, this.height, this.textureWidth, this.textureHeight);
+        p_283502_.blit(RenderType::guiTextured, this.resourceLocation, this.getX(), this.getY(), this.xTexStart, i, this.width, this.height, this.textureWidth, this.textureHeight);
     }
 }

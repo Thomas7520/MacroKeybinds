@@ -7,11 +7,14 @@ import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -69,7 +72,6 @@ public class CheckboxEdit extends AbstractButton {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.enableDepthTest();
         Font font = minecraft.font;
-        p_283124_.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         ResourceLocation resourcelocation;
         if (this.selected) {
@@ -81,8 +83,7 @@ public class CheckboxEdit extends AbstractButton {
         int i = boxSize(font);
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (9 >> 1);
-        p_283124_.blitSprite(resourcelocation, this.getX(), this.getY(), i+3, i+3);
-        p_283124_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        p_283124_.blitSprite(RenderType::guiTextured, resourcelocation, this.getX(), this.getY(), i+3, i+3, ARGB.white(this.alpha));
         p_283124_.drawString(font, this.getMessage(), j, k, 14737632 | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 

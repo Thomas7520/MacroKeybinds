@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -72,13 +73,10 @@ public class ServerMacroScreen extends Screen {
         }) {
             @Override
             public void renderWidget(GuiGraphics p_283502_, int p_281473_, int p_283021_, float p_282518_) {
-                p_283502_.setColor(1.0F, 1.0F, 1.0F, this.alpha);
                 RenderSystem.enableBlend();
                 RenderSystem.enableDepthTest();
-                p_283502_.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
-                p_283502_.blit(this.resourceLocation, this.getX() + 2, this.getY() + 2, 0, 0, 16,16, 16,16);
-
-                p_283502_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+                p_283502_.blitSprite(RenderType::guiTextured, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+                p_283502_.blit(RenderType::guiTextured, this.resourceLocation, this.getX() + 2, this.getY() + 2, 0, 0, 16,16, 16,16);
                 super.renderWidget(p_283502_, p_281473_, p_283021_, p_282518_);
             }
         });
