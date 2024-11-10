@@ -31,11 +31,11 @@ public class MainMacroScreen extends Screen {
         Component serverMacros = Component.translatable("text.config.servermacros");
         Component discordLink = Component.translatable("text.config.needhelp");
 
-        addRenderableWidget(Button.builder(globalMacros, p_93751_ ->  Minecraft.getInstance().setScreen(new GlobalMacroScreen(this, minecraft.options)))
+        addRenderableWidget(Button.builder(globalMacros, p_93751_ ->  Minecraft.getInstance().setScreen(new GlobalMacroScreen(this)))
                 .bounds(guiLeft - 100, guiTop / 2, 200, 20)
                 .build());
 
-        addRenderableWidget(serverMacrosButton = Button.builder(serverMacros, p_93751_ -> Minecraft.getInstance().setScreen(new ServerMacroScreen(this, minecraft.options)))
+        addRenderableWidget(serverMacrosButton = Button.builder(serverMacros, p_93751_ -> Minecraft.getInstance().setScreen(new ServerMacroScreen(this)))
                 .bounds(guiLeft - 100, guiTop / 2 + 35, 200, 20)
                 .build());
 

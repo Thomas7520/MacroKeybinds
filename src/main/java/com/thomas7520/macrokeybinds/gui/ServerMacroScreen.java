@@ -8,31 +8,30 @@ import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ServerMacroScreen extends OptionsSubScreen {
+public class ServerMacroScreen extends Screen {
 
     private MacroList macroList;
 
     private EditBox searchBox;
     private OldImageButton stopMacroButton;
+    private Screen lastScreen;
 
 
-    public ServerMacroScreen(Screen p_97519_, Options p_97520_) {
-        super(p_97519_, p_97520_, Component.translatable("text.servermacros.title"));
+    public ServerMacroScreen(Screen p_97519_) {
+        super(Component.translatable("text.servermacros.title"));
+        this.lastScreen = p_97519_;
     }
 
     protected void init() {
@@ -54,7 +53,7 @@ public class ServerMacroScreen extends OptionsSubScreen {
 
         addRenderableWidget(searchBox);
 
-        stopMacroButton = addRenderableWidget(new OldImageButton(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, 0, 0, 20, new ResourceLocation(MacroMod.MODID, "textures/stop_icon.png"), (p_97479_) -> {
+        stopMacroButton = addRenderableWidget(new OldImageButton(searchBox.getX() - 25, searchBox.getY() - 1, 20, 20, 0, 0, 20, ResourceLocation.fromNamespaceAndPath(MacroMod.MODID, "textures/stop_icon.png"), (p_97479_) -> {
             for (IMacro macro : MacroUtil.getServerKeybinds().values()) {
                 if(macro instanceof DelayedMacro delayedMacro) {
                     if(delayedMacro.isStart()) {

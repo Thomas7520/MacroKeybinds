@@ -120,7 +120,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
             this.macro = p_97451_;
 
-            this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
+            this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,  ResourceLocation.fromNamespaceAndPath(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
                     MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro, lastScreen instanceof ServerMacroScreen)));
 
 
@@ -137,7 +137,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
 
 
-            this.deleteButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,ResourceLocation.fromNamespaceAndPath(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
                 if (p_170322_) {
                     if(isMacroServer) {
