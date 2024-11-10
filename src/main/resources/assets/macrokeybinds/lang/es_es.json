@@ -1,0 +1,56 @@
+{
+  "text.config.mainscreen": "§3§nMenú de Macros",
+  "text.config.globalmacros": "Macros Globales",
+  "text.config.servermacros": "Macros de Servidor",
+  "text.config.needhelp": "§8Discord de Ayuda",
+  "text.tooltip.main.noserver": "§4❗ §cNo te encuentras en un servidor.",
+
+  "key.macrokeybinds.openoptions.desc": "Abrir la Configuración",
+  "key.categories.macrokeybinds": "§3§lMacroKeybinds",
+
+  "text.globalmacros.title": "§3§nMacros Globales",
+  "text.createglobalmacros.title": "§3§nCreación de Macros Globales",
+  "text.globalmacros.back": "§c✘ Cancelar",
+
+  "text.servermacros.title": "§3§nMacros de Servidor",
+  "text.createservermacros.title": "§3§nCreación de Macros para el Servidor",
+  "text.servermacros.back": "§c✘ Cancelar",
+
+  "text.createmacro": "§2✚ Crear Macro",
+  "text.editmacro": "§2✔ Guardar Cambios",
+
+  "text.type.simple": "Sencilla",
+  "text.type.toggle": "Cambiar",
+  "text.type.repeat": "Repetir",
+  "text.type.delayed": "Retrasada",
+  "text.key": "Tecla",
+
+  "text.action.message": "Enviar Mensaje",
+  "text.action.command": "Ejecutar Comando",
+  "text.action.fillchat": "Escribir en el Chat",
+
+  "text.tooltip.namebox": "Nombre de la macro",
+  "text.tooltip.actionbox": "Acción de la Macro",
+  "text.tooltip.timebox": "Tiempo entre ejecuciones",
+  "text.tooltip.timeboxsub": "(en milisegundos)",
+  "text.tooltip.macrotype": "Elige entre 4 tipos de macro.",
+  "text.tooltip.actiontype": "Elige entre 3 tipos de acciones.",
+  "text.tooltip.keybind": "Pulsa aquí y presiona la tecla deseada.",
+  "text.tooltip.editmacro.state": "§7Activar/Desactivar la Macro",
+  "text.tooltip.editmacro.edit": "§6✎ Modificar la Macro",
+  "text.tooltip.editmacro.delete": "§4❌ Eliminar la Macro",
+  "text.tooltip.editmacro.forgotvalue": "Has olvidado rellenar uno o varios campos.",
+  "text.tooltip.editmacro.keyalreadyassigned": "¡Esta tecla ya está asignada! (Sin embargo, puedes asignarla)",
+  "text.macro.deleteQuestion": "¿Seguro que quieres eliminar esta macro?",
+  "text.macro.deleteWarning": "Será eliminada permanentemente",
+  "text.macro.deleteButton": "Eliminar esta Macro",
+
+  "text.running": "R",
+  "text.tooltip.running": "Ejecutando",
+  "text.stopmacro": "Detener Todas las Macros Pendientes/Recurrentes",
+
+  "text.editglobalmacro.title": "§3§nModificación de Macro Global",
+  "text.editservermacro.title": "§3§nModificación de Macro de Servidor",
+
+  "text.searchbox.shadow": "Buscar una Macro"
+}
