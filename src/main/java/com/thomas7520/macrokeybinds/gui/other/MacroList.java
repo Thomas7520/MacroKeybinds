@@ -45,8 +45,8 @@ extends ElementListWidget<MacroList.Entry> {
     private final boolean isServer;
     int maxKeyNameLength;
 
-    private static final Identifier EDIT_ICON = new Identifier("macrokeybinds", "textures/edit_button.png");
-    private static final Identifier DELETE_ICON = new Identifier("macrokeybinds", "textures/delete_button.png");
+    private static final Identifier EDIT_ICON = Identifier.of("macrokeybinds", "textures/edit_button.png");
+    private static final Identifier DELETE_ICON = Identifier.of("macrokeybinds", "textures/delete_button.png");
 
     private String searchBoxInput = "";
 
@@ -103,9 +103,10 @@ extends ElementListWidget<MacroList.Entry> {
     }
 
     @Override
-    protected int getScrollbarPositionX() {
-        return super.getScrollbarPositionX() + 15 + 20;
+    protected int getScrollbarX() {
+        return super.getScrollbarX() + 15 + 20;
     }
+
 
     @Environment(value=EnvType.CLIENT)
     public class KeyBindingEntry

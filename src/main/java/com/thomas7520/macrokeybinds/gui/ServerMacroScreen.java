@@ -18,6 +18,7 @@ import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.widget.IconWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
 
 public class ServerMacroScreen extends Screen {
 
-    public static final Identifier STOP_ICON = new Identifier(MacroMod.MODID, "textures/stop_icon.png");
+    public static final Identifier STOP_ICON = Identifier.of(MacroMod.MODID, "textures/stop_icon.png");
     private final Screen parent;
     private MacroList macroList;
     private TextFieldWidget searchBox;
@@ -96,7 +97,7 @@ public class ServerMacroScreen extends Screen {
                 int i = 16;
                 int j = 16;
                 super.renderWidget(context, mouseX, mouseY, delta);
-                context.drawTexture(STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
+                context.drawTexture(RenderLayer::getGuiTextured, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });
 
@@ -151,8 +152,5 @@ public class ServerMacroScreen extends Screen {
         context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
     }
 
-    @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
-    }
+
 }

@@ -270,10 +270,7 @@ public class EditMacroScreen extends Screen {
 
     }
 
-    @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackgroundTexture(context);
-    }
+
 
     @Override
     public boolean keyPressed(int p_97526_, int p_97527_, int p_97528_) {
