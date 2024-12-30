@@ -51,7 +51,6 @@ public class MacroMod implements ModInitializer {
                 }
                 MacroUtil.getGlobalKeybindsMap().put(macro.getUUID(), macro);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

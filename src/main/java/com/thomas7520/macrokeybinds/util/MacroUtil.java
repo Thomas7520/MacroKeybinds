@@ -58,6 +58,7 @@ public class MacroUtil {
     public static void setServerIP(String ip) {
         serverIP = ip;
     }
+
     public static boolean isNumeric(final CharSequence cs) {
         if (cs.length() == 0 || cs.toString().equalsIgnoreCase("\u0008")) {
             return true;

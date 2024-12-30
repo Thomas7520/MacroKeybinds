@@ -46,7 +46,7 @@ public class ServerMacroScreen extends Screen {
         double scrollAmount = 0;
 
         if(macroList != null) {
-            scrollAmount = macroList.getScrollAmount();
+            scrollAmount = macroList.getScrollY();
         }
 
         this.macroList = new MacroList(this, client, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
@@ -54,7 +54,7 @@ public class ServerMacroScreen extends Screen {
         if(searchBox != null) {
             macroList.updateList(new ArrayList<>(MacroUtil.getServerKeybinds().values()));
             macroList.update(() -> searchBox.getText(), false);
-            macroList.setScrollAmount(scrollAmount);
+            macroList.setScrollY(scrollAmount);
         }
 
         this.addDrawableChild(this.macroList);

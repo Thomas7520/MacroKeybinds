@@ -70,7 +70,7 @@ extends ElementListWidget<MacroList.Entry> {
         searchBoxInput = p_101677_.get();
 
         this.clearEntries();
-        this.setScrollAmount(0);
+        this.setScrollY(0);
 
         if (this.cachedList == null) {
             this.cachedList = macroList;
