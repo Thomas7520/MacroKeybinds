@@ -70,9 +70,7 @@ public class CheckboxEdited
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        RenderSystem.enableDepthTest();
         TextRenderer textRenderer = minecraftClient.textRenderer;
-        RenderSystem.enableBlend();
         Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;

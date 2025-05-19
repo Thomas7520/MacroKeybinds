@@ -5,10 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.MutableText;
@@ -20,14 +18,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-@Environment(value= EnvType.CLIENT)
+@Environment(value = EnvType.CLIENT)
 public class ButtonImageWidget
         extends PressableWidget {
     public static final int DEFAULT_WIDTH_SMALL = 120;
     public static final int DEFAULT_WIDTH = 150;
     public static final int DEFAULT_HEIGHT = 20;
     public static final int field_46856 = 8;
-    protected static final ButtonImageWidget.NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableText)textSupplier.get();
+    protected static final ButtonImageWidget.NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableText) textSupplier.get();
     protected final ButtonImageWidget.PressAction onPress;
     protected final ButtonImageWidget.NarrationSupplier narrationSupplier;
 
@@ -63,24 +61,21 @@ public class ButtonImageWidget
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-
-        if(icon != null) {
+        if (icon != null) {
 
             int i = 0;
-            if(isHovered()) {
+            if (isHovered()) {
                 i = getHeight();
             }
 
-            context.drawTexture(RenderLayer::getGuiTextured, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ColorHelper.getWhite(alpha));
+            context.drawTexture(RenderLayer::getGuiTextured, icon, this.getX(), this.getY(), 0, i, getWidth(), getHeight(), 256, 256, ColorHelper.getWhite(alpha));
         }
 
         int i = this.active ? 0xFFFFFF : 0xA0A0A0;
         this.drawMessage(context, minecraftClient.textRenderer, i | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
-    @Environment(value=EnvType.CLIENT)
+    @Environment(value = EnvType.CLIENT)
     public static class Builder {
         private final Text message;
         private final ButtonImageWidget.PressAction onPress;
@@ -141,12 +136,12 @@ public class ButtonImageWidget
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
+    @Environment(value = EnvType.CLIENT)
     public static interface PressAction {
         public void onPress(ButtonImageWidget var1);
     }
 
-    @Environment(value=EnvType.CLIENT)
+    @Environment(value = EnvType.CLIENT)
     public static interface NarrationSupplier {
         public MutableText createNarrationMessage(Supplier<MutableText> var1);
     }
