@@ -1,11 +1,13 @@
 package com.thomas7520.macrokeybinds.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.MutableText;
@@ -60,7 +62,8 @@ public class ButtonImageWidget
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-
+        RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
 
         if(icon != null) {
 
