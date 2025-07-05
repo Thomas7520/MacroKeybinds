@@ -207,7 +207,7 @@ public class EditMacroScreen extends Screen {
                 && (macroTypeSelectId == 0 || !timeBox.getText().isEmpty()) && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHovered()) {
-            context.drawTooltip(textRenderer, textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.forgotvalue").formatted(Formatting.RED), 150), createPositioner(true,false, confirmButton), mouseX, mouseY);
+            context.drawTooltip(textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.forgotvalue").formatted(Formatting.RED), 150), mouseX, mouseY);
         }
 
         MutableText actionBox = Text.translatable("text.tooltip.actionbox");

@@ -54,7 +54,7 @@ public class MainMacroScreen extends Screen {
         context.drawText(textRenderer, title, width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
-            context.drawTooltip(textRenderer, textRenderer.wrapLines(Text.translatable("text.tooltip.main.noserver"), 150), createPositioner(true,false, serverMacrosButton), mouseX, mouseY);
+            context.drawTooltip(textRenderer.wrapLines(Text.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
         }
 
         if(serverMacrosButton.active && MacroUtil.getServerIP().isEmpty()) {

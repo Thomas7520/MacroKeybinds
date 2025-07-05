@@ -9,6 +9,7 @@ import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.ButtonImageWidget;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -97,7 +98,7 @@ public class GlobalMacroScreen extends Screen {
                 int i = 16;
                 int j = 16;
                 super.renderWidget(context, mouseX, mouseY, delta);
-                context.drawTexture(RenderLayer::getGuiTextured, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
+                context.drawTexture(RenderPipelines.GUI_TEXTURED, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });
 

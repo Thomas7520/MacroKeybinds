@@ -5,10 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.RenderLayer;
@@ -75,7 +77,8 @@ public class CheckboxEdited
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (textRenderer.fontHeight >> 1);
-        context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, this.getX(), this.getY(), i, i);
+
+        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
         context.drawTextWithShadow(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 

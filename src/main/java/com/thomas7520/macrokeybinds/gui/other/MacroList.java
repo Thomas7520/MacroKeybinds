@@ -20,6 +20,7 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.ControlsListWidget;
 import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
@@ -160,7 +161,9 @@ extends ElementListWidget<MacroList.Entry> {
         @Override
         public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             float f = (float) (x - MacroList.this.maxKeyNameLength);
-            context.drawText(client.textRenderer, this.macro.getName(), (int) f, y + 6, 16777215, false);
+            System.out.println(f);
+            System.out.println(y+6);
+            context.drawTextWithShadow(client.textRenderer, Text.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
             this.deleteButton.setX(x + 190 + 20);
             this.deleteButton.setY(y);
             this.editButton.setX(x + 190);
@@ -175,16 +178,16 @@ extends ElementListWidget<MacroList.Entry> {
                 context.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
                 context.fill(stateButton.getX(), stateButton.getY() + 20, stateButton.getX() + 1, stateButton.getY(), Color.WHITE.getRGB());
                 context.fill(stateButton.getX() + 19, stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
-                context.drawTooltip(client.textRenderer, client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.state"), 150), createPositioner(true,false, stateButton), mouseX, mouseY);
+                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
 
             }
 
             if(editButton.isHovered()) {
-                context.drawTooltip(client.textRenderer, client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.edit"), 150), createPositioner(true,false, editButton), mouseX, mouseY);
+                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
             }
 
             if(deleteButton.isHovered()) {
-                context.drawTooltip(client.textRenderer, client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.delete"), 150), createPositioner(true,false, deleteButton), mouseX, mouseY);
+                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
             }
 
             boolean running = false;

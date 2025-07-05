@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.util;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -69,7 +70,7 @@ public class ButtonImageWidget
                 i = getHeight();
             }
 
-            context.drawTexture(RenderLayer::getGuiTextured, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ColorHelper.getWhite(alpha));
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ColorHelper.getWhite(alpha));
         }
 
         int i = this.active ? 0xFFFFFF : 0xA0A0A0;
