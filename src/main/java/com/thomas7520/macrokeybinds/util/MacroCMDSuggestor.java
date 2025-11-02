@@ -24,6 +24,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.command.CommandSource;
@@ -86,7 +87,7 @@ public class MacroCMDSuggestor {
         this.maxSuggestionSize = maxSuggestionSize;
         this.chatScreenSized = chatScreenSized;
         this.color = color;
-        textField.setRenderTextProvider(this::provideRenderText);
+        textField.addFormatter(this::provideRenderText);
     }
 
     public void setWindowActive(boolean windowActive) {
@@ -100,17 +101,16 @@ public class MacroCMDSuggestor {
         this.canLeave = canLeave;
     }
 
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean bl;
-        boolean bl2 = bl = this.window != null;
-        if (bl && this.window.keyPressed(keyCode, scanCode, modifiers)) {
+    public boolean keyPressed(KeyInput input) {
+        boolean bl = this.window != null;
+        if (bl && this.window.keyPressed(input)) {
             return true;
-        }
-        if (this.owner.getFocused() == this.textField && keyCode == 258 && (!this.canLeave || bl)) {
+        } else if (this.owner.getFocused() != this.textField || !input.isTab() || this.canLeave && !bl) {
+            return false;
+        } else {
             this.show(true);
             return true;
         }
-        return false;
     }
 
     public boolean mouseScrolled(double amount) {
@@ -475,30 +475,30 @@ public class MacroCMDSuggestor {
             return false;
         }
 
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if (keyCode == 265) {
+
+        public boolean keyPressed(KeyInput input) {
+            if (input.isUp()) {
                 this.scroll(-1);
                 this.completed = false;
                 return true;
-            }
-            if (keyCode == 264) {
+            } else if (input.isDown()) {
                 this.scroll(1);
                 this.completed = false;
                 return true;
-            }
-            if (keyCode == 258) {
+            } else if (input.isTab()) {
                 if (this.completed) {
-                    this.scroll(Screen.hasShiftDown() ? -1 : 1);
+                    this.scroll(input.hasShift() ? -1 : 1);
                 }
+
                 this.complete();
                 return true;
-            }
-            if (keyCode == 256) {
+            } else if (input.isEscape()) {
                 MacroCMDSuggestor.this.clearWindow();
-                MacroCMDSuggestor.this.textField.setSuggestion(null);
+                MacroCMDSuggestor.this.textField.setSuggestion((String)null);
                 return true;
+            } else {
+                return false;
             }
-            return false;
         }
 
         public void scroll(int offset) {

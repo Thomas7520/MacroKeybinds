@@ -158,11 +158,14 @@ extends ElementListWidget<MacroList.Entry> {
                     .build();
         }
 
+
         @Override
-        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int x = getX();
+            int y = getY();
+
             float f = (float) (x - MacroList.this.maxKeyNameLength);
-            System.out.println(f);
-            System.out.println(y+6);
+
             context.drawTextWithShadow(client.textRenderer, Text.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
             this.deleteButton.setX(x + 190 + 20);
             this.deleteButton.setY(y);
@@ -225,6 +228,8 @@ extends ElementListWidget<MacroList.Entry> {
         @Override
         protected void update() {
         }
+
+
     }
 
     @Environment(value=EnvType.CLIENT)

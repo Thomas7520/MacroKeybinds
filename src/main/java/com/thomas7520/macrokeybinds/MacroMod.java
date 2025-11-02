@@ -9,6 +9,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -62,7 +63,7 @@ public class MacroMod implements ModInitializer {
         MacroUtil.guiBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.macrokeybinds.openoptions.desc",
                 GLFW.GLFW_KEY_N,
-                "key.categories.macrokeybinds"
+                KeyBinding.Category.create(Identifier.of("key.categories.macrokeybinds"))
         ));
 
     }

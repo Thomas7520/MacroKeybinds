@@ -6,6 +6,7 @@ import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -232,7 +234,11 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
+
         if (this.commandSuggestions.mouseClicked((int)mouseX, (int)mouseY, button)) {
             return true;
         }
@@ -265,7 +271,7 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(click, doubled);
         }
 
     }
@@ -273,12 +279,12 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean keyPressed(int p_97526_, int p_97527_, int p_97528_) {
-        if (this.commandSuggestions.keyPressed(p_97526_, p_97527_, p_97528_)) {
+    public boolean keyPressed(KeyInput input) {
+        if (this.commandSuggestions.keyPressed(input)) {
             return true;
         }
         if (this.listenMacroBind) {
-            if (p_97526_ == GLFW.GLFW_KEY_ESCAPE) {
+            if (input.isEscape()) {
                 if (hasConflictKey()) {
                     macroKeyButton.setMessage(Text.literal(getKeyName()).formatted(Formatting.RED));
                 } else {
@@ -286,7 +292,7 @@ public class EditMacroScreen extends Screen {
                 }
                 listenMacroBind = false;
             } else {
-                InputUtil.Key key = InputUtil.fromKeyCode(p_97526_, p_97527_);
+                InputUtil.Key key = InputUtil.fromKeyCode(input);
 
                 inputSelected = key;
 
@@ -317,12 +323,14 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.keyPressed(p_97526_, p_97527_, p_97528_);
+            return super.keyPressed(input);
         }
     }
 
+
+
     @Override
-    public boolean keyReleased(int p_94715_, int p_94716_, int p_94717_) {
+    public boolean keyReleased(KeyInput input) {
         if(listenMacroBind) {
 
             if (macroData != null) {
@@ -339,7 +347,7 @@ public class EditMacroScreen extends Screen {
 
             listenMacroBind = false;
         }
-        return super.keyReleased(p_94715_, p_94716_, p_94717_);
+        return super.keyReleased(input);
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.input.AbstractInput;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -42,10 +43,7 @@ public class ButtonImageWidget
         this.icon = icon;
     }
 
-    @Override
-    public void onPress() {
-        this.onPress.onPress(this);
-    }
+
 
     @Override
     protected MutableText getNarrationMessage() {
@@ -57,6 +55,11 @@ public class ButtonImageWidget
         this.appendDefaultNarrations(builder);
     }
 
+
+    @Override
+    public void onPress(AbstractInput input) {
+        this.onPress.onPress(this);
+    }
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {

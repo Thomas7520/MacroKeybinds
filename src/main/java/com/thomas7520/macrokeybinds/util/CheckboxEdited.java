@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.input.AbstractInput;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
@@ -46,11 +47,7 @@ public class CheckboxEdited
         return 9+8;
     }
 
-    @Override
-    public void onPress() {
-        this.checked = !this.checked;
-        this.callback.onValueChange(this, this.checked);
-    }
+
 
     public boolean isChecked() {
         return this.checked;
@@ -68,6 +65,12 @@ public class CheckboxEdited
         }
     }
 
+
+    @Override
+    public void onPress(AbstractInput input) {
+        this.checked = !this.checked;
+        this.callback.onValueChange(this, this.checked);
+    }
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
