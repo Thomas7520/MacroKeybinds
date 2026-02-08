@@ -94,10 +94,10 @@ public class ServerMacroScreen extends Screen {
         }, Supplier::get) {
 
             @Override
-            public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+            public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
                 int i = 16;
                 int j = 16;
-                super.renderWidget(context, mouseX, mouseY, delta);
+                this.drawButton(context);
                 context.drawTexture(RenderPipelines.GUI_TEXTURED, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });

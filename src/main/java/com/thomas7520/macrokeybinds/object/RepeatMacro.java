@@ -108,7 +108,9 @@ public class RepeatMacro implements IMacro {
         MinecraftClient client = MinecraftClient.getInstance();
         switch (action) {
 
-            case COMMAND -> client.player.networkHandler.sendChatCommand((getActionText().startsWith("/") ? getActionText().substring(1) : getActionText()));
+
+            case COMMAND -> client.player.networkHandler.sendChatCommand((getActionText().startsWith("/") ?
+                    getActionText().substring(1) : getActionText()));
             case MESSAGE -> client.player.networkHandler.sendChatMessage(getActionText());
             case FILL_CHAT -> MinecraftClient.getInstance().setScreen(new ChatScreen(getActionText(), false));
         }

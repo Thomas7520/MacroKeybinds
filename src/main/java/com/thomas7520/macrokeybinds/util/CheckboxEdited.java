@@ -73,7 +73,7 @@ public class CheckboxEdited
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
         Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
@@ -84,6 +84,8 @@ public class CheckboxEdited
         context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
         context.drawTextWithShadow(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
+
+
 
     @Environment(value=EnvType.CLIENT)
     public static interface Callback {

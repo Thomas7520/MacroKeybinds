@@ -358,10 +358,11 @@ public class EditMacroScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
+
     @Override
-    public void resize(MinecraftClient p_96575_, int p_96576_, int p_96577_) {
+    public void resize(int width, int height) {
         MinecraftClient.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
-        super.resize(p_96575_, p_96576_, p_96577_);
+        super.resize(width, height);
     }
 
     public void initDataMacro() {

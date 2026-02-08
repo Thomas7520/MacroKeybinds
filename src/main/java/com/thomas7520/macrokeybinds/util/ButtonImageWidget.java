@@ -7,6 +7,7 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.input.AbstractInput;
 import net.minecraft.client.render.RenderLayer;
@@ -62,8 +63,7 @@ public class ButtonImageWidget
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+    public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
 
 
         if(icon != null) {
@@ -76,8 +76,8 @@ public class ButtonImageWidget
             context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ColorHelper.getWhite(alpha));
         }
 
-        int i = this.active ? 0xFFFFFF : 0xA0A0A0;
-        this.drawMessage(context, minecraftClient.textRenderer, i | MathHelper.ceil(this.alpha * 255.0f) << 24);
+
+        this.drawLabel(context.getHoverListener(this, DrawContext.HoverType.NONE));
     }
 
     @Environment(value=EnvType.CLIENT)
