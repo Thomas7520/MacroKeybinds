@@ -1,15 +1,16 @@
 package com.thomas7520.macrokeybinds;
 
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.event.MacroEvent;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -60,10 +61,11 @@ public class MacroMod implements ModInitializer {
     }
 
     private void registerKeybindingEvent() {
-        MacroUtil.guiBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        MacroUtil.guiBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                KeyBinding.Category.create(Identifier.of("key.categories.macrokeybinds"))
+                KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(MODID, "key.categories.macrokeybinds"))
         ));
 
     }

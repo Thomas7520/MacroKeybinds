@@ -2,42 +2,42 @@ package com.thomas7520.macrokeybinds.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 @Environment(value= EnvType.CLIENT)
 public class ButtonImageWidget
-        extends PressableWidget {
+        extends AbstractButton {
     public static final int DEFAULT_WIDTH_SMALL = 120;
     public static final int DEFAULT_WIDTH = 150;
     public static final int DEFAULT_HEIGHT = 20;
     public static final int field_46856 = 8;
-    protected static final ButtonImageWidget.NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableText)textSupplier.get();
+    protected static final ButtonImageWidget.NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableComponent)textSupplier.get();
     protected final ButtonImageWidget.PressAction onPress;
     protected final ButtonImageWidget.NarrationSupplier narrationSupplier;
 
-    private final Identifier icon;
+    private final ResourceLocation icon;
 
-    public static ButtonImageWidget.Builder builder(Text message, ButtonImageWidget.PressAction onPress) {
+    public static ButtonImageWidget.Builder builder(Component message, ButtonImageWidget.PressAction onPress) {
         return new ButtonImageWidget.Builder(message, onPress);
     }
 
-    protected ButtonImageWidget(int x, int y, int width, int height, Text message, ButtonImageWidget.PressAction onPress, ButtonImageWidget.NarrationSupplier narrationSupplier, Identifier icon) {
+    protected ButtonImageWidget(int x, int y, int width, int height, Component message, ButtonImageWidget.PressAction onPress, ButtonImageWidget.NarrationSupplier narrationSupplier, ResourceLocation icon) {
         super(x, y, width, height, message);
         this.onPress = onPress;
         this.narrationSupplier = narrationSupplier;
@@ -47,13 +47,13 @@ public class ButtonImageWidget
 
 
     @Override
-    protected MutableText getNarrationMessage() {
-        return this.narrationSupplier.createNarrationMessage(super::getNarrationMessage);
+    protected MutableComponent createNarrationMessage() {
+        return this.narrationSupplier.createNarrationMessage(super::createNarrationMessage);
     }
 
     @Override
-    public void appendClickableNarrations(NarrationMessageBuilder builder) {
-        this.appendDefaultNarrations(builder);
+    public void updateWidgetNarration(NarrationElementOutput builder) {
+        this.defaultButtonNarrationText(builder);
     }
 
 
@@ -63,7 +63,7 @@ public class ButtonImageWidget
     }
 
     @Override
-    public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidgetIcon(GuiGraphics context, int mouseX, int mouseY, float delta) {
 
 
         if(icon != null) {
@@ -73,16 +73,16 @@ public class ButtonImageWidget
                 i = getHeight();
             }
 
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ColorHelper.getWhite(alpha));
+            context.blit(RenderPipelines.GUI_TEXTURED, icon, this.getX(), this.getY(),  0, i, getWidth(), getHeight(), 256,256, ARGB.white(alpha));
         }
 
 
-        this.drawLabel(context.getHoverListener(this, DrawContext.HoverType.NONE));
+        this.renderWidgetLabel(context.getHoverListener(this, GuiGraphics.HoverType.NONE));
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class Builder {
-        private final Text message;
+        private final Component message;
         private final ButtonImageWidget.PressAction onPress;
         @Nullable
         private Tooltip tooltip;
@@ -91,9 +91,9 @@ public class ButtonImageWidget
         private int width = 150;
         private int height = 20;
         private ButtonImageWidget.NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
-        private Identifier icon;
+        private ResourceLocation icon;
 
-        public Builder(Text message, ButtonImageWidget.PressAction onPress) {
+        public Builder(Component message, ButtonImageWidget.PressAction onPress) {
             this.message = message;
             this.onPress = onPress;
         }
@@ -119,7 +119,7 @@ public class ButtonImageWidget
             return this.position(x, y).size(width, height);
         }
 
-        public ButtonImageWidget.Builder icon(Identifier icon) {
+        public ButtonImageWidget.Builder icon(ResourceLocation icon) {
             this.icon = icon;
             return this;
         }
@@ -148,6 +148,6 @@ public class ButtonImageWidget
 
     @Environment(value=EnvType.CLIENT)
     public static interface NarrationSupplier {
-        public MutableText createNarrationMessage(Supplier<MutableText> var1);
+        public MutableComponent createNarrationMessage(Supplier<MutableComponent> var1);
     }
 }

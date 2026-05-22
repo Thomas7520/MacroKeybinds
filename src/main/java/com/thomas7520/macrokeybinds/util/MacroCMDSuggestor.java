@@ -18,26 +18,24 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ChatInputSuggestor;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.network.ClientCommandSource;
-import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.command.CommandSource;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Colors;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -50,24 +48,24 @@ import java.util.stream.Stream;
 
 public class MacroCMDSuggestor {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("(\\s+)");
-    private static final Style ERROR_STYLE = Style.EMPTY.withColor(Formatting.RED);
-    private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
-    private static final List<Style> HIGHLIGHT_STYLES = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
-    final MinecraftClient client;
+    private static final Style ERROR_STYLE = Style.EMPTY.withColor(ChatFormatting.RED);
+    private static final Style INFO_STYLE = Style.EMPTY.withColor(ChatFormatting.GRAY);
+    private static final List<Style> HIGHLIGHT_STYLES = Stream.of(ChatFormatting.AQUA, ChatFormatting.YELLOW, ChatFormatting.GREEN, ChatFormatting.LIGHT_PURPLE, ChatFormatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
+    final Minecraft client;
     private final Screen owner;
-    final TextFieldWidget textField;
-    final TextRenderer textRenderer;
+    final EditBox textField;
+    final Font textRenderer;
     private final boolean slashOptional;
     private final boolean suggestingWhenEmpty;
     final int inWindowIndexOffset;
     final int maxSuggestionSize;
     final boolean chatScreenSized;
     final int color;
-    private final List<OrderedText> messages = Lists.newArrayList();
+    private final List<FormattedCharSequence> messages = Lists.newArrayList();
     private int x;
     private int width;
     @Nullable
-    private ParseResults<ClientCommandSource> parse;
+    private ParseResults<ClientSuggestionProvider> parse;
     @Nullable
     private CompletableFuture<Suggestions> pendingSuggestions;
     @Nullable
@@ -76,7 +74,7 @@ public class MacroCMDSuggestor {
     boolean completingSuggestions;
     private boolean canLeave = true;
 
-    public MacroCMDSuggestor(MinecraftClient client, Screen owner, TextFieldWidget textField, TextRenderer textRenderer, boolean slashOptional, boolean suggestingWhenEmpty, int inWindowIndexOffset, int maxSuggestionSize, boolean chatScreenSized, int color) {
+    public MacroCMDSuggestor(Minecraft client, Screen owner, EditBox textField, Font textRenderer, boolean slashOptional, boolean suggestingWhenEmpty, int inWindowIndexOffset, int maxSuggestionSize, boolean chatScreenSized, int color) {
         this.client = client;
         this.owner = owner;
         this.textField = textField;
@@ -87,7 +85,7 @@ public class MacroCMDSuggestor {
         this.maxSuggestionSize = maxSuggestionSize;
         this.chatScreenSized = chatScreenSized;
         this.color = color;
-        textField.addFormatter(this::provideRenderText);
+        textField.setFormatter(this::provideRenderText);
     }
 
     public void setWindowActive(boolean windowActive) {
@@ -114,7 +112,7 @@ public class MacroCMDSuggestor {
     }
 
     public boolean mouseScrolled(double amount) {
-        return this.window != null && this.window.mouseScrolled(MathHelper.clamp(amount, -1.0, 1.0));
+        return this.window != null && this.window.mouseScrolled(Mth.clamp(amount, -1.0, 1.0));
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -126,9 +124,9 @@ public class MacroCMDSuggestor {
         if (this.pendingSuggestions != null && this.pendingSuggestions.isDone() && !(suggestions = this.pendingSuggestions.join()).isEmpty()) {
             int i = 0;
             for (Suggestion suggestion : suggestions.getList()) {
-                i = Math.max(i, this.textRenderer.getWidth(suggestion.getText()));
+                i = Math.max(i, this.textRenderer.width(suggestion.getText()));
             }
-            int j = MathHelper.clamp(this.textField.getCharacterX(suggestions.getRange().getStart()), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
+            int j = Mth.clamp(this.textField.getScreenX(suggestions.getRange().getStart()), 0, this.textField.getScreenX(0) + this.textField.getInnerWidth() - i);
             int k = this.chatScreenSized ? this.owner.height - 12 : 72;
             this.window = new MacroCMDSuggestor.SuggestionWindow(j, textField.getY(), i, this.sortSuggestions(suggestions), narrateFirstSuggestion);
         }
@@ -138,17 +136,17 @@ public class MacroCMDSuggestor {
         return this.window != null;
     }
 
-    public Text getSuggestionUsageNarrationText() {
+    public Component getSuggestionUsageNarrationText() {
         if (this.window != null && this.window.completed) {
             if (this.canLeave) {
-                return Text.translatable("narration.suggestion.usage.cycle.hidable");
+                return Component.translatable("narration.suggestion.usage.cycle.hidable");
             }
-            return Text.translatable("narration.suggestion.usage.cycle.fixed");
+            return Component.translatable("narration.suggestion.usage.cycle.fixed");
         }
         if (this.canLeave) {
-            return Text.translatable("narration.suggestion.usage.fill.hidable");
+            return Component.translatable("narration.suggestion.usage.fill.hidable");
         }
-        return Text.translatable("narration.suggestion.usage.fill.fixed");
+        return Component.translatable("narration.suggestion.usage.fill.fixed");
     }
 
     public void clearWindow() {
@@ -156,7 +154,7 @@ public class MacroCMDSuggestor {
     }
 
     private List<Suggestion> sortSuggestions(Suggestions suggestions) {
-        String string = this.textField.getText().substring(0, this.textField.getCursor());
+        String string = this.textField.getValue().substring(0, this.textField.getCursorPosition());
         int i = MacroCMDSuggestor.getStartOfCurrentWord(string);
         String string2 = string.substring(i).toLowerCase(Locale.ROOT);
         ArrayList<Suggestion> list = Lists.newArrayList();
@@ -173,7 +171,7 @@ public class MacroCMDSuggestor {
     }
 
     public void refresh() {
-        String string = this.textField.getText();
+        String string = this.textField.getValue();
         if (this.parse != null && !this.parse.getReader().getString().equals(string)) {
             this.parse = null;
         }
@@ -191,12 +189,12 @@ public class MacroCMDSuggestor {
         }
 
         boolean bl2 = this.slashOptional || bl;
-        int i = this.textField.getCursor();
+        int i = this.textField.getCursorPosition();
         int j;
         if (bl2) {
-            CommandDispatcher<ClientCommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
+            CommandDispatcher<ClientSuggestionProvider> commandDispatcher = this.client.player.connection.getCommands();
             if (this.parse == null) {
-                this.parse = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
+                this.parse = commandDispatcher.parse(stringReader, this.client.player.connection.getSuggestionsProvider());
             }
 
             j = this.suggestingWhenEmpty ? stringReader.getCursor() : 1;
@@ -211,8 +209,8 @@ public class MacroCMDSuggestor {
         } else {
             String string2 = string.substring(0, i);
             j = getStartOfCurrentWord(string2);
-            Collection<String> collection = this.client.player.networkHandler.getCommandSource().getChatSuggestions();
-            this.pendingSuggestions = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string2, j));
+            Collection<String> collection = this.client.player.connection.getSuggestionsProvider().getCustomTabSugggestions();
+            this.pendingSuggestions = SharedSuggestionProvider.suggest(collection, new SuggestionsBuilder(string2, j));
         }
 
     }
@@ -229,22 +227,22 @@ public class MacroCMDSuggestor {
         return i;
     }
 
-    private static OrderedText formatException(CommandSyntaxException exception) {
-        Text text = Texts.toText(exception.getRawMessage());
+    private static FormattedCharSequence formatException(CommandSyntaxException exception) {
+        Component text = ComponentUtils.fromMessage(exception.getRawMessage());
         String string = exception.getContext();
         if (string == null) {
-            return text.asOrderedText();
+            return text.getVisualOrderText();
         }
-        return Text.translatable("command.context.parse_error", text, exception.getCursor(), string).asOrderedText();
+        return Component.translatable("command.context.parse_error", text, exception.getCursor(), string).getVisualOrderText();
     }
 
     private void showCommandSuggestions() {
         boolean bl = false;
-        if (this.textField.getCursor() == this.textField.getText().length()) {
+        if (this.textField.getCursorPosition() == this.textField.getValue().length()) {
             if (((Suggestions)this.pendingSuggestions.join()).isEmpty() && !this.parse.getExceptions().isEmpty()) {
                 int i = 0;
 
-                for (Map.Entry<CommandNode<ClientCommandSource>, CommandSyntaxException> entry : this.parse.getExceptions().entrySet()) {
+                for (Map.Entry<CommandNode<ClientSuggestionProvider>, CommandSyntaxException> entry : this.parse.getExceptions().entrySet()) {
                     CommandSyntaxException commandSyntaxException = (CommandSyntaxException)entry.getValue();
                     if (commandSyntaxException.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()) {
                         i++;
@@ -263,38 +261,38 @@ public class MacroCMDSuggestor {
 
         this.x = 0;
         this.width = this.owner.width;
-        if (this.messages.isEmpty() && !this.showUsages(Formatting.GRAY) && bl) {
-            this.messages.add(formatException(CommandManager.getException(this.parse)));
+        if (this.messages.isEmpty() && !this.showUsages(ChatFormatting.GRAY) && bl) {
+            this.messages.add(formatException(Commands.getParseException(this.parse)));
         }
 
         this.window = null;
-        if (this.windowActive && this.client.options.getAutoSuggestions().getValue()) {
+        if (this.windowActive && this.client.options.autoSuggestions().get()) {
             this.show(false);
         }
     }
 
-    private boolean showUsages(Formatting formatting) {
-        CommandContextBuilder<ClientCommandSource> commandContextBuilder = this.parse.getContext();
-        SuggestionContext<ClientCommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getCursor());
-        Map<CommandNode<ClientCommandSource>, String> map = this.client
+    private boolean showUsages(ChatFormatting formatting) {
+        CommandContextBuilder<ClientSuggestionProvider> commandContextBuilder = this.parse.getContext();
+        SuggestionContext<ClientSuggestionProvider> suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getCursorPosition());
+        Map<CommandNode<ClientSuggestionProvider>, String> map = this.client
                 .player
-                .networkHandler
-                .getCommandDispatcher()
-                .getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
-        List<OrderedText> list = Lists.<OrderedText>newArrayList();
+                .connection
+                .getCommands()
+                .getSmartUsage(suggestionContext.parent, this.client.player.connection.getSuggestionsProvider());
+        List<FormattedCharSequence> list = Lists.<FormattedCharSequence>newArrayList();
         int i = 0;
         Style style = Style.EMPTY.withColor(formatting);
 
-        for (Map.Entry<CommandNode<ClientCommandSource>, String> entry : map.entrySet()) {
+        for (Map.Entry<CommandNode<ClientSuggestionProvider>, String> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof LiteralCommandNode)) {
-                list.add(OrderedText.styledForwardsVisitedString(entry.getValue(), style));
-                i = Math.max(i, this.textRenderer.getWidth(entry.getValue()));
+                list.add(FormattedCharSequence.forward(entry.getValue(), style));
+                i = Math.max(i, this.textRenderer.width(entry.getValue()));
             }
         }
 
         if (!list.isEmpty()) {
             this.messages.addAll(list);
-            this.x = MathHelper.clamp(this.textField.getCharacterX(suggestionContext.startPos), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
+            this.x = Mth.clamp(this.textField.getScreenX(suggestionContext.startPos), 0, this.textField.getScreenX(0) + this.textField.getInnerWidth() - i);
             this.width = i;
             return true;
         } else {
@@ -302,11 +300,11 @@ public class MacroCMDSuggestor {
         }
     }
 
-    private OrderedText provideRenderText(String original, int firstCharacterIndex) {
+    private FormattedCharSequence provideRenderText(String original, int firstCharacterIndex) {
         if (this.parse != null) {
             return MacroCMDSuggestor.highlight(this.parse, original, firstCharacterIndex);
         }
-        return OrderedText.styledForwardsVisitedString(original, Style.EMPTY);
+        return FormattedCharSequence.forward(original, Style.EMPTY);
     }
 
     @Nullable
@@ -317,13 +315,13 @@ public class MacroCMDSuggestor {
         return null;
     }
 
-    private static OrderedText highlight(ParseResults<ClientCommandSource> parse, String original, int firstCharacterIndex) {
-        List<OrderedText> list = Lists.<OrderedText>newArrayList();
+    private static FormattedCharSequence highlight(ParseResults<ClientSuggestionProvider> parse, String original, int firstCharacterIndex) {
+        List<FormattedCharSequence> list = Lists.<FormattedCharSequence>newArrayList();
         int i = 0;
         int j = -1;
-        CommandContextBuilder<ClientCommandSource> commandContextBuilder = parse.getContext().getLastChild();
+        CommandContextBuilder<ClientSuggestionProvider> commandContextBuilder = parse.getContext().getLastChild();
 
-        for (ParsedArgument<ClientCommandSource, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
+        for (ParsedArgument<ClientSuggestionProvider, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
             if (++j >= HIGHLIGHT_STYLES.size()) {
                 j = 0;
             }
@@ -335,8 +333,8 @@ public class MacroCMDSuggestor {
 
             int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
             if (l > 0) {
-                list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_STYLE));
-                list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), (Style)HIGHLIGHT_STYLES.get(j)));
+                list.add(FormattedCharSequence.forward(original.substring(i, k), INFO_STYLE));
+                list.add(FormattedCharSequence.forward(original.substring(k, l), (Style)HIGHLIGHT_STYLES.get(j)));
                 i = l;
             }
         }
@@ -345,23 +343,23 @@ public class MacroCMDSuggestor {
             int m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0);
             if (m < original.length()) {
                 int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-                list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_STYLE));
-                list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_STYLE));
+                list.add(FormattedCharSequence.forward(original.substring(i, m), INFO_STYLE));
+                list.add(FormattedCharSequence.forward(original.substring(m, n), ERROR_STYLE));
                 i = n;
             }
         }
 
-        list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_STYLE));
-        return OrderedText.concat(list);
+        list.add(FormattedCharSequence.forward(original.substring(i), INFO_STYLE));
+        return FormattedCharSequence.composite(list);
     }
 
-    public void render(DrawContext context, int mouseX, int mouseY) {
+    public void render(GuiGraphics context, int mouseX, int mouseY) {
         if (!this.tryRenderWindow(context, mouseX, mouseY)) {
             this.renderMessages(context);
         }
     }
 
-    public boolean tryRenderWindow(DrawContext context, int mouseX, int mouseY) {
+    public boolean tryRenderWindow(GuiGraphics context, int mouseX, int mouseY) {
         if (this.window != null) {
             this.window.render(context, mouseX, mouseY);
             return true;
@@ -369,21 +367,21 @@ public class MacroCMDSuggestor {
         return false;
     }
 
-    public void renderMessages(DrawContext context) {
+    public void renderMessages(GuiGraphics context) {
         int i = 0;
-        for (OrderedText orderedText : this.messages) {
+        for (FormattedCharSequence orderedText : this.messages) {
             int j = textField.getY() - 20;
             context.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-            context.drawTextWithShadow(this.textRenderer, orderedText, this.x, j + 2, -1);
+            context.drawString(this.textRenderer, orderedText, this.x, j + 2, -1);
             ++i;
         }
     }
 
-    public Text getNarration() {
+    public Component getNarration() {
         if (this.window != null) {
-            return ScreenTexts.LINE_BREAK.copy().append(this.window.getNarration());
+            return CommonComponents.NEW_LINE.copy().append(this.window.getNarration());
         }
-        return ScreenTexts.EMPTY;
+        return CommonComponents.EMPTY;
     }
 
     @Environment(value= EnvType.CLIENT)
@@ -393,7 +391,7 @@ public class MacroCMDSuggestor {
         private final List<Suggestion> suggestions;
         private int inWindowIndex;
         private int selection;
-        private Vec2f mouse = Vec2f.ZERO;
+        private Vec2 mouse = Vec2.ZERO;
         boolean completed;
         private int lastNarrationIndex;
 
@@ -401,13 +399,13 @@ public class MacroCMDSuggestor {
             int i = x - 1;
             int j = MacroCMDSuggestor.this.chatScreenSized ? y - 3 - Math.min(suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize) * 12 : y;
             this.area = new Rect2i(i, j, width + 1, Math.min(suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize) * 12);
-            this.typedText = MacroCMDSuggestor.this.textField.getText();
+            this.typedText = MacroCMDSuggestor.this.textField.getValue();
             this.lastNarrationIndex = narrateFirstSuggestion ? -1 : 0;
             this.suggestions = suggestions;
             this.select(0);
         }
 
-        public void render(DrawContext context, int mouseX, int mouseY) {
+        public void render(GuiGraphics context, int mouseX, int mouseY) {
             Message message;
             boolean bl4;
             int i = Math.min(this.suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize);
@@ -417,7 +415,7 @@ public class MacroCMDSuggestor {
             boolean bl3 = bl || bl2;
             boolean bl5 = bl4 = this.mouse.x != (float)mouseX || this.mouse.y != (float)mouseY;
             if (bl4) {
-                this.mouse = new Vec2f(mouseX, mouseY);
+                this.mouse = new Vec2(mouseX, mouseY);
             }
             if (bl3) {
                 int k;
@@ -446,10 +444,10 @@ public class MacroCMDSuggestor {
                     }
                     bl52 = true;
                 }
-                context.drawTextWithShadow(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
+                context.drawString(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
             }
             if (bl52 && (message = this.suggestions.get(this.selection).getTooltip()) != null) {
-                context.drawTooltip(MacroCMDSuggestor.this.textRenderer, Texts.toText(message), mouseX, mouseY);
+                context.renderTooltip(MacroCMDSuggestor.this.textRenderer, ComponentUtils.fromMessage(message), mouseX, mouseY);
             }
         }
 
@@ -467,9 +465,9 @@ public class MacroCMDSuggestor {
 
         public boolean mouseScrolled(double amount) {
             int j;
-            int i = (int)(MacroCMDSuggestor.this.client.mouse.getX() * (double)MacroCMDSuggestor.this.client.getWindow().getScaledWidth() / (double)MacroCMDSuggestor.this.client.getWindow().getWidth());
-            if (this.area.contains(i, j = (int)(MacroCMDSuggestor.this.client.mouse.getY() * (double)MacroCMDSuggestor.this.client.getWindow().getScaledHeight() / (double)MacroCMDSuggestor.this.client.getWindow().getHeight()))) {
-                this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - amount), 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+            int i = (int)(MacroCMDSuggestor.this.client.mouseHandler.xpos() * (double)MacroCMDSuggestor.this.client.getWindow().getGuiScaledWidth() / (double)MacroCMDSuggestor.this.client.getWindow().getWidth());
+            if (this.area.contains(i, j = (int)(MacroCMDSuggestor.this.client.mouseHandler.ypos() * (double)MacroCMDSuggestor.this.client.getWindow().getGuiScaledHeight() / (double)MacroCMDSuggestor.this.client.getWindow().getHeight()))) {
+                this.inWindowIndex = Mth.clamp((int)((double)this.inWindowIndex - amount), 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
                 return true;
             }
             return false;
@@ -506,9 +504,9 @@ public class MacroCMDSuggestor {
             int i = this.inWindowIndex;
             int j = this.inWindowIndex + MacroCMDSuggestor.this.maxSuggestionSize - 1;
             if (this.selection < i) {
-                this.inWindowIndex = MathHelper.clamp(this.selection, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+                this.inWindowIndex = Mth.clamp(this.selection, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
             } else if (this.selection > j) {
-                this.inWindowIndex = MathHelper.clamp(this.selection + MacroCMDSuggestor.this.inWindowIndexOffset - MacroCMDSuggestor.this.maxSuggestionSize, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+                this.inWindowIndex = Mth.clamp(this.selection + MacroCMDSuggestor.this.inWindowIndexOffset - MacroCMDSuggestor.this.maxSuggestionSize, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
             }
         }
 
@@ -521,32 +519,32 @@ public class MacroCMDSuggestor {
                 this.selection -= this.suggestions.size();
             }
             Suggestion suggestion = this.suggestions.get(this.selection);
-            //MacroCMDSuggestor.this.textField.setSuggestion(MacroCMDSuggestor.getSuggestionSuffix(MacroCMDSuggestor.this.textField.getText(), suggestion.apply(this.typedText)));
+            //MacroCMDSuggestor.this.textField.setSuggestion(MacroCMDSuggestor.getSuggestionSuffix(MacroCMDSuggestor.this.textField.getValue(), suggestion.apply(this.typedText)));
             if (this.lastNarrationIndex != this.selection) {
-                MacroCMDSuggestor.this.client.getNarratorManager().narrate(this.getNarration());
+                MacroCMDSuggestor.this.client.getNarrator().sayNow(this.getNarration());
             }
         }
 
         public void complete() {
             Suggestion suggestion = this.suggestions.get(this.selection);
             MacroCMDSuggestor.this.completingSuggestions = true;
-            MacroCMDSuggestor.this.textField.setText(suggestion.apply(this.typedText));
+            MacroCMDSuggestor.this.textField.setValue(suggestion.apply(this.typedText));
             int i = suggestion.getRange().getStart() + suggestion.getText().length();
-            MacroCMDSuggestor.this.textField.setSelectionStart(i);
-            MacroCMDSuggestor.this.textField.setSelectionEnd(i);
+            MacroCMDSuggestor.this.textField.setCursorPosition(i);
+            MacroCMDSuggestor.this.textField.setHighlightPos(i);
             this.select(this.selection);
             MacroCMDSuggestor.this.completingSuggestions = false;
             this.completed = true;
         }
 
-        Text getNarration() {
+        Component getNarration() {
             this.lastNarrationIndex = this.selection;
             Suggestion suggestion = this.suggestions.get(this.selection);
             Message message = suggestion.getTooltip();
             if (message != null) {
-                return Text.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), Text.of(message.getString()));
+                return Component.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), Component.literal(message.getString()));
             }
-            return Text.translatable("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
+            return Component.translatable("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
         }
     }
 }

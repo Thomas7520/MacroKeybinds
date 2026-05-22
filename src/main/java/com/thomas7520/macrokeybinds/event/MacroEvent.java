@@ -5,8 +5,8 @@ import com.thomas7520.macrokeybinds.object.*;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public class MacroEvent {
     public void onInputEvent() {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-            if(MacroUtil.guiBinding.isPressed()) {
-                MinecraftClient.getInstance().setScreen(new MainMacroScreen());
+            if(MacroUtil.guiBinding.isDown()) {
+                Minecraft.getInstance().setScreen(new MainMacroScreen());
             }
 
-            if(MinecraftClient.getInstance().world == null || MinecraftClient.getInstance().currentScreen != null) return;
+            if(Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
 
             Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
             macros.addAll(MacroUtil.getServerKeybinds().values());
@@ -42,10 +42,10 @@ public class MacroEvent {
                 int state;
 
                 if(key == 0 || key <= 7) {
-                    state = GLFW.glfwGetMouseButton(client.getWindow().getHandle(), key);
+                    state = GLFW.glfwGetMouseButton(client.getWindow().getWindow(), key);
                     modifier = MacroModifier.NONE;
                 } else {
-                    state = GLFW.glfwGetKey(client.getWindow().getHandle(), key);
+                    state = GLFW.glfwGetKey(client.getWindow().getWindow(), key);
                 }
 
                 boolean isPress = state == GLFW.GLFW_PRESS;
@@ -70,7 +70,7 @@ public class MacroEvent {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
 
-            if(MinecraftClient.getInstance().world == null) return;
+            if(Minecraft.getInstance().level == null) return;
 
             Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
             macros.addAll(MacroUtil.getServerKeybinds().values());
@@ -115,13 +115,13 @@ public class MacroEvent {
 
     public void onServerConnect() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+            ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
 
-            if(networkHandler == null || networkHandler.getServerInfo() == null) return;
+            if(networkHandler == null || networkHandler.getServerData() == null) return;
 
-            if(networkHandler.getServerInfo().isLocal()) return;
+            if(networkHandler.getServerData().isLan()) return;
 
-            MacroUtil.initServerMacros(networkHandler.getServerInfo().address);
+            MacroUtil.initServerMacros(networkHandler.getServerData().ip);
         });
 
 
@@ -198,7 +198,7 @@ public class MacroEvent {
         int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
 
         for (int key : modifierKeys) {
-            if (GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), key) == GLFW.GLFW_PRESS) {
+            if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), key) == GLFW.GLFW_PRESS) {
                 return key;
             }
         }

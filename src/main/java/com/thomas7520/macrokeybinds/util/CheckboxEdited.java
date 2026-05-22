@@ -3,47 +3,47 @@ package com.thomas7520.macrokeybinds.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.gui.widget.PressableWidget;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value= EnvType.CLIENT)
 public class CheckboxEdited
-        extends PressableWidget {
-    private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_selected_highlighted");
-    private static final Identifier SELECTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_selected");
-    private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.ofVanilla("widget/checkbox_highlighted");
-    private static final Identifier TEXTURE = Identifier.ofVanilla("widget/checkbox");
+        extends AbstractButton {
+    private static final ResourceLocation SELECTED_HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected_highlighted");
+    private static final ResourceLocation SELECTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected");
+    private static final ResourceLocation HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_highlighted");
+    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox");
     private static final int TEXT_COLOR = 0xE0E0E0;
     private static final int field_47105 = 4;
     private static final int field_47106 = 8;
     private boolean checked;
     private final CheckboxEdited.Callback callback;
 
-    CheckboxEdited(int x, int y, Text message, TextRenderer textRenderer, boolean checked, CheckboxEdited.Callback callback) {
-        super(x, y, CheckboxEdited.getSize(textRenderer) + 4 + textRenderer.getWidth(message), CheckboxEdited.getSize(textRenderer), message);
+    CheckboxEdited(int x, int y, Component message, Font textRenderer, boolean checked, CheckboxEdited.Callback callback) {
+        super(x, y, CheckboxEdited.getSize(textRenderer) + 4 + textRenderer.width(message), CheckboxEdited.getSize(textRenderer), message);
         this.checked = checked;
         this.callback = callback;
     }
 
-    public static CheckboxEdited.Builder builder(Text text, TextRenderer textRenderer) {
+    public static CheckboxEdited.Builder builder(Component text, Font textRenderer) {
         return new CheckboxEdited.Builder(text, textRenderer);
     }
 
-    private static int getSize(TextRenderer textRenderer) {
+    private static int getSize(Font textRenderer) {
         return 9+8;
     }
 
@@ -54,13 +54,13 @@ public class CheckboxEdited
     }
 
     @Override
-    public void appendClickableNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, (Text)this.getNarrationMessage());
+    public void updateWidgetNarration(NarrationElementOutput builder) {
+        builder.add(NarratedElementType.TITLE, (Component)this.createNarrationMessage());
         if (this.active) {
             if (this.isFocused()) {
-                builder.put(NarrationPart.USAGE, (Text)Text.translatable("narration.checkbox.usage.focused"));
+                builder.add(NarratedElementType.USAGE, (Component)Component.translatable("narration.checkbox.usage.focused"));
             } else {
-                builder.put(NarrationPart.USAGE, (Text)Text.translatable("narration.checkbox.usage.hovered"));
+                builder.add(NarratedElementType.USAGE, (Component)Component.translatable("narration.checkbox.usage.hovered"));
             }
         }
     }
@@ -73,16 +73,16 @@ public class CheckboxEdited
     }
 
     @Override
-    public void drawIcon(DrawContext context, int mouseX, int mouseY, float delta) {
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        TextRenderer textRenderer = minecraftClient.textRenderer;
-        Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
+    public void renderWidgetIcon(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        Minecraft minecraftClient = Minecraft.getInstance();
+        Font textRenderer = minecraftClient.font;
+        ResourceLocation identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;
-        int k = this.getY() + (this.height >> 1) - (textRenderer.fontHeight >> 1);
+        int k = this.getY() + (this.height >> 1) - (textRenderer.lineHeight >> 1);
 
-        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
-        context.drawTextWithShadow(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
+        context.drawString(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.alpha * 255.0f) << 24);
     }
 
 
@@ -96,18 +96,18 @@ public class CheckboxEdited
 
     @Environment(value=EnvType.CLIENT)
     public static class Builder {
-        private final Text message;
-        private final TextRenderer textRenderer;
+        private final Component message;
+        private final Font textRenderer;
         private int x = 0;
         private int y = 0;
         private CheckboxEdited.Callback callback = CheckboxEdited.Callback.EMPTY;
         private boolean checked = false;
         @Nullable
-        private SimpleOption<Boolean> option = null;
+        private OptionInstance<Boolean> option = null;
         @Nullable
         private Tooltip tooltip = null;
 
-        Builder(Text message, TextRenderer textRenderer) {
+        Builder(Component message, Font textRenderer) {
             this.message = message;
             this.textRenderer = textRenderer;
         }
@@ -129,9 +129,9 @@ public class CheckboxEdited
             return this;
         }
 
-        public CheckboxEdited.Builder option(SimpleOption<Boolean> option) {
+        public CheckboxEdited.Builder option(OptionInstance<Boolean> option) {
             this.option = option;
-            this.checked = option.getValue();
+            this.checked = option.get();
             return this;
         }
 
@@ -142,7 +142,7 @@ public class CheckboxEdited
 
         public CheckboxEdited build() {
             CheckboxEdited.Callback callback = this.option == null ? this.callback : (checkbox, checked) -> {
-                this.option.setValue(checked);
+                this.option.set(checked);
                 this.callback.onValueChange(checkbox, checked);
             };
             CheckboxEdited checkboxWidget = new CheckboxEdited(this.x, this.y, this.message, this.textRenderer, this.checked, callback);
