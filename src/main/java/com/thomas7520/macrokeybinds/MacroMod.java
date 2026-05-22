@@ -10,7 +10,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -65,7 +65,7 @@ public class MacroMod implements ModInitializer {
                 "key.macrokeybinds.openoptions.desc",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(MODID, "key.categories.macrokeybinds"))
+                KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MODID, "key.categories.macrokeybinds"))
         ));
 
     }

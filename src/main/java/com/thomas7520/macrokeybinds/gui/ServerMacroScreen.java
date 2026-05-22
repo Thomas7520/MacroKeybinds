@@ -6,7 +6,7 @@ import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -14,14 +14,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public class ServerMacroScreen extends Screen {
 
-    public static final ResourceLocation STOP_ICON = ResourceLocation.fromNamespaceAndPath(MacroMod.MODID, "textures/stop_icon.png");
+    public static final Identifier STOP_ICON = Identifier.fromNamespaceAndPath(MacroMod.MODID, "textures/stop_icon.png");
     private final Screen parent;
     private MacroList macroList;
     private EditBox searchBox;
@@ -37,7 +37,7 @@ public class ServerMacroScreen extends Screen {
         double scrollAmount = 0;
 
         if(macroList != null) {
-            scrollAmount = macroList.getScrollAmount();
+            scrollAmount = macroList.scrollAmount();
         }
 
         this.macroList = new MacroList(this, minecraft, new ArrayList<>(MacroUtil.getServerKeybinds().values()), true);
@@ -84,10 +84,10 @@ public class ServerMacroScreen extends Screen {
         }, Supplier::get) {
 
             @Override
-            public void renderWidgetIcon(GuiGraphics context, int mouseX, int mouseY, float delta) {
+            protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+                this.extractDefaultSprite(context);
                 int i = 16;
                 int j = 16;
-                this.renderWidgetButton(context);
                 context.blit(RenderPipelines.GUI_TEXTURED, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });
@@ -137,10 +137,10 @@ public class ServerMacroScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
 
-        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 8, 16777215, false);
+        context.text(font, this.title, this.width / 2 - font.width(title) / 2, 8, 16777215, false);
     }
 
 

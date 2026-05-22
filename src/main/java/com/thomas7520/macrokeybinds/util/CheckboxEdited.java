@@ -1,32 +1,29 @@
 package com.thomas7520.macrokeybinds.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.AbstractInput;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value= EnvType.CLIENT)
 public class CheckboxEdited
         extends AbstractButton {
-    private static final ResourceLocation SELECTED_HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected_highlighted");
-    private static final ResourceLocation SELECTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected");
-    private static final ResourceLocation HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_highlighted");
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox");
+    private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = Identifier.withDefaultNamespace("widget/checkbox_selected_highlighted");
+    private static final Identifier SELECTED_TEXTURE = Identifier.withDefaultNamespace("widget/checkbox_selected");
+    private static final Identifier HIGHLIGHTED_TEXTURE = Identifier.withDefaultNamespace("widget/checkbox_highlighted");
+    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("widget/checkbox");
     private static final int TEXT_COLOR = 0xE0E0E0;
     private static final int field_47105 = 4;
     private static final int field_47106 = 8;
@@ -67,22 +64,22 @@ public class CheckboxEdited
 
 
     @Override
-    public void onPress(AbstractInput input) {
+    public void onPress(InputWithModifiers input) {
         this.checked = !this.checked;
         this.callback.onValueChange(this, this.checked);
     }
 
     @Override
-    public void renderWidgetIcon(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         Minecraft minecraftClient = Minecraft.getInstance();
         Font textRenderer = minecraftClient.font;
-        ResourceLocation identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
+        Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (textRenderer.lineHeight >> 1);
 
         context.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
-        context.drawString(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.alpha * 255.0f) << 24);
+        context.text(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.getAlpha() * 255.0f) << 24);
     }
 
 

@@ -42,10 +42,10 @@ public class MacroEvent {
                 int state;
 
                 if(key == 0 || key <= 7) {
-                    state = GLFW.glfwGetMouseButton(client.getWindow().getWindow(), key);
+                    state = GLFW.glfwGetMouseButton(client.getWindow().handle(), key);
                     modifier = MacroModifier.NONE;
                 } else {
-                    state = GLFW.glfwGetKey(client.getWindow().getWindow(), key);
+                    state = GLFW.glfwGetKey(client.getWindow().handle(), key);
                 }
 
                 boolean isPress = state == GLFW.GLFW_PRESS;
@@ -198,7 +198,7 @@ public class MacroEvent {
         int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
 
         for (int key : modifierKeys) {
-            if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), key) == GLFW.GLFW_PRESS) {
+            if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), key) == GLFW.GLFW_PRESS) {
                 return key;
             }
         }
