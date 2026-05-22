@@ -13,22 +13,20 @@ import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.ControlsListWidget;
-import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -40,21 +38,21 @@ import java.util.function.Supplier;
 
 @Environment(value= EnvType.CLIENT)
 public class MacroList
-extends ElementListWidget<MacroList.Entry> {
+extends ContainerObjectSelectionList<MacroList.Entry> {
     final Screen parent;
     private List<IMacro> macroList;
     private final boolean isServer;
     int maxKeyNameLength;
 
-    private static final Identifier EDIT_ICON = Identifier.of("macrokeybinds", "textures/edit_button.png");
-    private static final Identifier DELETE_ICON = Identifier.of("macrokeybinds", "textures/delete_button.png");
+    private static final ResourceLocation EDIT_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/edit_button.png");
+    private static final ResourceLocation DELETE_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/delete_button.png");
 
     private String searchBoxInput = "";
 
     @Nullable
     private List<IMacro> cachedList;
 
-    public MacroList(Screen parent, MinecraftClient client, List<IMacro> macros, boolean isServer) {
+    public MacroList(Screen parent, Minecraft client, List<IMacro> macros, boolean isServer) {
         super(client, parent.width, parent.height - 20 - 53, 43, 20);
         this.parent = parent;
         this.macroList = macros;
@@ -71,7 +69,7 @@ extends ElementListWidget<MacroList.Entry> {
         searchBoxInput = p_101677_.get();
 
         this.clearEntries();
-        this.setScrollY(0);
+        this.setScrollAmount(0);
 
         if (this.cachedList == null) {
             this.cachedList = macroList;
@@ -104,8 +102,8 @@ extends ElementListWidget<MacroList.Entry> {
     }
 
     @Override
-    protected int getScrollbarX() {
-        return super.getScrollbarX() + 15 + 20;
+    protected int getScrollbarPosition() {
+        return super.getScrollbarPosition() + 15 + 20;
     }
 
 
@@ -122,12 +120,12 @@ extends ElementListWidget<MacroList.Entry> {
             this.macro = bind;
 
 
-            this.editButton = ButtonImageWidget.builder(Text.empty(), button -> MacroList.this.client.setScreen(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
+            this.editButton = ButtonImageWidget.builder(Component.empty(), button -> MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
                     .dimensions(0,0,20,20)
                     .icon(EDIT_ICON)
                     .build();
 
-            this.stateButton = CheckboxEdited.builder(Text.empty(), client.textRenderer)
+            this.stateButton = CheckboxEdited.builder(Component.empty(), minecraft.font)
                     .pos(0,0)
                     .callback((checkbox, checked) -> {
                         String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
@@ -138,7 +136,7 @@ extends ElementListWidget<MacroList.Entry> {
                     .checked(macro.isEnable())
                     .build();
 
-            this.deleteButton = ButtonImageWidget.builder(Text.empty(), button -> client.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = ButtonImageWidget.builder(Component.empty(), button -> minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
                 if (p_170322_) {
                     if(isMacroServer) {
@@ -151,8 +149,8 @@ extends ElementListWidget<MacroList.Entry> {
                     new File(FabricLoader.getInstance().getGameDir().resolve(FabricLoader.getInstance().getConfigDir()) + directory + "/" + macro.getUUID().toString() + ".json").delete();
                 }
 
-                client.setScreen(parent);
-            }, Text.translatable("text.macro.deleteQuestion"), Text.translatable("text.macro.deleteWarning"), Text.translatable("text.macro.deleteButton"), ScreenTexts.CANCEL)))
+                minecraft.setScreen(parent);
+            }, Component.translatable("text.macro.deleteQuestion"), Component.translatable("text.macro.deleteWarning"), Component.translatable("text.macro.deleteButton"), CommonComponents.GUI_CANCEL)))
                     .dimensions(20,0,20,20)
                     .icon(DELETE_ICON)
                     .build();
@@ -160,13 +158,13 @@ extends ElementListWidget<MacroList.Entry> {
 
 
         @Override
-        public void render(DrawContext context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int x = getX();
             int y = getY();
 
             float f = (float) (x - MacroList.this.maxKeyNameLength);
 
-            context.drawTextWithShadow(client.textRenderer, Text.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
+            context.drawString(minecraft.font, Component.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
             this.deleteButton.setX(x + 190 + 20);
             this.deleteButton.setY(y);
             this.editButton.setX(x + 190);
@@ -181,16 +179,16 @@ extends ElementListWidget<MacroList.Entry> {
                 context.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
                 context.fill(stateButton.getX(), stateButton.getY() + 20, stateButton.getX() + 1, stateButton.getY(), Color.WHITE.getRGB());
                 context.fill(stateButton.getX() + 19, stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
-                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
+                context.renderTooltip(minecraft.font, minecraft.font.split(Component.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
 
             }
 
             if(editButton.isHovered()) {
-                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
+                context.renderTooltip(minecraft.font, minecraft.font.split(Component.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
             }
 
             if(deleteButton.isHovered()) {
-                context.drawTooltip(client.textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
+                context.renderTooltip(minecraft.font, minecraft.font.split(Component.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
             }
 
             boolean running = false;
@@ -209,19 +207,19 @@ extends ElementListWidget<MacroList.Entry> {
 
             if(running) {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
-                    context.drawTooltip(client.textRenderer, Text.translatable("text.tooltip.running"), mouseX, mouseY);
+                    context.renderTooltip(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
                 }
-                context.drawText(client.textRenderer, Text.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
+                context.drawString(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
             }
         }
 
         @Override
-        public List<? extends Element> children() {
+        public List<? extends GuiEventListener> children() {
             return ImmutableList.of(this.editButton, this.deleteButton, this.stateButton);
         }
 
         @Override
-        public List<? extends Selectable> selectableChildren() {
+        public List<? extends NarratableEntry> narratables() {
             return ImmutableList.of(this.editButton, this.deleteButton, this.stateButton);
         }
 
@@ -234,15 +232,14 @@ extends ElementListWidget<MacroList.Entry> {
 
     @Environment(value=EnvType.CLIENT)
     public static abstract class Entry
-            extends ElementListWidget.Entry<MacroList.Entry> {
+            extends ContainerObjectSelectionList.Entry<MacroList.Entry> {
         abstract void update();
     }
 
-    protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
-        if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus.getNavigationFocus());
+    protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
+        if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
+            return new DefaultTooltipPositioner();
         }
-        return new WidgetTooltipPositioner(focus.getNavigationFocus());
+        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
     }
 }
-

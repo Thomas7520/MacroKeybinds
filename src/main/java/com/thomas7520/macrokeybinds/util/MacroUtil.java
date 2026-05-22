@@ -4,7 +4,7 @@ import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.MacroModifier;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.KeyMapping;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class MacroUtil {
     private static final HashMap<UUID, IMacro> keybinds = new HashMap<>();
     private static final HashMap<UUID, IMacro> serverKeybinds = new HashMap<>();
     private static String serverIP = "";
-    public static KeyBinding guiBinding;
+    public static KeyMapping guiBinding;
 
 
 
@@ -60,7 +60,7 @@ public class MacroUtil {
     }
 
     public static boolean isNumeric(final CharSequence cs) {
-        if (cs.length() == 0 || cs.toString().equalsIgnoreCase("\u0008")) {
+        if (cs.length() == 0 || cs.toString().equalsIgnoreCase("")) {
             return true;
         }
         final int sz = cs.length();

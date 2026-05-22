@@ -1,7 +1,7 @@
 package com.thomas7520.macrokeybinds.object;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 
 import java.util.UUID;
 
@@ -105,14 +105,14 @@ public class RepeatMacro implements IMacro {
 
         lastActionTime = System.currentTimeMillis();
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         switch (action) {
 
 
-            case COMMAND -> client.player.networkHandler.sendChatCommand((getActionText().startsWith("/") ?
+            case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ?
                     getActionText().substring(1) : getActionText()));
-            case MESSAGE -> client.player.networkHandler.sendChatMessage(getActionText());
-            case FILL_CHAT -> MinecraftClient.getInstance().setScreen(new ChatScreen(getActionText(), false));
+            case MESSAGE -> client.player.connection.sendChat(getActionText());
+            case FILL_CHAT -> Minecraft.getInstance().setScreen(new ChatScreen(getActionText(), false));
         }
     }
 

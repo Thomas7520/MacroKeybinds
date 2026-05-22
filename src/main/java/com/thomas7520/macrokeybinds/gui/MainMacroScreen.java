@@ -1,18 +1,18 @@
 package com.thomas7520.macrokeybinds.gui;
 
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.gui.screen.GameMenuScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Supplier;
 
@@ -22,10 +22,10 @@ public class MainMacroScreen extends Screen {
 
     private int guiLeft;
     private int guiTop;
-    private ButtonWidget serverMacrosButton;
+    private Button serverMacrosButton;
 
     public MainMacroScreen() {
-        super(Text.translatable("text.config.mainscreen"));
+        super(Component.translatable("text.config.mainscreen"));
     }
 
     @Override
@@ -33,28 +33,28 @@ public class MainMacroScreen extends Screen {
         this.guiLeft = (this.width) / 2;
         this.guiTop = (this.height) / 2;
 
-        Text globalMacros = Text.translatable("text.config.globalmacros");
-        Text serverMacros = Text.translatable("text.config.servermacros");
-        Text discordLink = Text.translatable("text.config.needhelp");
+        Component globalMacros = Component.translatable("text.config.globalmacros");
+        Component serverMacros = Component.translatable("text.config.servermacros");
+        Component discordLink = Component.translatable("text.config.needhelp");
 
-        addDrawableChild(createButton(globalMacros, guiLeft - 100, guiTop / 2, 200, 20, () -> new GlobalMacroScreen(this)));
+        addRenderableWidget(createButton(globalMacros, guiLeft - 100, guiTop / 2, 200, 20, () -> new GlobalMacroScreen(this)));
 
-        addDrawableChild(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
+        addRenderableWidget(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
 
-        addDrawableChild(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
+        addRenderableWidget(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
 
         super.init();
     }
 
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawText(textRenderer, title, width / 2 - textRenderer.getWidth(title) / 2, 8, 16777215, false);
+        context.drawString(font, title, width / 2 - font.width(title) / 2, 8, 16777215, false);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
-            context.drawTooltip(textRenderer.wrapLines(Text.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
+            context.renderTooltip(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
         }
 
         if(serverMacrosButton.active && MacroUtil.getServerIP().isEmpty()) {
@@ -68,23 +68,23 @@ public class MainMacroScreen extends Screen {
 
 
 
-    private ButtonWidget createButton(Text text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return ButtonWidget.builder(text, button -> this.client.setScreen(screenSupplier.get()))
-                .dimensions(x,y,width,height)
+    private Button createButton(Component text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
+        return Button.builder(text, button -> this.minecraft.setScreen(screenSupplier.get()))
+                .bounds(x,y,width,height)
                 .build();
     }
 
-    private ButtonWidget createUrlButton(Text text, int x, int y, int width, int height, String url) {
-        return ButtonWidget.builder(text, ConfirmLinkScreen.opening(this, url))
-                .dimensions(x,y,width,height)
+    private Button createUrlButton(Component text, int x, int y, int width, int height, String url) {
+        return Button.builder(text, ConfirmLinkScreen.confirmLinkNow(this, url))
+                .bounds(x,y,width,height)
                 .build();
     }
 
-    protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
-        if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus.getNavigationFocus());
+    protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
+        if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
+            return new DefaultTooltipPositioner();
         }
 
-        return new WidgetTooltipPositioner(focus.getNavigationFocus());
+        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
     }
 }

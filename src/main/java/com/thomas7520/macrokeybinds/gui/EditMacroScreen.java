@@ -1,26 +1,26 @@
 package com.thomas7520.macrokeybinds.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.object.*;
 import com.thomas7520.macrokeybinds.util.MacroCMDSuggestor;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -32,15 +32,15 @@ public class EditMacroScreen extends Screen {
     private final String[] macrosType = {"text.type.simple", "text.type.toggle", "text.type.repeat", "text.type.delayed"};
     private final String[] actionsType = {"text.action.message", "text.action.command", "text.action.fillchat"};
 
-    private TextFieldWidget nameBox;
-    private ButtonWidget macroActionButton;
-    private TextFieldWidget macroActionBox;
+    private EditBox nameBox;
+    private Button macroActionButton;
+    private EditBox macroActionBox;
 
-    private ButtonWidget macroTypeButton;
-    private TextFieldWidget timeBox;
-    private ButtonWidget macroKeyButton;
+    private Button macroTypeButton;
+    private EditBox timeBox;
+    private Button macroKeyButton;
 
-    private ButtonWidget confirmButton;
+    private Button confirmButton;
 
     private boolean listenMacroBind;
     private int keySelect = -1;
@@ -55,10 +55,10 @@ public class EditMacroScreen extends Screen {
     private MacroCMDSuggestor commandSuggestions;
 
     private MacroModifier macroModifierSelect = MacroModifier.NONE;
-    private InputUtil.Key inputSelected;
+    private InputConstants.Key inputSelected;
 
     public EditMacroScreen(Screen lastScreen, IMacro macro, boolean serverMacro) {
-        super(Text.translatable((macro == null) ? (serverMacro ? "text.createservermacros.title" : "text.createglobalmacros.title") : (serverMacro ? "text.createservermacros.title" : "text.editglobalmacro.title")));
+        super(Component.translatable((macro == null) ? (serverMacro ? "text.createservermacros.title" : "text.createglobalmacros.title") : (serverMacro ? "text.createservermacros.title" : "text.editglobalmacro.title")));
 
         this.lastScreen = lastScreen;
         this.macroData = macro;
@@ -71,41 +71,41 @@ public class EditMacroScreen extends Screen {
         this.guiTop = (this.height) / 2;
 
 
-        addDrawableChild(nameBox = new TextFieldWidget(textRenderer, guiLeft - 200, guiTop / 2, 150, 20, Text.empty()));
+        addRenderableWidget(nameBox = new EditBox(font, guiLeft - 200, guiTop / 2, 150, 20, Component.empty()));
 
-        addDrawableChild(macroActionButton = createButton(Text.translatable(actionsType[0])
+        addRenderableWidget(macroActionButton = createButton(Component.translatable(actionsType[0])
                         , guiLeft - 200, guiTop / 2 + 40, 150, 20
                 , button -> {
                             if(actionTypeSelectId == 2) {
-                                macroActionBox.setMessage(macroActionBox.getMessage().copy().formatted(Formatting.WHITE));
+                                macroActionBox.setMessage(macroActionBox.getMessage().copy().withStyle(ChatFormatting.WHITE));
                                 actionTypeSelectId = 0;
                             } else {
                                 actionTypeSelectId++;
                             }
 
-                            macroActionButton.setMessage(Text.translatable(actionsType[actionTypeSelectId]));
+                            macroActionButton.setMessage(Component.translatable(actionsType[actionTypeSelectId]));
 
                 }))
-                .setTooltip(Tooltip.of(Text.translatable("text.tooltip.actiontype")));
+                .setTooltip(Tooltip.create(Component.translatable("text.tooltip.actiontype")));
 
 
-        addDrawableChild(macroActionBox = new TextFieldWidget(textRenderer, guiLeft - 200, guiTop / 2 + 80, 150, 20, Text.empty()));
+        addRenderableWidget(macroActionBox = new EditBox(font, guiLeft - 200, guiTop / 2 + 80, 150, 20, Component.empty()));
 
 
-        this.commandSuggestions = new MacroCMDSuggestor(this.client, this, this.macroActionBox, this.textRenderer, false, false, 10, 10, true, -805306368);
+        this.commandSuggestions = new MacroCMDSuggestor(this.minecraft, this, this.macroActionBox, this.font, false, false, 10, 10, true, -805306368);
         this.commandSuggestions.refresh();
-        macroActionBox.setChangedListener(this::onEdited);
+        macroActionBox.setResponder(this::onEdited);
         macroActionBox.setMaxLength(256);
 
 
-        addDrawableChild(macroTypeButton = createButton(Text.translatable(macrosType[0]), guiLeft + 55, guiTop / 2, 150, 20, onPress -> {
+        addRenderableWidget(macroTypeButton = createButton(Component.translatable(macrosType[0]), guiLeft + 55, guiTop / 2, 150, 20, onPress -> {
                     if(macroTypeSelectId == 3) {
                         macroTypeSelectId = 0;
                     } else {
                         macroTypeSelectId++;
                     }
 
-                    macroTypeButton.setMessage(Text.translatable(macrosType[macroTypeSelectId]));
+                    macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
 
                     if(macroTypeSelectId == 0) {
                         timeBox.visible = false;
@@ -115,41 +115,41 @@ public class EditMacroScreen extends Screen {
                         macroKeyButton.setY(guiTop / 2 + 80);
                     }
                 }))
-                .setTooltip(Tooltip.of(Text.translatable("text.tooltip.macrotype")));
+                .setTooltip(Tooltip.create(Component.translatable("text.tooltip.macrotype")));
 
 
 
-        addDrawableChild(timeBox = new TextFieldWidget(textRenderer, guiLeft + 55, guiTop / 2 + 40, 150, 20, Text.empty()));
-        timeBox.setTextPredicate(MacroUtil::isNumeric);
+        addRenderableWidget(timeBox = new EditBox(font, guiLeft + 55, guiTop / 2 + 40, 150, 20, Component.empty()));
+        timeBox.setFilter(MacroUtil::isNumeric);
 
 
-        addDrawableChild(macroKeyButton = createButton(Text.translatable("text.key"), guiLeft + 55, guiTop / 2 + 80, 150, 20, onPress -> {
+        addRenderableWidget(macroKeyButton = createButton(Component.translatable("text.key"), guiLeft + 55, guiTop / 2 + 80, 150, 20, onPress -> {
                     if(listenMacroBind) return;
                     listenMacroBind = true;
 
-                    macroKeyButton.setMessage((Text.literal("> ")).append(macroKeyButton.getMessage().copy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+                    macroKeyButton.setMessage((Component.literal("> ")).append(macroKeyButton.getMessage().copy().withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
 
                 }))
-                .setTooltip(Tooltip.of((macroData != null && MacroUtil.isCombinationAssigned(macroData) || macroData == null && MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect)) ?
-                        Text.translatable("text.tooltip.editmacro.keyalreadyassigned").formatted(Formatting.RED)
-                        : Text.translatable("text.tooltip.keybind")));
+                .setTooltip(Tooltip.create((macroData != null && MacroUtil.isCombinationAssigned(macroData) || macroData == null && MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect)) ?
+                        Component.translatable("text.tooltip.editmacro.keyalreadyassigned").withStyle(ChatFormatting.RED)
+                        : Component.translatable("text.tooltip.keybind")));
 
 
 
-        addDrawableChild(createButton(Text.translatable("text.globalmacros.back"), this.width / 2 - 155 + 160, this.height - 38, 150, 20, p_93751_ -> client.setScreen(this.lastScreen)));
+        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), this.width / 2 - 155 + 160, this.height - 38, 150, 20, p_93751_ -> minecraft.setScreen(this.lastScreen)));
 
 
-        addDrawableChild(confirmButton = createButton(Text.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), this.width / 2 - 155, this.height - 38, 150, 20, p_93751_ -> {
+        addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), this.width / 2 - 155, this.height - 38, 150, 20, p_93751_ -> {
                     UUID macroUUID = macroData == null ? UUID.randomUUID() : macroData.getUUID();
                     IMacro macro = switch (macroTypeSelectId) {
                         case 0 ->
-                                new SimpleMacro(macroUUID, nameBox.getText(), macroActionBox.getText(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new SimpleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 1 ->
-                                new ToggleMacro(macroUUID, nameBox.getText(), macroActionBox.getText(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getText()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new ToggleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 2 ->
-                                new RepeatMacro(macroUUID, nameBox.getText(), macroActionBox.getText(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getText()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 3 ->
-                                new DelayedMacro(macroUUID, nameBox.getText(), macroActionBox.getText(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getText()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
                     };
                     if(serverMacro) {
@@ -160,7 +160,7 @@ public class EditMacroScreen extends Screen {
                     String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
                     MacroFlow.writeMacro(macro, FabricLoader.getInstance().getGameDir().resolve(FabricLoader.getInstance().getConfigDir()) + directory);
 
-                    client.setScreen(this.lastScreen);
+                    minecraft.setScreen(this.lastScreen);
                 }));
 
         timeBox.visible = false;
@@ -180,7 +180,7 @@ public class EditMacroScreen extends Screen {
     }
 
     private void onEdited(String p_95611_) {
-        String string = this.macroActionBox.getText();
+        String string = this.macroActionBox.getValue();
 
         this.commandSuggestions.setWindowActive(!string.isEmpty() && actionTypeSelectId == 1);
         if(actionTypeSelectId != 1) return;
@@ -190,41 +190,41 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        context.drawText(textRenderer, this.title, this.width / 2 - textRenderer.getWidth(title) / 2, 16, 16777215, false);
+        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 16, 16777215, false);
 
 
         if(macroTypeSelectId != 0) {
-            MutableText timeBoxText = Text.translatable("text.tooltip.timebox");
-            MutableText timeBoxSubText = Text.translatable("text.tooltip.timeboxsub");
+            MutableComponent timeBoxText = Component.translatable("text.tooltip.timebox");
+            MutableComponent timeBoxSubText = Component.translatable("text.tooltip.timeboxsub");
 
-            context.drawText(textRenderer, timeBoxText, guiLeft + 47 + 80 - textRenderer.getWidth(timeBoxText) / 2, guiTop / 2 + 21, Color.WHITE.getRGB(), false);
-            context.drawText(textRenderer, timeBoxSubText, guiLeft + 90 + 40 - textRenderer.getWidth(timeBoxSubText) / 2, guiTop / 2 + 31, Color.WHITE.getRGB(), false);
+            context.drawString(font, timeBoxText, guiLeft + 47 + 80 - font.width(timeBoxText) / 2, guiTop / 2 + 21, Color.WHITE.getRGB(), false);
+            context.drawString(font, timeBoxSubText, guiLeft + 90 + 40 - font.width(timeBoxSubText) / 2, guiTop / 2 + 31, Color.WHITE.getRGB(), false);
         }
 
 
-        confirmButton.active = !nameBox.getText().isEmpty() && !macroActionBox.getText().isEmpty()
-                && (macroTypeSelectId == 0 || !timeBox.getText().isEmpty()) && keySelect != -1;
+        confirmButton.active = !nameBox.getValue().isEmpty() && !macroActionBox.getValue().isEmpty()
+                && (macroTypeSelectId == 0 || !timeBox.getValue().isEmpty()) && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHovered()) {
-            context.drawTooltip(textRenderer.wrapLines(Text.translatable("text.tooltip.editmacro.forgotvalue").formatted(Formatting.RED), 150), mouseX, mouseY);
+            context.renderTooltip(font, font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), mouseX, mouseY);
         }
 
-        MutableText actionBox = Text.translatable("text.tooltip.actionbox");
-        MutableText nameBoxTitle = Text.translatable("text.tooltip.namebox");
+        MutableComponent actionBox = Component.translatable("text.tooltip.actionbox");
+        MutableComponent nameBoxTitle = Component.translatable("text.tooltip.namebox");
 
-        if(actionTypeSelectId == 1 && macroActionBox.isFocused() && !macroActionBox.getText().isEmpty() && macroActionBox.getText().startsWith("/")) {
+        if(actionTypeSelectId == 1 && macroActionBox.isFocused() && !macroActionBox.getValue().isEmpty() && macroActionBox.getValue().startsWith("/")) {
             nameBox.visible = false;
             macroActionButton.visible = false;
-            context.drawText(textRenderer, actionBox, guiLeft - 45, guiTop / 2 + 85, Color.WHITE.getRGB(), false);
+            context.drawString(font, actionBox, guiLeft - 45, guiTop / 2 + 85, Color.WHITE.getRGB(), false);
 
             this.commandSuggestions.render(context, mouseX, mouseY);
         } else {
 
-            context.drawText(textRenderer, nameBoxTitle, guiLeft - 127 - textRenderer.getWidth(nameBoxTitle) / 2, guiTop / 2 - 15, Color.WHITE.getRGB(), false);
-            context.drawText(textRenderer, actionBox, guiLeft - 127 - textRenderer.getWidth(actionBox) / 2, guiTop / 2 + 65, Color.WHITE.getRGB(), false);
+            context.drawString(font, nameBoxTitle, guiLeft - 127 - font.width(nameBoxTitle) / 2, guiTop / 2 - 15, Color.WHITE.getRGB(), false);
+            context.drawString(font, actionBox, guiLeft - 127 - font.width(actionBox) / 2, guiTop / 2 + 65, Color.WHITE.getRGB(), false);
             this.nameBox.visible = true;
             macroActionButton.visible = true;
         }
@@ -252,9 +252,9 @@ public class EditMacroScreen extends Screen {
         }
 
         if (this.listenMacroBind) {
-            InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
-            keySelect = key.getCode();
-            keyName = key.getLocalizedText().getString();
+            InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(button);
+            keySelect = key.getValue();
+            keyName = key.getDisplayName().getString();
             listenMacroBind = false;
 
             if(macroData != null) {
@@ -265,9 +265,9 @@ public class EditMacroScreen extends Screen {
             macroModifierSelect = MacroModifier.NONE;
 
             if(hasConflictKey()) {
-                macroKeyButton.setMessage(Text.literal(keyName).formatted(Formatting.RED));
+                macroKeyButton.setMessage(Component.literal(keyName).withStyle(ChatFormatting.RED));
             } else {
-                macroKeyButton.setMessage(Text.literal(keyName));
+                macroKeyButton.setMessage(Component.literal(keyName));
             }
             return true;
         } else {
@@ -286,23 +286,23 @@ public class EditMacroScreen extends Screen {
         if (this.listenMacroBind) {
             if (input.isEscape()) {
                 if (hasConflictKey()) {
-                    macroKeyButton.setMessage(Text.literal(getKeyName()).formatted(Formatting.RED));
+                    macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
                 } else {
-                    macroKeyButton.setMessage(Text.literal(getKeyName()));
+                    macroKeyButton.setMessage(Component.literal(getKeyName()));
                 }
                 listenMacroBind = false;
             } else {
-                InputUtil.Key key = InputUtil.fromKeyCode(input);
+                InputConstants.Key key = InputConstants.getKey(input.key(), input.scancode());
 
                 inputSelected = key;
 
-                keySelect = key.getCode();
-                keyName = key.getLocalizedText().getString();
+                keySelect = key.getValue();
+                keyName = key.getDisplayName().getString();
 
                 macroModifierSelect = getPressedModifierKeyCode();
 
 
-                if (!isKeyCodeModifier(inputSelected.getCode())) {
+                if (!isKeyCodeModifier(inputSelected.getValue())) {
                     listenMacroBind = false;
 
                     if (macroData != null) {
@@ -312,13 +312,13 @@ public class EditMacroScreen extends Screen {
 
 
                     if (hasConflictKey()) {
-                        macroKeyButton.setMessage(Text.literal(getKeyName()).formatted(Formatting.RED));
+                        macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
                     } else {
-                        macroKeyButton.setMessage(Text.literal(getKeyName()));
+                        macroKeyButton.setMessage(Component.literal(getKeyName()));
                     }
 
                 } else {
-                    macroKeyButton.setMessage(Text.literal("> ").append(Text.literal(keyName).formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+                    macroKeyButton.setMessage(Component.literal("> ").append(Component.literal(keyName).withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
                 }
             }
             return true;
@@ -340,9 +340,9 @@ public class EditMacroScreen extends Screen {
 
 
             if (hasConflictKey()) {
-                macroKeyButton.setMessage(Text.literal(keyName).formatted(Formatting.RED));
+                macroKeyButton.setMessage(Component.literal(keyName).withStyle(ChatFormatting.RED));
             } else {
-                macroKeyButton.setMessage(Text.literal(keyName));
+                macroKeyButton.setMessage(Component.literal(keyName));
             }
 
             listenMacroBind = false;
@@ -361,41 +361,41 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
-        MinecraftClient.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
+        Minecraft.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
         super.resize(width, height);
     }
 
     public void initDataMacro() {
-        nameBox.setText(macroData.getName());
+        nameBox.setValue(macroData.getName());
         actionTypeSelectId = (byte) macroData.getAction().ordinal();
-        macroActionBox.setText(macroData.getActionText());
+        macroActionBox.setValue(macroData.getActionText());
         keySelect = macroData.getKey();
         keyName = macroData.getKeyName();
         macroTypeSelectId = 0;
         macroModifierSelect = macroData.getModifier();
 
         if(macroData instanceof ToggleMacro) {
-            timeBox.setText(String.valueOf(((ToggleMacro) macroData).getCooldownTime()));
+            timeBox.setValue(String.valueOf(((ToggleMacro) macroData).getCooldownTime()));
             macroTypeSelectId = 1;
         }
 
         if(macroData instanceof RepeatMacro) {
-            timeBox.setText(String.valueOf(((RepeatMacro) macroData).getCooldownTime()));
+            timeBox.setValue(String.valueOf(((RepeatMacro) macroData).getCooldownTime()));
             macroTypeSelectId = 2;
         }
 
         if(macroData instanceof DelayedMacro) {
-            timeBox.setText(String.valueOf(((DelayedMacro) macroData).getDelayedTime()));
+            timeBox.setValue(String.valueOf(((DelayedMacro) macroData).getDelayedTime()));
             macroTypeSelectId = 3;
         }
 
-        macroActionButton.setMessage(Text.translatable(actionsType[actionTypeSelectId]));
-        macroTypeButton.setMessage(Text.translatable(macrosType[macroTypeSelectId]));
+        macroActionButton.setMessage(Component.translatable(actionsType[actionTypeSelectId]));
+        macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
 
         if (MacroUtil.isCombinationAssigned(macroData)){
-            macroKeyButton.setMessage(Text.literal(getKeyName()).formatted(Formatting.RED));
+            macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
         } else {
-            macroKeyButton.setMessage(Text.literal(getKeyName()));
+            macroKeyButton.setMessage(Component.literal(getKeyName()));
         }
 
         if(macroTypeSelectId == 0) {
@@ -408,8 +408,8 @@ public class EditMacroScreen extends Screen {
     }
 
     @Override
-    public void close() {
-        client.setScreen(lastScreen);
+    public void onClose() {
+        minecraft.setScreen(lastScreen);
     }
 
     private String getKeyName() {
@@ -419,17 +419,17 @@ public class EditMacroScreen extends Screen {
         return macroData != null && MacroUtil.isCombinationAssigned(macroData) || macroData == null && MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect);
     }
 
-    private ButtonWidget createButton(Text text, int x, int y, int width, int height, ButtonWidget.PressAction pressSupplier) {
-        return ButtonWidget.builder(text, pressSupplier)
-                .dimensions(x,y,width,height)
+    private Button createButton(Component text, int x, int y, int width, int height, Button.OnPress pressSupplier) {
+        return Button.builder(text, pressSupplier)
+                .bounds(x,y,width,height)
                 .build();
     }
 
-    protected TooltipPositioner createPositioner(boolean hovered, boolean focused, ClickableWidget focus) {
-        if (!hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard()) {
-            return new FocusedTooltipPositioner(focus.getNavigationFocus());
+    protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
+        if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
+            return new DefaultTooltipPositioner();
         }
-        return new WidgetTooltipPositioner(focus.getNavigationFocus());
+        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
     }
 
     private boolean isKeyCodeModifier(int key) {
