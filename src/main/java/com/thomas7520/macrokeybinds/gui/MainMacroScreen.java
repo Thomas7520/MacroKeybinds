@@ -2,12 +2,10 @@ package com.thomas7520.macrokeybinds.gui;
 
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
-import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -48,13 +46,13 @@ public class MainMacroScreen extends Screen {
 
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
 
-        context.drawString(font, title, width / 2 - font.width(title) / 2, 8, 16777215, false);
+        context.text(font, title, width / 2 - font.width(title) / 2, 8, 16777215, false);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
-            context.renderTooltip(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
+            context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
         }
 
         if(serverMacrosButton.active && MacroUtil.getServerIP().isEmpty()) {
@@ -75,14 +73,14 @@ public class MainMacroScreen extends Screen {
     }
 
     private Button createUrlButton(Component text, int x, int y, int width, int height, String url) {
-        return Button.builder(text, ConfirmLinkScreen.confirmLinkNow(this, url))
+        return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(this, url))
                 .bounds(x,y,width,height)
                 .build();
     }
 
     protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
         if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
-            return new DefaultTooltipPositioner();
+            return DefaultTooltipPositioner.INSTANCE;
         }
 
         return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());

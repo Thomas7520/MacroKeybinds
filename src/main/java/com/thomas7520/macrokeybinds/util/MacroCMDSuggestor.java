@@ -21,11 +21,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -85,7 +86,7 @@ public class MacroCMDSuggestor {
         this.maxSuggestionSize = maxSuggestionSize;
         this.chatScreenSized = chatScreenSized;
         this.color = color;
-        textField.setFormatter(this::provideRenderText);
+        textField.addFormatter(this::provideRenderText);
     }
 
     public void setWindowActive(boolean windowActive) {
@@ -99,11 +100,11 @@ public class MacroCMDSuggestor {
         this.canLeave = canLeave;
     }
 
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         boolean bl = this.window != null;
         if (bl && this.window.keyPressed(input)) {
             return true;
-        } else if (this.owner.getFocused() != this.textField || !input.isTab() || this.canLeave && !bl) {
+        } else if (this.owner.getFocused() != this.textField || input.key() != GLFW.GLFW_KEY_TAB || this.canLeave && !bl) {
             return false;
         } else {
             this.show(true);
@@ -209,7 +210,7 @@ public class MacroCMDSuggestor {
         } else {
             String string2 = string.substring(0, i);
             j = getStartOfCurrentWord(string2);
-            Collection<String> collection = this.client.player.connection.getSuggestionsProvider().getCustomTabSugggestions();
+            Collection<String> collection = this.client.player.connection.getSuggestionsProvider().getCustomTabSuggestions();
             this.pendingSuggestions = SharedSuggestionProvider.suggest(collection, new SuggestionsBuilder(string2, j));
         }
 
@@ -353,13 +354,13 @@ public class MacroCMDSuggestor {
         return FormattedCharSequence.composite(list);
     }
 
-    public void render(GuiGraphics context, int mouseX, int mouseY) {
+    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         if (!this.tryRenderWindow(context, mouseX, mouseY)) {
             this.renderMessages(context);
         }
     }
 
-    public boolean tryRenderWindow(GuiGraphics context, int mouseX, int mouseY) {
+    public boolean tryRenderWindow(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         if (this.window != null) {
             this.window.render(context, mouseX, mouseY);
             return true;
@@ -367,12 +368,12 @@ public class MacroCMDSuggestor {
         return false;
     }
 
-    public void renderMessages(GuiGraphics context) {
+    public void renderMessages(GuiGraphicsExtractor context) {
         int i = 0;
         for (FormattedCharSequence orderedText : this.messages) {
             int j = textField.getY() - 20;
             context.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-            context.drawString(this.textRenderer, orderedText, this.x, j + 2, -1);
+            context.text(this.textRenderer, orderedText, this.x, j + 2, -1);
             ++i;
         }
     }
@@ -405,7 +406,7 @@ public class MacroCMDSuggestor {
             this.select(0);
         }
 
-        public void render(GuiGraphics context, int mouseX, int mouseY) {
+        public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
             Message message;
             boolean bl4;
             int i = Math.min(this.suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize);
@@ -444,10 +445,10 @@ public class MacroCMDSuggestor {
                     }
                     bl52 = true;
                 }
-                context.drawString(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
+                context.text(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
             }
             if (bl52 && (message = this.suggestions.get(this.selection).getTooltip()) != null) {
-                context.renderTooltip(MacroCMDSuggestor.this.textRenderer, ComponentUtils.fromMessage(message), mouseX, mouseY);
+                context.setTooltipForNextFrame(MacroCMDSuggestor.this.textRenderer, ComponentUtils.fromMessage(message), mouseX, mouseY);
             }
         }
 
@@ -474,7 +475,7 @@ public class MacroCMDSuggestor {
         }
 
 
-        public boolean keyPressed(KeyInput input) {
+        public boolean keyPressed(KeyEvent input) {
             if (input.isUp()) {
                 this.scroll(-1);
                 this.completed = false;
@@ -483,9 +484,9 @@ public class MacroCMDSuggestor {
                 this.scroll(1);
                 this.completed = false;
                 return true;
-            } else if (input.isTab()) {
+            } else if (input.key() == GLFW.GLFW_KEY_TAB) {
                 if (this.completed) {
-                    this.scroll(input.hasShift() ? -1 : 1);
+                    this.scroll(input.hasShiftDown() ? -1 : 1);
                 }
 
                 this.complete();
@@ -521,7 +522,7 @@ public class MacroCMDSuggestor {
             Suggestion suggestion = this.suggestions.get(this.selection);
             //MacroCMDSuggestor.this.textField.setSuggestion(MacroCMDSuggestor.getSuggestionSuffix(MacroCMDSuggestor.this.textField.getValue(), suggestion.apply(this.typedText)));
             if (this.lastNarrationIndex != this.selection) {
-                MacroCMDSuggestor.this.client.getNarrator().sayNow(this.getNarration());
+                MacroCMDSuggestor.this.client.getNarrator().saySystemNow(this.getNarration());
             }
         }
 

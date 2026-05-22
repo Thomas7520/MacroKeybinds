@@ -8,8 +8,7 @@ import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -18,7 +17,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
@@ -120,7 +120,11 @@ public class EditMacroScreen extends Screen {
 
 
         addRenderableWidget(timeBox = new EditBox(font, guiLeft + 55, guiTop / 2 + 40, 150, 20, Component.empty()));
-        timeBox.setFilter(MacroUtil::isNumeric);
+        timeBox.setResponder(value -> {
+            if (!value.isEmpty() && !MacroUtil.isNumeric(value)) {
+                timeBox.setValue(value.replaceAll("[^0-9]", ""));
+            }
+        });
 
 
         addRenderableWidget(macroKeyButton = createButton(Component.translatable("text.key"), guiLeft + 55, guiTop / 2 + 80, 150, 20, onPress -> {
@@ -190,18 +194,18 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
 
-        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 16, 16777215, false);
+        context.text(font, this.title, this.width / 2 - font.width(title) / 2, 16, 16777215, false);
 
 
         if(macroTypeSelectId != 0) {
             MutableComponent timeBoxText = Component.translatable("text.tooltip.timebox");
             MutableComponent timeBoxSubText = Component.translatable("text.tooltip.timeboxsub");
 
-            context.drawString(font, timeBoxText, guiLeft + 47 + 80 - font.width(timeBoxText) / 2, guiTop / 2 + 21, Color.WHITE.getRGB(), false);
-            context.drawString(font, timeBoxSubText, guiLeft + 90 + 40 - font.width(timeBoxSubText) / 2, guiTop / 2 + 31, Color.WHITE.getRGB(), false);
+            context.text(font, timeBoxText, guiLeft + 47 + 80 - font.width(timeBoxText) / 2, guiTop / 2 + 21, Color.WHITE.getRGB(), false);
+            context.text(font, timeBoxSubText, guiLeft + 90 + 40 - font.width(timeBoxSubText) / 2, guiTop / 2 + 31, Color.WHITE.getRGB(), false);
         }
 
 
@@ -209,7 +213,7 @@ public class EditMacroScreen extends Screen {
                 && (macroTypeSelectId == 0 || !timeBox.getValue().isEmpty()) && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHovered()) {
-            context.renderTooltip(font, font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), mouseX, mouseY);
+            context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), mouseX, mouseY);
         }
 
         MutableComponent actionBox = Component.translatable("text.tooltip.actionbox");
@@ -218,13 +222,13 @@ public class EditMacroScreen extends Screen {
         if(actionTypeSelectId == 1 && macroActionBox.isFocused() && !macroActionBox.getValue().isEmpty() && macroActionBox.getValue().startsWith("/")) {
             nameBox.visible = false;
             macroActionButton.visible = false;
-            context.drawString(font, actionBox, guiLeft - 45, guiTop / 2 + 85, Color.WHITE.getRGB(), false);
+            context.text(font, actionBox, guiLeft - 45, guiTop / 2 + 85, Color.WHITE.getRGB(), false);
 
             this.commandSuggestions.render(context, mouseX, mouseY);
         } else {
 
-            context.drawString(font, nameBoxTitle, guiLeft - 127 - font.width(nameBoxTitle) / 2, guiTop / 2 - 15, Color.WHITE.getRGB(), false);
-            context.drawString(font, actionBox, guiLeft - 127 - font.width(actionBox) / 2, guiTop / 2 + 65, Color.WHITE.getRGB(), false);
+            context.text(font, nameBoxTitle, guiLeft - 127 - font.width(nameBoxTitle) / 2, guiTop / 2 - 15, Color.WHITE.getRGB(), false);
+            context.text(font, actionBox, guiLeft - 127 - font.width(actionBox) / 2, guiTop / 2 + 65, Color.WHITE.getRGB(), false);
             this.nameBox.visible = true;
             macroActionButton.visible = true;
         }
@@ -234,7 +238,7 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         double mouseX = click.x();
         double mouseY = click.y();
         int button = click.button();
@@ -279,7 +283,7 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         if (this.commandSuggestions.keyPressed(input)) {
             return true;
         }
@@ -292,7 +296,7 @@ public class EditMacroScreen extends Screen {
                 }
                 listenMacroBind = false;
             } else {
-                InputConstants.Key key = InputConstants.getKey(input.key(), input.scancode());
+                InputConstants.Key key = InputConstants.getKey(input);
 
                 inputSelected = key;
 
@@ -330,7 +334,7 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean keyReleased(KeyInput input) {
+    public boolean keyReleased(KeyEvent input) {
         if(listenMacroBind) {
 
             if (macroData != null) {
@@ -427,7 +431,7 @@ public class EditMacroScreen extends Screen {
 
     protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
         if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
-            return new DefaultTooltipPositioner();
+            return DefaultTooltipPositioner.INSTANCE;
         }
         return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
     }
