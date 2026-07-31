@@ -140,7 +140,7 @@ public class EditMacroScreen extends Screen {
 
 
 
-        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), this.width / 2 - 155 + 160, this.height - 38, 150, 20, p_93751_ -> minecraft.setScreen(this.lastScreen)));
+        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), this.width / 2 - 155 + 160, this.height - 38, 150, 20, p_93751_ -> minecraft.setScreenAndShow(this.lastScreen)));
 
 
         addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), this.width / 2 - 155, this.height - 38, 150, 20, p_93751_ -> {
@@ -164,7 +164,7 @@ public class EditMacroScreen extends Screen {
                     String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
                     MacroFlow.writeMacro(macro, FabricLoader.getInstance().getGameDir().resolve(FabricLoader.getInstance().getConfigDir()) + directory);
 
-                    minecraft.setScreen(this.lastScreen);
+                    minecraft.setScreenAndShow(this.lastScreen);
                 }));
 
         timeBox.visible = false;
@@ -365,7 +365,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
-        Minecraft.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
+        Minecraft.getInstance().setScreenAndShow(new EditMacroScreen(lastScreen, macroData, serverMacro));
         super.resize(width, height);
     }
 
@@ -413,7 +413,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(lastScreen);
+        minecraft.setScreenAndShow(lastScreen);
     }
 
     private String getKeyName() {

@@ -67,7 +67,7 @@ public class MainMacroScreen extends Screen {
 
 
     private Button createButton(Component text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return Button.builder(text, button -> this.minecraft.setScreen(screenSupplier.get()))
+        return Button.builder(text, button -> this.minecraft.setScreenAndShow(screenSupplier.get()))
                 .bounds(x,y,width,height)
                 .build();
     }

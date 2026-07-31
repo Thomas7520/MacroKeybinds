@@ -120,7 +120,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
             this.macro = bind;
 
 
-            this.editButton = ButtonImageWidget.builder(Component.empty(), button -> MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
+            this.editButton = ButtonImageWidget.builder(Component.empty(), button -> MacroList.this.minecraft.setScreenAndShow(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
                     .dimensions(0,0,20,20)
                     .icon(EDIT_ICON)
                     .build();
@@ -136,7 +136,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                     .checked(macro.isEnable())
                     .build();
 
-            this.deleteButton = ButtonImageWidget.builder(Component.empty(), button -> minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = ButtonImageWidget.builder(Component.empty(), button -> minecraft.setScreenAndShow(new ConfirmScreen((p_170322_)-> {
 
                 if (p_170322_) {
                     if(isMacroServer) {
@@ -149,7 +149,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                     new File(FabricLoader.getInstance().getGameDir().resolve(FabricLoader.getInstance().getConfigDir()) + directory + "/" + macro.getUUID().toString() + ".json").delete();
                 }
 
-                minecraft.setScreen(parent);
+                minecraft.setScreenAndShow(parent);
             }, Component.translatable("text.macro.deleteQuestion"), Component.translatable("text.macro.deleteWarning"), Component.translatable("text.macro.deleteButton"), CommonComponents.GUI_CANCEL)))
                     .dimensions(20,0,20,20)
                     .icon(DELETE_ICON)

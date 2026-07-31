@@ -50,11 +50,11 @@ public class GlobalMacroScreen extends Screen {
 
         this.addRenderableWidget(this.macroList);
 
-        addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), button -> minecraft.setScreen(new EditMacroScreen(this, null, false)))
+        addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), button -> minecraft.setScreenAndShow(new EditMacroScreen(this, null, false)))
                 .bounds(this.width / 2 - 155, this.height - 25, 150, 20)
                 .build());
 
-        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> minecraft.setScreen(parent))
+        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> minecraft.setScreenAndShow(parent))
                 .bounds(this.width / 2 - 155 + 160, this.height - 25, 150, 20)
                 .build());
 

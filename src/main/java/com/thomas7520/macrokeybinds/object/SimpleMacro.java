@@ -124,7 +124,7 @@ public class SimpleMacro implements IMacro {
 
             case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ? getActionText().substring(1) : getActionText()));
             case MESSAGE -> client.player.connection.sendChat(getActionText());
-            case FILL_CHAT -> Minecraft.getInstance().setScreen(new ChatScreen(getActionText(), false));
+            case FILL_CHAT -> Minecraft.getInstance().setScreenAndShow(new ChatScreen(getActionText(), false));
         }
     }
 }

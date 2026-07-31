@@ -21,10 +21,10 @@ public class MacroEvent {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if(MacroUtil.guiBinding.isDown()) {
-                Minecraft.getInstance().setScreen(new MainMacroScreen());
+                Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
             }
 
-            if(Minecraft.getInstance().level == null || Minecraft.getInstance().screen != null) return;
+            if(Minecraft.getInstance().level == null || Minecraft.getInstance().gui.screen() != null) return;
 
             Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
             macros.addAll(MacroUtil.getServerKeybinds().values());
