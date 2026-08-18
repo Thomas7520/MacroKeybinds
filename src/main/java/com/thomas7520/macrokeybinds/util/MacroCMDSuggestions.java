@@ -22,6 +22,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
@@ -67,7 +68,7 @@ public class MacroCMDSuggestions {
     private int commandUsagePosition;
     private int commandUsageWidth;
     @Nullable
-    private ParseResults<SharedSuggestionProvider> currentParse;
+    private ParseResults<ClientSuggestionProvider> currentParse;
     @Nullable
     private CompletableFuture<Suggestions> pendingSuggestions;
     @Nullable
@@ -86,7 +87,7 @@ public class MacroCMDSuggestions {
         this.suggestionLineLimit = p_93878_;
         this.anchorToBottom = p_93879_;
         this.fillColor = p_93880_;
-        p_93873_.setFormatter(this::formatChat);
+        p_93873_.addFormatter(this::formatChat);
     }
 
     public void setAllowSuggestions(boolean p_93923_) {
@@ -174,7 +175,7 @@ public class MacroCMDSuggestions {
         boolean flag1 = this.commandsOnly || flag;
         int i = this.input.getCursorPosition();
         if (flag1) {
-            CommandDispatcher<SharedSuggestionProvider> commanddispatcher = this.minecraft.player.connection.getCommands();
+            CommandDispatcher<ClientSuggestionProvider> commanddispatcher = this.minecraft.player.connection.getCommands();
             if (this.currentParse == null) {
                 this.currentParse = commanddispatcher.parse(stringreader, this.minecraft.player.connection.getSuggestionsProvider());
             }
@@ -221,7 +222,7 @@ public class MacroCMDSuggestions {
             if (this.pendingSuggestions.join().isEmpty() && !this.currentParse.getExceptions().isEmpty()) {
                 int i = 0;
 
-                for(Map.Entry<CommandNode<SharedSuggestionProvider>, CommandSyntaxException> entry : this.currentParse.getExceptions().entrySet()) {
+                for(Map.Entry<CommandNode<ClientSuggestionProvider>, CommandSyntaxException> entry : this.currentParse.getExceptions().entrySet()) {
                     CommandSyntaxException commandsyntaxexception = entry.getValue();
                     if (commandsyntaxexception.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()) {
                         ++i;
@@ -252,14 +253,14 @@ public class MacroCMDSuggestions {
     }
 
     private void fillNodeUsage(ChatFormatting p_93921_) {
-        CommandContextBuilder<SharedSuggestionProvider> commandcontextbuilder = this.currentParse.getContext();
-        SuggestionContext<SharedSuggestionProvider> suggestioncontext = commandcontextbuilder.findSuggestionContext(this.input.getCursorPosition());
-        Map<CommandNode<SharedSuggestionProvider>, String> map = this.minecraft.player.connection.getCommands().getSmartUsage(suggestioncontext.parent, this.minecraft.player.connection.getSuggestionsProvider());
+        CommandContextBuilder<ClientSuggestionProvider> commandcontextbuilder = this.currentParse.getContext();
+        SuggestionContext<ClientSuggestionProvider> suggestioncontext = commandcontextbuilder.findSuggestionContext(this.input.getCursorPosition());
+        Map<CommandNode<ClientSuggestionProvider>, String> map = this.minecraft.player.connection.getCommands().getSmartUsage(suggestioncontext.parent, this.minecraft.player.connection.getSuggestionsProvider());
         List<FormattedCharSequence> list = Lists.newArrayList();
         int i = 0;
         Style style = Style.EMPTY.withColor(p_93921_);
 
-        for(Map.Entry<CommandNode<SharedSuggestionProvider>, String> entry : map.entrySet()) {
+        for(Map.Entry<CommandNode<ClientSuggestionProvider>, String> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof LiteralCommandNode)) {
                 list.add(FormattedCharSequence.forward(entry.getValue(), style));
                 i = Math.max(i, this.font.width(entry.getValue()));
@@ -283,13 +284,13 @@ public class MacroCMDSuggestions {
         return p_93929_.startsWith(p_93928_) ? p_93929_.substring(p_93928_.length()) : null;
     }
 
-    private static FormattedCharSequence formatText(ParseResults<SharedSuggestionProvider> p_93893_, String p_93894_, int p_93895_) {
+    private static FormattedCharSequence formatText(ParseResults<ClientSuggestionProvider> p_93893_, String p_93894_, int p_93895_) {
         List<FormattedCharSequence> list = Lists.newArrayList();
         int i = 0;
         int j = -1;
-        CommandContextBuilder<SharedSuggestionProvider> commandcontextbuilder = p_93893_.getContext().getLastChild();
+        CommandContextBuilder<ClientSuggestionProvider> commandcontextbuilder = p_93893_.getContext().getLastChild();
 
-        for(ParsedArgument<SharedSuggestionProvider, ?> parsedargument : commandcontextbuilder.getArguments().values()) {
+        for(ParsedArgument<ClientSuggestionProvider, ?> parsedargument : commandcontextbuilder.getArguments().values()) {
             ++j;
             if (j >= ARGUMENT_STYLES.size()) {
                 j = 0;
@@ -410,7 +411,7 @@ public class MacroCMDSuggestions {
             if (flag4) {
                 Message message = this.suggestionList.get(this.current).getTooltip();
                 if (message != null) {
-                    p_93980_.renderTooltip(font, ComponentUtils.fromMessage(message), p_93981_, p_93982_);
+                    p_93980_.setTooltipForNextFrame(font, ComponentUtils.fromMessage(message), p_93981_, p_93982_);
                 }
             }
 
@@ -452,7 +453,7 @@ public class MacroCMDSuggestions {
                 return true;
             } else if (p_93989_ == 258) {
                 if (this.tabCycles) {
-                    this.cycle(Screen.hasShiftDown() ? -1 : 1);
+                    this.cycle(Minecraft.getInstance().hasShiftDown() ? -1 : 1);
                 }
 
                 this.useSuggestion();
@@ -490,7 +491,7 @@ public class MacroCMDSuggestions {
             Suggestion suggestion = this.suggestionList.get(this.current);
             MacroCMDSuggestions.this.input.setSuggestion(MacroCMDSuggestions.calculateSuggestionSuffix(MacroCMDSuggestions.this.input.getValue(), suggestion.apply(this.originalContents)));
             if (this.lastNarratedEntry != this.current) {
-                minecraft.getNarrator().sayNow(this.getNarrationMessage());
+                minecraft.getNarrator().saySystemNow(this.getNarrationMessage());
             }
 
         }

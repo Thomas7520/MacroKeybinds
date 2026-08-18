@@ -6,7 +6,7 @@
   "text.tooltip.main.noserver": "Vous n'êtes pas sur un serveur",
 
   "key.macrokeybinds.openoptions.desc": "Ouvrir Gui Option" ,
-  "key.categories.macrokeybinds": "MacroKeybinds",
+  "key.category.macrokeybinds.macrokeybinds": "MacroKeybinds",
 
   "text.globalmacros.title": "Global Macros",
   "text.createglobalmacros.title": "Créer Nouvelle Macro Global",

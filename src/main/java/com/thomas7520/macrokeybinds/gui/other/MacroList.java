@@ -12,7 +12,9 @@ import com.thomas7520.macrokeybinds.util.CheckboxEdit;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -21,7 +23,7 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLConfig;
@@ -59,8 +61,8 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         macros.forEach((IMacro p_97451_) -> addEntry(new KeyEntry(p_97451_, macroScreen, isServer)));
     }
 
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 15 + 20;
+    protected int scrollBarX() {
+        return super.scrollBarX() + 15 + 20;
     }
 
     public int getRowWidth() {
@@ -116,7 +118,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
             this.macro = p_97451_;
 
-            this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
+            this.editButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20, Identifier.fromNamespaceAndPath(MacroMod.MODID, "textures/edit_button.png"), (p_97479_) ->
                     MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.macroScreen, macro, lastScreen instanceof ServerMacroScreen)));
 
             this.stateButton = CheckboxEdit.builder(Component.empty(), minecraft.font)
@@ -131,7 +133,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                     .pos(0,0)
                     .build();
 
-            this.deleteButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20,new ResourceLocation(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = new OldImageButton(0, 0, 20, 20, 0, 0, 20, Identifier.fromNamespaceAndPath(MacroMod.MODID, "textures/delete_button.png"), (p_97479_) -> MacroList.this.minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
                 if (p_170322_) {
                     if(isMacroServer) {
@@ -149,9 +151,12 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int p_281298_, int y, int x, int p_283433_, int p_281932_, int mouseX, int mouseY, boolean p_282605_, float p_281432_) {
+        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float p_281432_) {
+            int x = this.getX();
+            int y = this.getY();
+            int height = this.getHeight();
             float f = (float) (x - MacroList.this.maxNameWidth);
-            guiGraphics.drawString(minecraft.font, this.macro.getName(), f, (float) y + (float) p_281932_ / 2 - (float) 9 / 2, 16777215, false);
+            guiGraphics.drawString(minecraft.font, this.macro.getName(), (int) f, (int) ((float) y + (float) height / 2 - (float) 9 / 2), 16777215, false);
             this.deleteButton.setX(x + 190 + 20);
             this.deleteButton.setY(y);
             this.editButton.setX(x + 190);
@@ -166,15 +171,15 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
                 guiGraphics.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
                 guiGraphics.fill(stateButton.getX(), stateButton.getY() + 20, stateButton.getX() + 1, stateButton.getY(), Color.WHITE.getRGB());
                 guiGraphics.fill(stateButton.getX() + 19, stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
-                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.state"), 150), mouseX, mouseY);
             }
 
             if(editButton.isHoveredOrFocused()) {
-                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.edit"), 150), mouseX, mouseY);
             }
 
             if(deleteButton.isHoveredOrFocused()) {
-                guiGraphics.renderTooltip(minecraft.font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
+                guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.delete"), 150), mouseX, mouseY);
             }
 
             boolean running = false;
@@ -193,7 +198,7 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
 
             if(running) {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
-                    guiGraphics.renderTooltip(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
+                    guiGraphics.setTooltipForNextFrame(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
                 }
                 guiGraphics.drawString(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB());
             }
@@ -208,18 +213,18 @@ public class MacroList extends ContainerObjectSelectionList<MacroList.Entry> {
             return ImmutableList.of(this.stateButton, this.deleteButton, this.editButton);
         }
 
-        public boolean mouseClicked(double p_97459_, double p_97460_, int p_97461_) {
-            if (this.stateButton.mouseClicked(p_97459_, p_97460_, p_97461_)) {
+        public boolean mouseClicked(MouseButtonEvent p_97459_, boolean p_97460_) {
+            if (this.stateButton.mouseClicked(p_97459_, p_97460_)) {
                 return true;
-            } else if(this.deleteButton.mouseClicked(p_97459_, p_97460_, p_97461_)){
+            } else if(this.deleteButton.mouseClicked(p_97459_, p_97460_)){
                 return true;
             } else {
-                return this.editButton.mouseClicked(p_97459_, p_97460_, p_97461_);
+                return this.editButton.mouseClicked(p_97459_, p_97460_);
             }
         }
 
-        public boolean mouseReleased(double p_97481_, double p_97482_, int p_97483_) {
-            return this.stateButton.mouseReleased(p_97481_, p_97482_, p_97483_) || this.deleteButton.mouseReleased(p_97481_, p_97482_, p_97483_) || this.editButton.mouseReleased(p_97481_,p_97482_,p_97483_);
+        public boolean mouseReleased(MouseButtonEvent p_97481_) {
+            return this.stateButton.mouseReleased(p_97481_) || this.deleteButton.mouseReleased(p_97481_) || this.editButton.mouseReleased(p_97481_);
         }
     }
 }

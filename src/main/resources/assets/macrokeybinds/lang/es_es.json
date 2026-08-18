@@ -6,7 +6,7 @@
   "text.tooltip.main.noserver": "§4❗ §cNo te encuentras en un servidor.",
 
   "key.macrokeybinds.openoptions.desc": "Abrir la Configuración",
-  "key.categories.macrokeybinds": "§3§lMacroKeybinds",
+  "key.category.macrokeybinds.macrokeybinds": "§3§lMacroKeybinds",
 
   "text.globalmacros.title": "§3§nMacros Globales",
   "text.createglobalmacros.title": "§3§nCreación de Macros Globales",

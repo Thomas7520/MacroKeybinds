@@ -1,9 +1,9 @@
 package com.thomas7520.macrokeybinds.util;
 
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -11,7 +11,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -20,10 +20,10 @@ import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
 public class CheckboxEdit extends AbstractButton {
-    private static final ResourceLocation CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_selected_highlighted");
-    private static final ResourceLocation CHECKBOX_SELECTED_SPRITE = new ResourceLocation("widget/checkbox_selected");
-    private static final ResourceLocation CHECKBOX_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/checkbox_highlighted");
-    private static final ResourceLocation CHECKBOX_SPRITE = new ResourceLocation("widget/checkbox");
+    private static final Identifier CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("widget/checkbox_selected_highlighted");
+    private static final Identifier CHECKBOX_SELECTED_SPRITE = Identifier.withDefaultNamespace("widget/checkbox_selected");
+    private static final Identifier CHECKBOX_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("widget/checkbox_highlighted");
+    private static final Identifier CHECKBOX_SPRITE = Identifier.withDefaultNamespace("widget/checkbox");
     private static final int TEXT_COLOR = 14737632;
     private static final int SPACING = 4;
     private static final int BOX_PADDING = 8;
@@ -44,7 +44,7 @@ public class CheckboxEdit extends AbstractButton {
         return 9 + 8;
     }
 
-    public void onPress() {
+    public void onPress(net.minecraft.client.input.InputWithModifiers p_input_) {
         this.selected = !this.selected;
         this.onValueChange.onValueChange(this, this.selected);
     }
@@ -65,13 +65,10 @@ public class CheckboxEdit extends AbstractButton {
 
     }
 
-    public void renderWidget(GuiGraphics p_283124_, int p_282925_, int p_282705_, float p_282612_) {
+    public void renderContents(GuiGraphics p_283124_, int p_282925_, int p_282705_, float p_282612_) {
         Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.enableDepthTest();
         Font font = minecraft.font;
-        p_283124_.setColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.enableBlend();
-        ResourceLocation resourcelocation;
+        Identifier resourcelocation;
         if (this.selected) {
             resourcelocation = this.isFocused() ? CHECKBOX_SELECTED_HIGHLIGHTED_SPRITE : CHECKBOX_SELECTED_SPRITE;
         } else {
@@ -81,8 +78,7 @@ public class CheckboxEdit extends AbstractButton {
         int i = boxSize(font);
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (9 >> 1);
-        p_283124_.blitSprite(resourcelocation, this.getX(), this.getY(), i+3, i+3);
-        p_283124_.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        p_283124_.blitSprite(RenderPipelines.GUI_TEXTURED, resourcelocation, this.getX(), this.getY(), i+3, i+3);
         p_283124_.drawString(font, this.getMessage(), j, k, 14737632 | Mth.ceil(this.alpha * 255.0F) << 24);
     }
 

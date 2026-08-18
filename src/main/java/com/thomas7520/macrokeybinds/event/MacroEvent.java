@@ -7,16 +7,16 @@ import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT, modid = MacroMod.MODID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = MacroMod.MODID)
 public class MacroEvent {
 
 
@@ -57,7 +57,7 @@ public class MacroEvent {
     }
 
     @SubscribeEvent
-    public static void onTick(TickEvent.ClientTickEvent event) {
+    public static void onTick(ClientTickEvent.Post event) {
         if(Minecraft.getInstance().level == null) return;
 
         Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());

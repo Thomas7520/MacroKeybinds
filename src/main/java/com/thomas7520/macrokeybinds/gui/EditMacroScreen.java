@@ -13,11 +13,11 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.neoforged.fml.loading.FMLConfig;
 import net.neoforged.fml.loading.FMLPaths;
-import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.UUID;
@@ -192,7 +192,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void render(GuiGraphics p_281549_, int p_281550_, int p_282878_, float p_282465_) {
-        renderDirtBackground(p_281549_);
+        renderMenuBackground(p_281549_);
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 16, 16777215);
 
 
@@ -208,7 +208,7 @@ public class EditMacroScreen extends Screen {
                 && (macroTypeSelectId == 0 || !timeBox.getValue().isEmpty()) && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHoveredOrFocused()) {
-            p_281549_.renderTooltip(font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), p_281550_, p_282878_);
+            p_281549_.setTooltipForNextFrame(Minecraft.getInstance().font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), p_281550_, p_282878_);
         }
 
         if(actionTypeSelectId == 1 && macroActionBox.isFocused() && !macroActionBox.getValue().isEmpty() && macroActionBox.getValue().startsWith("/")) {
@@ -217,10 +217,6 @@ public class EditMacroScreen extends Screen {
             p_281549_.drawString(font, Component.translatable("text.tooltip.actionbox"), guiLeft - 45, guiTop / 2 + 85, Color.WHITE.getRGB());
 
             this.commandSuggestions.render(p_281549_, p_281550_, p_282878_, p_282465_);
-            Style style = this.minecraft.gui.getChat().getClickedComponentStyleAt(p_281550_, p_282878_);
-            if (style != null && style.getHoverEvent() != null) {
-                p_281549_.renderComponentHoverEffect(font, style, p_281550_, p_282878_);
-            }
         } else {
             p_281549_.drawString(font, Component.translatable("text.tooltip.namebox"), guiLeft - 140, guiTop / 2 - 15, Color.WHITE.getRGB());
             p_281549_.drawString(font, Component.translatable("text.tooltip.actionbox"), guiLeft - 142, guiTop / 2 + 65, Color.WHITE.getRGB());
@@ -242,7 +238,11 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean mouseClicked(double p_97522_, double p_97523_, int p_97524_) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        double p_97522_ = click.x();
+        double p_97523_ = click.y();
+        int p_97524_ = click.button();
+
         if (this.commandSuggestions.mouseClicked((int)p_97522_, (int)p_97523_, p_97524_)) {
             return true;
         }
@@ -274,21 +274,21 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.mouseClicked(p_97522_, p_97523_, p_97524_);
+            return super.mouseClicked(click, doubled);
         }
 
     }
 
     @Override
-    public boolean keyPressed(int p_97526_, int p_97527_, int p_97528_) {
-        if (this.commandSuggestions.keyPressed(p_97526_, p_97527_, p_97528_)) {
+    public boolean keyPressed(KeyEvent input) {
+        if (this.commandSuggestions.keyPressed(input.key(), input.scancode(), input.modifiers())) {
             return true;
         }
         if (this.listenMacroBind) {
-            if (p_97526_ == GLFW.GLFW_KEY_ESCAPE) {
+            if (input.isEscape()) {
                 return false;
             } else {
-                InputConstants.Key key = InputConstants.getKey(p_97526_, p_97527_);
+                InputConstants.Key key = InputConstants.getKey(input);
 
                 inputSelected = key;
 
@@ -296,10 +296,15 @@ public class EditMacroScreen extends Screen {
                 keyName = key.getDisplayName().getString();
 
 
-                switch (net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifier()) {
+                net.neoforged.neoforge.client.settings.KeyModifier activeModifier = net.neoforged.neoforge.client.settings.KeyModifier.getActiveModifiers().stream()
+                        .filter(modifier -> modifier != net.neoforged.neoforge.client.settings.KeyModifier.NONE)
+                        .findFirst()
+                        .orElse(net.neoforged.neoforge.client.settings.KeyModifier.NONE);
+
+                switch (activeModifier) {
                     case SHIFT -> macroModifierSelect = MacroModifier.SHIFT;
                     case ALT -> macroModifierSelect = MacroModifier.ALT;
-                    case CONTROL -> macroModifierSelect = MacroModifier.CONTROL;
+                    case CONTROL, CONTROL_OR_COMMAND -> macroModifierSelect = MacroModifier.CONTROL;
                     case NONE -> macroModifierSelect = MacroModifier.NONE;
                 }
 
@@ -323,12 +328,12 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.keyPressed(p_97526_, p_97527_, p_97528_);
+            return super.keyPressed(input);
         }
     }
 
     @Override
-    public boolean keyReleased(int p_94715_, int p_94716_, int p_94717_) {
+    public boolean keyReleased(KeyEvent input) {
         if(listenMacroBind) {
             if (macroData != null) {
                 macroData.setKey(keySelect);
@@ -344,7 +349,7 @@ public class EditMacroScreen extends Screen {
 
             listenMacroBind = false;
         }
-        return super.keyReleased(p_94715_, p_94716_, p_94717_);
+        return super.keyReleased(input);
     }
 
     @Override
@@ -356,9 +361,9 @@ public class EditMacroScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft p_96575_, int p_96576_, int p_96577_) {
+    public void resize(int p_96576_, int p_96577_) {
         Minecraft.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
-        super.resize(p_96575_, p_96576_, p_96577_);
+        super.resize(p_96576_, p_96577_);
     }
 
     public void initDataMacro() {

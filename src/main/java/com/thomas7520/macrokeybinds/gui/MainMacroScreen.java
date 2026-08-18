@@ -3,7 +3,7 @@ package com.thomas7520.macrokeybinds.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -65,7 +65,7 @@ public class MainMacroScreen extends Screen {
         p_281549_.drawCenteredString(this.font, this.title, this.width / 2, 8, 16777215);
 
         if(serverMacrosButton.isHoveredOrFocused() && MacroUtil.getServerIP().isEmpty()) {
-            p_281549_.renderTooltip(font, Minecraft.getInstance().font.split(Component.translatable("text.tooltip.main.noserver").withStyle(ChatFormatting.RED), 150), p_281550_, p_282878_);
+            p_281549_.setTooltipForNextFrame(Minecraft.getInstance().font.split(Component.translatable("text.tooltip.main.noserver").withStyle(ChatFormatting.RED), 150), p_281550_, p_282878_);
         }
 
         if(serverMacrosButton.active && MacroUtil.getServerIP().isEmpty()) {
