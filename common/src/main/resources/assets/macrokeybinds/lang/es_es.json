@@ -25,6 +25,13 @@
   "text.type.delayed": "Retrasada",
   "text.key": "Tecla",
 
+  "text.editmacro.field.name": "Nombre de la macro",
+  "text.editmacro.field.actiontype": "Tipo de acción",
+  "text.editmacro.field.action": "Acción",
+  "text.editmacro.field.macrotype": "Tipo de macro",
+  "text.editmacro.field.timing": "Espera / retraso (ms)",
+  "text.editmacro.field.keybind": "Atajo de teclado",
+
   "text.action.message": "Enviar Mensaje",
   "text.action.command": "Ejecutar Comando",
   "text.action.fillchat": "Escribir en el Chat",

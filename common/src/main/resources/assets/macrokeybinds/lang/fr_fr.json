@@ -25,6 +25,13 @@
   "text.type.delayed": "Delayed",
   "text.key": "Key",
 
+  "text.editmacro.field.name": "Nom de la macro",
+  "text.editmacro.field.actiontype": "Type d'action",
+  "text.editmacro.field.action": "Action",
+  "text.editmacro.field.macrotype": "Type de macro",
+  "text.editmacro.field.timing": "Cooldown / délai (ms)",
+  "text.editmacro.field.keybind": "Raccourci clavier",
+
   "text.action.message": "Envoyer message",
   "text.action.command": "Executer Commande",
   "text.action.fillchat": "Remplir Chat Sans Envoyer",

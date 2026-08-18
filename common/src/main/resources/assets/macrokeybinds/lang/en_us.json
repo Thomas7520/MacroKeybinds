@@ -25,6 +25,13 @@
   "text.type.delayed": "Delayed",
   "text.key": "Key",
 
+  "text.editmacro.field.name": "Macro name",
+  "text.editmacro.field.actiontype": "Action type",
+  "text.editmacro.field.action": "Action",
+  "text.editmacro.field.macrotype": "Macro type",
+  "text.editmacro.field.timing": "Cooldown / delay (ms)",
+  "text.editmacro.field.keybind": "Key binding",
+
   "text.action.message": "Send Message",
   "text.action.command": "Execute Command",
   "text.action.fillchat": "Fill Chat Without Send",

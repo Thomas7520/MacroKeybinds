@@ -56,9 +56,8 @@ public class MacroCMDSuggestor {
     final Font textRenderer;
     private final boolean slashOptional;
     private final boolean suggestingWhenEmpty;
-    final int inWindowIndexOffset;
     final int maxSuggestionSize;
-    final boolean chatScreenSized;
+    final boolean suggestionsAbove;
     final int color;
     private final List<FormattedCharSequence> messages = Lists.newArrayList();
     private int x;
@@ -73,16 +72,15 @@ public class MacroCMDSuggestor {
     boolean completingSuggestions;
     private boolean canLeave = true;
 
-    public MacroCMDSuggestor(Minecraft client, Screen owner, EditBox textField, Font textRenderer, boolean slashOptional, boolean suggestingWhenEmpty, int inWindowIndexOffset, int maxSuggestionSize, boolean chatScreenSized, int color) {
+    public MacroCMDSuggestor(Minecraft client, Screen owner, EditBox textField, Font textRenderer, boolean slashOptional, boolean suggestingWhenEmpty, int maxSuggestionSize, boolean suggestionsAbove, int color) {
         this.client = client;
         this.owner = owner;
         this.textField = textField;
         this.textRenderer = textRenderer;
         this.slashOptional = slashOptional;
         this.suggestingWhenEmpty = suggestingWhenEmpty;
-        this.inWindowIndexOffset = inWindowIndexOffset;
         this.maxSuggestionSize = maxSuggestionSize;
-        this.chatScreenSized = chatScreenSized;
+        this.suggestionsAbove = suggestionsAbove;
         this.color = color;
         textField.addFormatter(this::provideRenderText);
     }
@@ -126,7 +124,6 @@ public class MacroCMDSuggestor {
                 i = Math.max(i, this.textRenderer.width(suggestion.getText()));
             }
             int j = Mth.clamp(this.textField.getScreenX(suggestions.getRange().getStart()), 0, this.textField.getScreenX(0) + this.textField.getInnerWidth() - i);
-            int k = this.chatScreenSized ? this.owner.height - 12 : 72;
             this.window = new MacroCMDSuggestor.SuggestionWindow(j, textField.getY(), i, this.sortSuggestions(suggestions), narrateFirstSuggestion);
         }
     }
@@ -369,7 +366,9 @@ public class MacroCMDSuggestor {
     public void renderMessages(GuiGraphicsExtractor context) {
         int i = 0;
         for (FormattedCharSequence orderedText : this.messages) {
-            int j = textField.getY() - 20;
+            int j = this.suggestionsAbove
+                    ? textField.getY() - 20 - i * 12
+                    : textField.getY() + textField.getHeight() + 2 + i * 12;
             context.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
             context.text(this.textRenderer, orderedText, this.x, j + 2, -1);
             ++i;
@@ -387,6 +386,7 @@ public class MacroCMDSuggestor {
         private final Rect2i area;
         private final String typedText;
         private final List<Suggestion> suggestions;
+        private final int visibleSuggestionCount;
         private int inWindowIndex;
         private int selection;
         private Vec2 mouse = Vec2.ZERO;
@@ -395,8 +395,16 @@ public class MacroCMDSuggestor {
 
         SuggestionWindow(int x, int y, int width, List<Suggestion> suggestions, boolean narrateFirstSuggestion) {
             int i = x - 1;
-            int j = MacroCMDSuggestor.this.chatScreenSized ? y - 3 - Math.min(suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize) * 12 : y;
-            this.area = new Rect2i(i, j, width + 1, Math.min(suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize) * 12);
+            int maximumVisible = MacroCMDSuggestor.this.maxSuggestionSize;
+            if (!MacroCMDSuggestor.this.suggestionsAbove) {
+                int availableHeight = MacroCMDSuggestor.this.owner.height - y - MacroCMDSuggestor.this.textField.getHeight() - 4;
+                maximumVisible = Math.min(maximumVisible, Math.max(1, availableHeight / 12));
+            }
+            this.visibleSuggestionCount = Math.min(suggestions.size(), maximumVisible);
+            int j = MacroCMDSuggestor.this.suggestionsAbove
+                    ? y - 3 - this.visibleSuggestionCount * 12
+                    : y + MacroCMDSuggestor.this.textField.getHeight() + 2;
+            this.area = new Rect2i(i, j, width + 1, this.visibleSuggestionCount * 12);
             this.typedText = MacroCMDSuggestor.this.textField.getValue();
             this.lastNarrationIndex = narrateFirstSuggestion ? -1 : 0;
             this.suggestions = suggestions;
@@ -406,7 +414,7 @@ public class MacroCMDSuggestor {
         public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
             Message message;
             boolean bl4;
-            int i = Math.min(this.suggestions.size(), MacroCMDSuggestor.this.maxSuggestionSize);
+            int i = this.visibleSuggestionCount;
             int j = -5592406;
             boolean bl = this.inWindowIndex > 0;
             boolean bl2 = this.suggestions.size() > this.inWindowIndex + i;
@@ -465,7 +473,7 @@ public class MacroCMDSuggestor {
             int j;
             int i = (int)(MacroCMDSuggestor.this.client.mouseHandler.xpos() * (double)MacroCMDSuggestor.this.client.getWindow().getGuiScaledWidth() / (double)MacroCMDSuggestor.this.client.getWindow().getWidth());
             if (this.area.contains(i, j = (int)(MacroCMDSuggestor.this.client.mouseHandler.ypos() * (double)MacroCMDSuggestor.this.client.getWindow().getGuiScaledHeight() / (double)MacroCMDSuggestor.this.client.getWindow().getHeight()))) {
-                this.inWindowIndex = Mth.clamp((int)((double)this.inWindowIndex - amount), 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+                this.inWindowIndex = Mth.clamp((int)((double)this.inWindowIndex - amount), 0, Math.max(this.suggestions.size() - this.visibleSuggestionCount, 0));
                 return true;
             }
             return false;
@@ -500,11 +508,11 @@ public class MacroCMDSuggestor {
         public void scroll(int offset) {
             this.select(this.selection + offset);
             int i = this.inWindowIndex;
-            int j = this.inWindowIndex + MacroCMDSuggestor.this.maxSuggestionSize - 1;
+            int j = this.inWindowIndex + this.visibleSuggestionCount - 1;
             if (this.selection < i) {
-                this.inWindowIndex = Mth.clamp(this.selection, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+                this.inWindowIndex = Mth.clamp(this.selection, 0, Math.max(this.suggestions.size() - this.visibleSuggestionCount, 0));
             } else if (this.selection > j) {
-                this.inWindowIndex = Mth.clamp(this.selection + MacroCMDSuggestor.this.inWindowIndexOffset - MacroCMDSuggestor.this.maxSuggestionSize, 0, Math.max(this.suggestions.size() - MacroCMDSuggestor.this.maxSuggestionSize, 0));
+                this.inWindowIndex = Mth.clamp(this.selection - this.visibleSuggestionCount + 1, 0, Math.max(this.suggestions.size() - this.visibleSuggestionCount, 0));
             }
         }
 

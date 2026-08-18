@@ -25,6 +25,13 @@
   "text.type.delayed": "Ожидание",
   "text.key": "Клавиша",
 
+  "text.editmacro.field.name": "Название макроса",
+  "text.editmacro.field.actiontype": "Тип действия",
+  "text.editmacro.field.action": "Действие",
+  "text.editmacro.field.macrotype": "Тип макроса",
+  "text.editmacro.field.timing": "Задержка (мс)",
+  "text.editmacro.field.keybind": "Сочетание клавиш",
+
   "text.action.message": "Отправить текст",
   "text.action.command": "Отправить команду",
   "text.action.fillchat": "Написать в чат без отправления",
