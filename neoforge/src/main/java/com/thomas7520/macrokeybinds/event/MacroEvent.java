@@ -68,14 +68,19 @@ public class MacroEvent {
             if(bind instanceof SimpleMacro && ((SimpleMacro) bind).isStart()) {
                 bind.doAction();
             }
-            if(bind instanceof RepeatMacro && ((RepeatMacro) bind).isRepeat()) {
+            if(bind instanceof RepeatMacro repeatMacro && repeatMacro.isRepeat()) {
+                if(!bind.isEnable()) {
+                    repeatMacro.setRepeat(false);
+                    continue;
+                }
+
                 bind.doAction();
             }
 
-            if(bind instanceof ToggleMacro && ((ToggleMacro) bind).isToggled()) {
+            if(bind instanceof ToggleMacro toggleMacro && toggleMacro.isToggled()) {
                 if(!bind.isEnable()) {
-                    ((ToggleMacro) bind).setToggled(false);
-                    return;
+                    toggleMacro.setToggled(false);
+                    continue;
                 }
 
                 bind.doAction();
@@ -151,15 +156,15 @@ public class MacroEvent {
 
             if(bind instanceof RepeatMacro) {
                 if(isPress && modifierPressed) {
-                    ((RepeatMacro) bind).setRepeat(!((RepeatMacro) bind).isRepeat());
+                    ((RepeatMacro) bind).setRepeat(true);
+                } else if(isRelease || !modifierPressed) {
+                    ((RepeatMacro) bind).setRepeat(false);
                 }
             }
 
             if(bind instanceof ToggleMacro) {
                 if(isPress && modifierPressed) {
-                    ((ToggleMacro) bind).setToggled(true);
-                } else if(isRelease || !modifierPressed) {
-                    ((ToggleMacro) bind).setToggled(false);
+                    ((ToggleMacro) bind).setToggled(!((ToggleMacro) bind).isToggled());
                 }
             }
 

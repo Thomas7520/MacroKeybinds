@@ -7,56 +7,73 @@ import com.thomas7520.macrokeybinds.object.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class MacroFlow {
 
+    private static final String CURRENT_VERSION = "1.4.0";
 
     public static IMacro getMacroFromFile(File file) throws IOException {
 
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject object;
 
-        FileInputStream fileInputStream = new FileInputStream(file);
+        try (Reader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            object = gson.fromJson(reader, JsonObject.class);
+        }
 
-        Reader reader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-
-
-        JsonObject object = new GsonBuilder().create().fromJson(new BufferedReader(new FileReader(file)), JsonObject.class);
+        boolean migrated = migrateLegacyMacroTo1_4_0(object);
 
         IMacro macro;
         switch (MacroType.valueOf(object.get("macroType").getAsString())) {
 
-            case SIMPLE -> macro = gson.fromJson(reader, SimpleMacro.class);
-            case TOGGLE -> macro = gson.fromJson(reader, ToggleMacro.class);
-            case REPEAT -> macro = gson.fromJson(reader, RepeatMacro.class);
-            case DELAYED -> macro = gson.fromJson(reader, DelayedMacro.class);
+            case SIMPLE -> macro = gson.fromJson(object, SimpleMacro.class);
+            case TOGGLE -> macro = gson.fromJson(object, ToggleMacro.class);
+            case REPEAT -> macro = gson.fromJson(object, RepeatMacro.class);
+            case DELAYED -> macro = gson.fromJson(object, DelayedMacro.class);
 
 
-            default -> throw new IllegalStateException("Unexpected value: " + MacroType.valueOf(object.get("type").getAsString()));
+            default -> throw new IllegalStateException("Unexpected value: " + MacroType.valueOf(object.get("macroType").getAsString()));
         }
 
+        if(migrated) {
+            writeMacroFile(macro, file.toPath());
+        }
 
-        reader.close();
         return macro;
+    }
+
+    private static boolean migrateLegacyMacroTo1_4_0(JsonObject object) {
+        if(object.has("version")) return false;
+
+        String macroType = object.get("macroType").getAsString();
+        switch (macroType) {
+            case "TOGGLE" -> object.addProperty("macroType", "REPEAT");
+            case "REPEAT" -> object.addProperty("macroType", "TOGGLE");
+        }
+
+        object.addProperty("version", CURRENT_VERSION);
+        return true;
     }
 
     public static void writeMacro(IMacro macro, String path) {
         try {
-            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-            File macroFile = new File(path + "/" + macro.getUUID().toString() +  ".json");
-            macroFile.createNewFile();
-
-            FileOutputStream fileOutputStream = new FileOutputStream(macroFile);
-            Writer writer = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
-
-            //Writer writer = Files.newBufferedWriter(macroFile.toPath());
-            gson.toJson(macro, writer);
-
-
-            writer.close();
+            Path macroFile = new File(path, macro.getUUID().toString() + ".json").toPath();
+            writeMacroFile(macro, macroFile);
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void writeMacroFile(IMacro macro, Path macroFile) throws IOException {
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject object = gson.toJsonTree(macro).getAsJsonObject();
+        object.addProperty("version", CURRENT_VERSION);
+
+        try (Writer writer = Files.newBufferedWriter(macroFile, StandardCharsets.UTF_8)) {
+            gson.toJson(object, writer);
         }
     }
 

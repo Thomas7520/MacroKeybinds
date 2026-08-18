@@ -54,7 +54,7 @@
 
   "text.running": "L",
   "text.tooltip.running": "Lancé",
-  "text.stopmacro": "Arrête toutes les macros Delayed/Repeat",
+  "text.stopmacro": "Arrête toutes les macros Delayed/Toggle",
 
   "text.editglobalmacro.title": "Modifier Macro Global",
   "text.editservermacro.title": "Modifier Macro Server",

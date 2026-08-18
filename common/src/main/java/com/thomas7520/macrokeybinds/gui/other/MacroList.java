@@ -5,7 +5,7 @@ import com.thomas7520.macrokeybinds.gui.EditMacroScreen;
 import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
-import com.thomas7520.macrokeybinds.object.RepeatMacro;
+import com.thomas7520.macrokeybinds.object.ToggleMacro;
 import com.thomas7520.macrokeybinds.platform.Services;
 import com.thomas7520.macrokeybinds.util.ButtonImageWidget;
 import com.thomas7520.macrokeybinds.util.CheckboxEdited;
@@ -195,8 +195,8 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                 }
             }
 
-            if(macro instanceof RepeatMacro repeatMacro) {
-                if(repeatMacro.isRepeat()) {
+            if(macro instanceof ToggleMacro toggleMacro) {
+                if(toggleMacro.isToggled()) {
                     running = true;
                 }
             }

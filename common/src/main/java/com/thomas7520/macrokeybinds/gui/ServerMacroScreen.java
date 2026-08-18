@@ -4,7 +4,7 @@ import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.other.MacroList;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
-import com.thomas7520.macrokeybinds.object.RepeatMacro;
+import com.thomas7520.macrokeybinds.object.ToggleMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -74,9 +74,9 @@ public class ServerMacroScreen extends Screen {
                     }
                 }
 
-                if(macro instanceof RepeatMacro repeatMacro) {
-                    if(repeatMacro.isRepeat()) {
-                        repeatMacro.setRepeat(false);
+                if(macro instanceof ToggleMacro toggleMacro) {
+                    if(toggleMacro.isToggled()) {
+                        toggleMacro.setToggled(false);
                     }
                 }
             }
@@ -105,8 +105,8 @@ public class ServerMacroScreen extends Screen {
                 }
             }
 
-            if(macro instanceof RepeatMacro repeatMacro) {
-                if(repeatMacro.isRepeat()) {
+            if(macro instanceof ToggleMacro toggleMacro) {
+                if(toggleMacro.isToggled()) {
                     stopMacroButton.active = true;
                     break;
                 }
@@ -127,8 +127,8 @@ public class ServerMacroScreen extends Screen {
                 }
             }
 
-            if(macro instanceof RepeatMacro repeatMacro) {
-                if(repeatMacro.isRepeat()) {
+            if(macro instanceof ToggleMacro toggleMacro) {
+                if(toggleMacro.isToggled()) {
                     stopMacroButton.active = true;
                     break;
                 }
