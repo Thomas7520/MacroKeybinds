@@ -1,0 +1,56 @@
+{
+  "text.config.mainscreen": "MacroKeybinds",
+  "text.config.globalmacros": "Глобальные макросы",
+  "text.config.servermacros": "Серверные макросы",
+  "text.config.needhelp": "Нужна помощь? Баги? Ссылка на Дискорд",
+  "text.tooltip.main.noserver": "Вы не на сервере",
+
+  "key.macrokeybinds.openoptions.desc": "Открыть настройки макросов" ,
+  "key.categories.macrokeybinds": "MacroKeybinds",
+
+  "text.globalmacros.title": "Глобальные макросы",
+  "text.createglobalmacros.title": "Создать новый макрос",
+  "text.globalmacros.back": "Назад",
+
+  "text.servermacros.title": "Серверные макросы",
+  "text.createservermacros.title": "Создать новый макрос",
+  "text.servermacros.back": "Назад",
+
+  "text.createmacro": "Создать макрос",
+  "text.editmacro": "Редактировать макрос",
+
+  "text.type.simple": "Нажатие",
+  "text.type.toggle": "Зажатие клавиши",
+  "text.type.repeat": "Повторение",
+  "text.type.delayed": "Ожидание",
+  "text.key": "Клавиша",
+
+  "text.action.message": "Отправить текст",
+  "text.action.command": "Отправить команду",
+  "text.action.fillchat": "Написать в чат без отправления",
+
+  "text.tooltip.namebox": "Имя",
+  "text.tooltip.actionbox": "Действие",
+  "text.tooltip.timebox": "Задержка",
+  "text.tooltip.timeboxsub": "(в миллисекундах)",
+  "text.tooltip.macrotype": "Выберите один из 4 типов макросов",
+  "text.tooltip.actiontype": "Выберите один из 3 типов действий",
+  "text.tooltip.keybind": "Нажмите нужную вам клавишу",
+  "text.tooltip.editmacro.state": "Вкл/Выкл макрос",
+  "text.tooltip.editmacro.edit": "Редактировать макрос",
+  "text.tooltip.editmacro.delete": "Удалить макрос",
+  "text.tooltip.editmacro.forgotvalue": "Заполните все поля",
+  "text.tooltip.editmacro.keyalreadyassigned": "Данная клавиша уже имеется! (Однако вы всё равно можете назначить макрос)",
+  "text.macro.deleteQuestion": "Вы уверены что хотите удалить макрос?",
+  "text.macro.deleteWarning": "Он будет удалён навсегда",
+  "text.macro.deleteButton": "Удалить этот макрос",
+
+  "text.running": "R",
+  "text.tooltip.running": "Запущенно",
+  "text.stopmacro": "Остановить ВСЕ Отложенные/Повторяющиеся макросы",
+
+  "text.editglobalmacro.title": "Редакт. Гловальные макросы",
+  "text.editservermacro.title": "Редакт. Серверные макросы",
+
+  "text.searchbox.shadow": "Поиск макросов"
+}
