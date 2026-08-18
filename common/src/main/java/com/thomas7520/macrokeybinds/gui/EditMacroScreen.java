@@ -247,14 +247,6 @@ public class EditMacroScreen extends Screen {
             return true;
         }
 
-        if(!macroActionBox.isMouseOver(mouseX, mouseY) && macroActionBox.isFocused()) {
-            macroActionBox.setFocused(false);
-        }
-
-        if(!nameBox.isMouseOver(mouseX, mouseY) && nameBox.isFocused()) {
-            nameBox.setFocused(false);
-        }
-
         if (this.listenMacroBind) {
             InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(button);
             keySelect = key.getValue();
@@ -275,7 +267,11 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.mouseClicked(click, doubled);
+            boolean handled = super.mouseClicked(click, doubled);
+            if (!handled) {
+                this.setFocused(null);
+            }
+            return handled;
         }
 
     }
