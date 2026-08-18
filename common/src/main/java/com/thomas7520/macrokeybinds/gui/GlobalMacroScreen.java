@@ -2,6 +2,7 @@ package com.thomas7520.macrokeybinds.gui;
 
 import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.other.MacroList;
+import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.ToggleMacro;
@@ -79,6 +80,10 @@ public class GlobalMacroScreen extends Screen {
                         toggleMacro.setToggled(false);
                     }
                 }
+
+                if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
+                    countedRepeatMacro.cancel();
+                }
             }
             stopMacroButton.active = false;
         }, Supplier::get) {
@@ -111,13 +116,19 @@ public class GlobalMacroScreen extends Screen {
                     break;
                 }
             }
+
+            if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
+                if(countedRepeatMacro.isRunning()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
         }
     }
 
     @Override
     public void tick() {
-
-        if(stopMacroButton.active) return;
+        stopMacroButton.active = false;
 
         for (IMacro macro : MacroUtil.getGlobalKeybindsMap().values()) {
             if(macro instanceof DelayedMacro delayedMacro) {
@@ -129,6 +140,13 @@ public class GlobalMacroScreen extends Screen {
 
             if(macro instanceof ToggleMacro toggleMacro) {
                 if(toggleMacro.isToggled()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+
+            if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
+                if(countedRepeatMacro.isRunning()) {
                     stopMacroButton.active = true;
                     break;
                 }

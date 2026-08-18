@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.gui.other;
 import com.google.common.collect.ImmutableList;
 import com.thomas7520.macrokeybinds.gui.EditMacroScreen;
 import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
+import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.ToggleMacro;
@@ -197,6 +198,12 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
 
             if(macro instanceof ToggleMacro toggleMacro) {
                 if(toggleMacro.isToggled()) {
+                    running = true;
+                }
+            }
+
+            if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
+                if(countedRepeatMacro.isRunning()) {
                     running = true;
                 }
             }

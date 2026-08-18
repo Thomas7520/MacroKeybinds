@@ -23,6 +23,7 @@
   "text.type.toggle": "Cambiar",
   "text.type.repeat": "Repetir",
   "text.type.delayed": "Retrasada",
+  "text.type.countedrepeat": "Repetición limitada",
   "text.key": "Tecla",
 
   "text.editmacro.field.name": "Nombre de la macro",
@@ -30,6 +31,8 @@
   "text.editmacro.field.action": "Acción",
   "text.editmacro.field.macrotype": "Tipo de macro",
   "text.editmacro.field.timing": "Espera / retraso (ms)",
+  "text.editmacro.field.interval": "Intervalo (ms)",
+  "text.editmacro.field.count": "Cantidad",
   "text.editmacro.field.keybind": "Atajo de teclado",
 
   "text.action.message": "Enviar Mensaje",
@@ -40,7 +43,7 @@
   "text.tooltip.actionbox": "Acción de la Macro",
   "text.tooltip.timebox": "Tiempo entre ejecuciones",
   "text.tooltip.timeboxsub": "(en milisegundos)",
-  "text.tooltip.macrotype": "Elige entre 4 tipos de macro.",
+  "text.tooltip.macrotype": "Elige entre 5 tipos de macro.",
   "text.tooltip.actiontype": "Elige entre 3 tipos de acciones.",
   "text.tooltip.keybind": "Pulsa aquí y presiona la tecla deseada.",
   "text.tooltip.editmacro.state": "§7Activar/Desactivar la Macro",
@@ -54,7 +57,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Ejecutando",
-  "text.stopmacro": "Detener Todas las Macros Pendientes/Recurrentes",
+  "text.stopmacro": "Detener todas las macros en ejecución",
 
   "text.editglobalmacro.title": "§3§nModificación de Macro Global",
   "text.editservermacro.title": "§3§nModificación de Macro de Servidor",

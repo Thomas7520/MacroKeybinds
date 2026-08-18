@@ -86,6 +86,15 @@ public class MacroEvent {
                 bind.doAction();
             }
 
+            if(bind instanceof CountedRepeatMacro countedRepeatMacro && countedRepeatMacro.isRunning()) {
+                if(!bind.isEnable()) {
+                    countedRepeatMacro.cancel();
+                    continue;
+                }
+
+                bind.doAction();
+            }
+
             if(bind instanceof DelayedMacro) {
                 DelayedMacro keybind = (DelayedMacro) bind;
 
@@ -127,6 +136,10 @@ public class MacroEvent {
 
             if(bind instanceof DelayedMacro keybind) {
                 keybind.setStart(false);
+            }
+
+            if(bind instanceof CountedRepeatMacro keybind) {
+                keybind.cancel();
             }
         }
 
@@ -172,6 +185,12 @@ public class MacroEvent {
                 if(isPress && modifierPressed && !((DelayedMacro) bind).isStart()) {
                     ((DelayedMacro) bind).setStartTime(System.currentTimeMillis());
                     ((DelayedMacro) bind).setStart(true);
+                }
+            }
+
+            if(bind instanceof CountedRepeatMacro countedRepeatMacro) {
+                if(isPress && modifierPressed) {
+                    countedRepeatMacro.start();
                 }
             }
         }

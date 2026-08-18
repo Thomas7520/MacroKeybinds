@@ -23,6 +23,7 @@
   "text.type.toggle": "Зажатие клавиши",
   "text.type.repeat": "Повторение",
   "text.type.delayed": "Ожидание",
+  "text.type.countedrepeat": "Ограниченный повтор",
   "text.key": "Клавиша",
 
   "text.editmacro.field.name": "Название макроса",
@@ -30,6 +31,8 @@
   "text.editmacro.field.action": "Действие",
   "text.editmacro.field.macrotype": "Тип макроса",
   "text.editmacro.field.timing": "Задержка (мс)",
+  "text.editmacro.field.interval": "Интервал (мс)",
+  "text.editmacro.field.count": "Количество",
   "text.editmacro.field.keybind": "Сочетание клавиш",
 
   "text.action.message": "Отправить текст",
@@ -40,7 +43,7 @@
   "text.tooltip.actionbox": "Действие",
   "text.tooltip.timebox": "Задержка",
   "text.tooltip.timeboxsub": "(в миллисекундах)",
-  "text.tooltip.macrotype": "Выберите один из 4 типов макросов",
+  "text.tooltip.macrotype": "Выберите один из 5 типов макросов",
   "text.tooltip.actiontype": "Выберите один из 3 типов действий",
   "text.tooltip.keybind": "Нажмите нужную вам клавишу",
   "text.tooltip.editmacro.state": "Вкл/Выкл макрос",
@@ -54,7 +57,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Запущенно",
-  "text.stopmacro": "Остановить ВСЕ Отложенные/Повторяющиеся макросы",
+  "text.stopmacro": "Остановить все запущенные макросы",
 
   "text.editglobalmacro.title": "Редакт. Гловальные макросы",
   "text.editservermacro.title": "Редакт. Серверные макросы",

@@ -23,6 +23,7 @@
   "text.type.toggle": "Toggle",
   "text.type.repeat": "Repeat",
   "text.type.delayed": "Delayed",
+  "text.type.countedrepeat": "Counted Repeat",
   "text.key": "Key",
 
   "text.editmacro.field.name": "Macro name",
@@ -30,6 +31,8 @@
   "text.editmacro.field.action": "Action",
   "text.editmacro.field.macrotype": "Macro type",
   "text.editmacro.field.timing": "Cooldown / delay (ms)",
+  "text.editmacro.field.interval": "Interval (ms)",
+  "text.editmacro.field.count": "Count",
   "text.editmacro.field.keybind": "Key binding",
 
   "text.action.message": "Send Message",
@@ -40,7 +43,7 @@
   "text.tooltip.actionbox": "Action",
   "text.tooltip.timebox": "Cooldown/Delay between execution",
   "text.tooltip.timeboxsub": "(in millisecond)",
-  "text.tooltip.macrotype": "Select between 4 types of macro.",
+  "text.tooltip.macrotype": "Select between 5 types of macro.",
   "text.tooltip.actiontype": "Select between 3 types of action.",
   "text.tooltip.keybind": "Click and press the wanted key",
   "text.tooltip.editmacro.state": "Disable/Enable Macro",
@@ -54,7 +57,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Running",
-  "text.stopmacro": "Stop All Delayed/Toggle macros",
+  "text.stopmacro": "Stop all running macros",
 
   "text.editglobalmacro.title": "Edit Global Macro",
   "text.editservermacro.title": "Edit Server Macro",

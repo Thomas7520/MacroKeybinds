@@ -23,6 +23,7 @@
   "text.type.toggle": "Toggle",
   "text.type.repeat": "Repeat",
   "text.type.delayed": "Delayed",
+  "text.type.countedrepeat": "Répétition limitée",
   "text.key": "Key",
 
   "text.editmacro.field.name": "Nom de la macro",
@@ -30,6 +31,8 @@
   "text.editmacro.field.action": "Action",
   "text.editmacro.field.macrotype": "Type de macro",
   "text.editmacro.field.timing": "Cooldown / délai (ms)",
+  "text.editmacro.field.interval": "Intervalle (ms)",
+  "text.editmacro.field.count": "Nombre",
   "text.editmacro.field.keybind": "Raccourci clavier",
 
   "text.action.message": "Envoyer message",
@@ -40,7 +43,7 @@
   "text.tooltip.actionbox": "Action",
   "text.tooltip.timebox": "Cooldown/Delay entre execution",
   "text.tooltip.timeboxsub": "(en milliseconde)",
-  "text.tooltip.macrotype": "Selectionner entre 4 types de macro.",
+  "text.tooltip.macrotype": "Sélectionner parmi 5 types de macro.",
   "text.tooltip.actiontype": "Selectionner entre 3 types de action.",
   "text.tooltip.keybind": "Cliquer et appuyer sur la key souhaitée",
   "text.tooltip.editmacro.state": "Désactiver/Activer Macro",
@@ -54,7 +57,7 @@
 
   "text.running": "L",
   "text.tooltip.running": "Lancé",
-  "text.stopmacro": "Arrête toutes les macros Delayed/Toggle",
+  "text.stopmacro": "Arrêter toutes les macros en cours",
 
   "text.editglobalmacro.title": "Modifier Macro Global",
   "text.editservermacro.title": "Modifier Macro Server",

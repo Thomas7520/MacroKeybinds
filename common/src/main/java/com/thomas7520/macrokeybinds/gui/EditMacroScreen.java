@@ -29,13 +29,14 @@ public class EditMacroScreen extends Screen {
     private static final int FORM_WIDTH = 310;
     private static final int COLUMN_WIDTH = 150;
     private static final int COLUMN_GAP = 10;
+    private static final int COMPACT_FIELD_WIDTH = 70;
     private static final int WIDGET_HEIGHT = 20;
     private static final int ROW_HEIGHT = 40;
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private static final int LABEL_COLOR = 0xFFE0E0E0;
 
     private final Screen lastScreen;
-    private final String[] macrosType = {"text.type.simple", "text.type.toggle", "text.type.repeat", "text.type.delayed"};
+    private final String[] macrosType = {"text.type.simple", "text.type.toggle", "text.type.repeat", "text.type.delayed", "text.type.countedrepeat"};
     private final String[] actionsType = {"text.action.message", "text.action.command", "text.action.fillchat"};
 
     private EditBox nameBox;
@@ -44,6 +45,7 @@ public class EditMacroScreen extends Screen {
 
     private Button macroTypeButton;
     private EditBox timeBox;
+    private EditBox countBox;
     private Button macroKeyButton;
 
     private Button confirmButton;
@@ -105,19 +107,14 @@ public class EditMacroScreen extends Screen {
 
 
         addRenderableWidget(macroTypeButton = createButton(Component.translatable(macrosType[0]), formLeft, formTop + ROW_HEIGHT * 2 + 11, COLUMN_WIDTH, WIDGET_HEIGHT, onPress -> {
-                    if(macroTypeSelectId == 3) {
+                    if(macroTypeSelectId == macrosType.length - 1) {
                         macroTypeSelectId = 0;
                     } else {
                         macroTypeSelectId++;
                     }
 
                     macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
-
-                    if(macroTypeSelectId == 0) {
-                        timeBox.visible = false;
-                    } else {
-                        timeBox.visible = true;
-                    }
+                    updateTimingFields();
                 }))
                 .setTooltip(Tooltip.create(Component.translatable("text.tooltip.macrotype")));
 
@@ -127,6 +124,14 @@ public class EditMacroScreen extends Screen {
         timeBox.setResponder(value -> {
             if (!value.isEmpty() && !MacroUtil.isNumeric(value)) {
                 timeBox.setValue(value.replaceAll("[^0-9]", ""));
+            }
+        });
+
+        addRenderableWidget(countBox = new EditBox(font, formLeft + COLUMN_WIDTH + COLUMN_GAP + COMPACT_FIELD_WIDTH + COLUMN_GAP, formTop + ROW_HEIGHT * 2 + 11, COMPACT_FIELD_WIDTH, WIDGET_HEIGHT, Component.empty()));
+        countBox.setMaxLength(9);
+        countBox.setResponder(value -> {
+            if (!value.isEmpty() && !MacroUtil.isNumeric(value)) {
+                countBox.setValue(value.replaceAll("[^0-9]", ""));
             }
         });
 
@@ -158,6 +163,8 @@ public class EditMacroScreen extends Screen {
                                 new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 3 ->
                                 new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                        case 4 ->
+                                new CountedRepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), Integer.parseInt(countBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
                     };
                     if(serverMacro) {
@@ -171,9 +178,11 @@ public class EditMacroScreen extends Screen {
                     minecraft.setScreenAndShow(this.lastScreen);
                 }));
 
-        timeBox.visible = false;
-
-        if(macroData != null) initDataMacro();
+        if(macroData != null) {
+            initDataMacro();
+        } else {
+            updateTimingFields();
+        }
 
 
 
@@ -212,14 +221,19 @@ public class EditMacroScreen extends Screen {
         drawFieldLabel(context, Component.translatable("text.editmacro.field.action"), formLeft + COLUMN_WIDTH + COLUMN_GAP, formTop + ROW_HEIGHT);
         drawFieldLabel(context, Component.translatable("text.editmacro.field.macrotype"), formLeft, formTop + ROW_HEIGHT * 2);
 
-        if(macroTypeSelectId != 0) {
+        if(macroTypeSelectId == 4) {
+            drawFieldLabel(context, Component.translatable("text.editmacro.field.interval"), formLeft + COLUMN_WIDTH + COLUMN_GAP, formTop + ROW_HEIGHT * 2);
+            drawFieldLabel(context, Component.translatable("text.editmacro.field.count"), formLeft + COLUMN_WIDTH + COLUMN_GAP + COMPACT_FIELD_WIDTH + COLUMN_GAP, formTop + ROW_HEIGHT * 2);
+        } else if(macroTypeSelectId != 0) {
             drawFieldLabel(context, Component.translatable("text.editmacro.field.timing"), formLeft + COLUMN_WIDTH + COLUMN_GAP, formTop + ROW_HEIGHT * 2);
         }
 
         drawFieldLabel(context, Component.translatable("text.editmacro.field.keybind"), formLeft, formTop + ROW_HEIGHT * 3);
 
         confirmButton.active = !nameBox.getValue().isEmpty() && !macroActionBox.getValue().isEmpty()
-                && (macroTypeSelectId == 0 || !timeBox.getValue().isEmpty()) && keySelect != -1;
+                && (macroTypeSelectId == 0 || !timeBox.getValue().isEmpty())
+                && (macroTypeSelectId != 4 || isValidRepeatCount())
+                && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHovered()) {
             context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), mouseX, mouseY);
@@ -385,6 +399,12 @@ public class EditMacroScreen extends Screen {
             macroTypeSelectId = 3;
         }
 
+        if(macroData instanceof CountedRepeatMacro countedRepeatMacro) {
+            timeBox.setValue(String.valueOf(countedRepeatMacro.getIntervalTime()));
+            countBox.setValue(String.valueOf(countedRepeatMacro.getRepeatCount()));
+            macroTypeSelectId = 4;
+        }
+
         macroActionButton.setMessage(Component.translatable(actionsType[actionTypeSelectId]));
         macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
 
@@ -394,10 +414,23 @@ public class EditMacroScreen extends Screen {
             macroKeyButton.setMessage(Component.literal(getKeyName()));
         }
 
-        if(macroTypeSelectId == 0) {
-            timeBox.visible = false;
-        } else {
-            timeBox.visible = true;
+        updateTimingFields();
+    }
+
+    private void updateTimingFields() {
+        boolean countedRepeat = macroTypeSelectId == 4;
+        timeBox.visible = macroTypeSelectId != 0;
+        timeBox.setWidth(countedRepeat ? COMPACT_FIELD_WIDTH : COLUMN_WIDTH);
+        countBox.visible = countedRepeat;
+    }
+
+    private boolean isValidRepeatCount() {
+        if(countBox.getValue().isEmpty()) return false;
+
+        try {
+            return Integer.parseInt(countBox.getValue()) > 0;
+        } catch (NumberFormatException ignored) {
+            return false;
         }
     }
 
