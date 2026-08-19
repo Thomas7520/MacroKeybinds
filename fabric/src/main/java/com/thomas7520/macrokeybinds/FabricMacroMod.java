@@ -3,16 +3,16 @@ package com.thomas7520.macrokeybinds;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.event.MacroEvent;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-public class FabricMacroMod implements ModInitializer {
+public class FabricMacroMod implements ClientModInitializer {
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
         MacroMod.setup();
         MacroUtil.guiBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",

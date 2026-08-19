@@ -9,9 +9,9 @@
     ],
     "license": "${license}",
     "icon": "assets/macrokeybinds/icon.png",
-    "environment": "*",
+    "environment": "client",
     "entrypoints": {
-        "main": [
+        "client": [
             "com.thomas7520.macrokeybinds.FabricMacroMod"
         ]
     },
