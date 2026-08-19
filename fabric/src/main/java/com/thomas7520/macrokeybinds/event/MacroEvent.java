@@ -113,8 +113,10 @@ public class MacroEvent {
                 if(bind instanceof DelayedMacro keybind) {
 
                     if(!keybind.isEnable()) {
-                        keybind.setStart(false);
-                        return;
+                        if(keybind.isStart()) {
+                            keybind.setStart(false);
+                        }
+                        continue;
                     }
 
                     if(!keybind.isStart()) continue;
