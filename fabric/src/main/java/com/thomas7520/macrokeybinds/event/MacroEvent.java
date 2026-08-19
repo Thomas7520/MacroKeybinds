@@ -11,11 +11,13 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MacroEvent {
 
-    private final List<Integer> keysPressed = new ArrayList<>();
+    private final Set<Integer> keysPressed = new HashSet<>();
 
     public void onInputEvent() {
 
@@ -55,11 +57,8 @@ public class MacroEvent {
                     keysPressed.remove(key);
                 }
 
-                if(isPress) {
-                    if(keysPressed.contains(key)) return;
+                if(isPress && !keysPressed.add(key)) continue;
 
-                    keysPressed.add(key);
-                }
 
                 onInputEvent(isPress, isRelease, key, modifier);
             }
