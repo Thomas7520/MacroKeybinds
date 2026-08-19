@@ -1,7 +1,6 @@
 package com.thomas7520.macrokeybinds;
 
 import com.thomas7520.macrokeybinds.object.IMacro;
-import com.thomas7520.macrokeybinds.platform.Services;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +15,14 @@ public class MacroMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static void setup() {
-        File directory = Services.PLATFORM.getConfigDirectory().resolve("global-macros").toFile();
+        try {
+            MacroUtil.initMacroDirectories();
+        } catch(IOException e) {
+            LOGGER.error("Failed to initialize macro directories", e);
+            return;
+        }
+
+        File directory = MacroUtil.getGlobalMacroDirectory().toFile();
 
         if(directory.mkdirs()) return;
 

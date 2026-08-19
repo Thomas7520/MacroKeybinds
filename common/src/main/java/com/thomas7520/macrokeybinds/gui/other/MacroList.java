@@ -8,7 +8,6 @@ import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
 import com.thomas7520.macrokeybinds.object.ToggleMacro;
-import com.thomas7520.macrokeybinds.platform.Services;
 import com.thomas7520.macrokeybinds.util.ButtonImageWidget;
 import com.thomas7520.macrokeybinds.util.CheckboxEdited;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
@@ -126,10 +125,12 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
             this.stateButton = CheckboxEdited.builder(Component.empty(), minecraft.font)
                     .pos(0,0)
                     .callback((checkbox, checked) -> {
-                        String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
+                        String directory = isMacroServer
+                                ? MacroUtil.getServerMacroDirectory().toString()
+                                : MacroUtil.getGlobalMacroDirectory().toString();
 
                         macro.setEnable(checked);
-                        MacroFlow.writeMacro(macro, new File(Services.PLATFORM.getConfigDirectory() + directory).getPath());
+                        MacroFlow.writeMacro(macro, directory);
                     })
                     .checked(macro.isEnable())
                     .build();
@@ -143,8 +144,10 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                         MacroUtil.getGlobalKeybindsMap().remove(macro.getUUID());
                     }
 
-                    String directory = isMacroServer ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-                    new File(Services.PLATFORM.getConfigDirectory() + directory + "/" + macro.getUUID().toString() + ".json").delete();
+                    File directory = isMacroServer
+                            ? MacroUtil.getServerMacroDirectory().toFile()
+                            : MacroUtil.getGlobalMacroDirectory().toFile();
+                    new File(directory, macro.getUUID().toString() + ".json").delete();
                 }
 
                 minecraft.setScreenAndShow(parent);

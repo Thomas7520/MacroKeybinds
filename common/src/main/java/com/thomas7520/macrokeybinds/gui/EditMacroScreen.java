@@ -3,7 +3,6 @@ package com.thomas7520.macrokeybinds.gui;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.gui.other.EditMacroFormList;
 import com.thomas7520.macrokeybinds.object.*;
-import com.thomas7520.macrokeybinds.platform.Services;
 import com.thomas7520.macrokeybinds.util.MacroCMDSuggestor;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
@@ -167,8 +166,10 @@ public class EditMacroScreen extends Screen {
                     } else {
                         MacroUtil.getGlobalKeybindsMap().put(macroUUID, macro);
                     }
-                    String directory = serverMacro ? "/servers-macros/" + MacroUtil.getServerIP() + "/" : "/global-macros/";
-                    MacroFlow.writeMacro(macro, Services.PLATFORM.getConfigDirectory() + directory);
+                    String directory = serverMacro
+                            ? MacroUtil.getServerMacroDirectory().toString()
+                            : MacroUtil.getGlobalMacroDirectory().toString();
+                    MacroFlow.writeMacro(macro, directory);
 
                     minecraft.setScreenAndShow(this.lastScreen);
                 }));

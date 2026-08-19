@@ -9,7 +9,12 @@ import net.minecraft.client.KeyMapping;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.UUID;
 
 public class MacroUtil {
@@ -20,16 +25,35 @@ public class MacroUtil {
     public static KeyMapping guiBinding;
 
 
+    public static void initMacroDirectories() throws IOException {
+        Path configDirectory = Services.PLATFORM.getConfigDirectory();
+        Path macroKeybindsDirectory = configDirectory.resolve(MacroMod.MODID);
+
+        Files.createDirectories(macroKeybindsDirectory);
+        migrateLegacyMacroDirectory(configDirectory.resolve("global-macros"), getGlobalMacroDirectory());
+        migrateLegacyMacroDirectory(configDirectory.resolve("servers-macros"), getServerMacrosDirectory());
+        Files.createDirectories(getGlobalMacroDirectory());
+        Files.createDirectories(getServerMacrosDirectory());
+    }
+
 
     public static void initServerMacros(String ip) {
         MacroUtil.serverIP = ip;
-        File directory = Services.PLATFORM.getConfigDirectory().resolve("servers-macros").resolve(serverIP).toFile();
+        Path serverMacrosDirectory = getServerMacrosDirectory();
+        Path directory = getServerMacroDirectory();
 
-        if(directory.mkdirs()) return;
+        try {
+            Files.createDirectories(serverMacrosDirectory);
+            migrateLegacyServerDirectory(serverMacrosDirectory, directory, ip);
+            Files.createDirectories(directory);
+        } catch(IOException e) {
+            MacroMod.LOGGER.error("Failed to create server macros directory {}", directory.toAbsolutePath(), e);
+            return;
+        }
 
-        File[] files = directory.listFiles(file -> file.isFile() && file.getName().endsWith(".json"));
+        File[] files = directory.toFile().listFiles(file -> file.isFile() && file.getName().endsWith(".json"));
         if(files == null) {
-            MacroMod.LOGGER.error("Failed to list macros in {}", directory.getAbsolutePath());
+            MacroMod.LOGGER.error("Failed to list macros in {}", directory.toAbsolutePath());
             return;
         }
 
@@ -58,6 +82,55 @@ public class MacroUtil {
 
     public static String getServerIP() {
         return serverIP;
+    }
+
+    public static Path getGlobalMacroDirectory() {
+        return Services.PLATFORM.getConfigDirectory().resolve(MacroMod.MODID).resolve("global-macros");
+    }
+
+    private static Path getServerMacrosDirectory() {
+        return Services.PLATFORM.getConfigDirectory().resolve(MacroMod.MODID).resolve("servers-macros");
+    }
+
+    public static Path getServerMacroDirectory() {
+        String normalizedIP = serverIP.strip().toLowerCase(Locale.ROOT);
+        String readableIP = normalizedIP.replaceAll("[^a-z0-9._-]", "_");
+
+        if(readableIP.length() > 80) {
+            readableIP = readableIP.substring(0, 80);
+        }
+        if(readableIP.isBlank()) {
+            readableIP = "server";
+        }
+
+        String addressID = UUID.nameUUIDFromBytes(normalizedIP.getBytes(StandardCharsets.UTF_8)).toString();
+        return getServerMacrosDirectory().resolve(readableIP + "-" + addressID);
+    }
+
+    private static void migrateLegacyMacroDirectory(Path legacyDirectory, Path directory) throws IOException {
+        if(!Files.isDirectory(legacyDirectory) || Files.exists(directory)) {
+            return;
+        }
+
+        Files.move(legacyDirectory, directory);
+        MacroMod.LOGGER.info("Migrated macro directory from {} to {}", legacyDirectory, directory);
+    }
+
+    private static void migrateLegacyServerDirectory(Path serverMacrosDirectory, Path directory, String ip) throws IOException {
+        Path legacyDirectory;
+
+        try {
+            legacyDirectory = serverMacrosDirectory.resolve(ip).normalize();
+        } catch(InvalidPathException ignored) {
+            return;
+        }
+
+        if(!serverMacrosDirectory.equals(legacyDirectory.getParent()) || !Files.isDirectory(legacyDirectory) || Files.exists(directory)) {
+            return;
+        }
+
+        Files.move(legacyDirectory, directory);
+        MacroMod.LOGGER.info("Migrated server macros directory from {} to {}", legacyDirectory.getFileName(), directory.getFileName());
     }
 
     public static void setServerIP(String ip) {
