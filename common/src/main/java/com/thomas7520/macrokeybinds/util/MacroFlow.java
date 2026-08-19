@@ -33,6 +33,7 @@ public class MacroFlow {
             case REPEAT -> macro = gson.fromJson(object, RepeatMacro.class);
             case DELAYED -> macro = gson.fromJson(object, DelayedMacro.class);
             case COUNTED_REPEAT -> macro = gson.fromJson(object, CountedRepeatMacro.class);
+            case ALTERNATE -> macro = gson.fromJson(object, AlternateMacro.class);
 
 
             default -> throw new IllegalStateException("Unexpected value: " + MacroType.valueOf(object.get("macroType").getAsString()));

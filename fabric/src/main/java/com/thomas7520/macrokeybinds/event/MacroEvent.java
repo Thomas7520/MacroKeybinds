@@ -80,6 +80,9 @@ public class MacroEvent {
                 if(bind instanceof SimpleMacro && ((SimpleMacro) bind).isStart()) {
                     bind.doAction();
                 }
+                if(bind instanceof AlternateMacro alternateMacro && alternateMacro.isStart()) {
+                    bind.doAction();
+                }
                 if(bind instanceof RepeatMacro repeatMacro && repeatMacro.isRepeat()) {
                     if(!bind.isEnable()) {
                         repeatMacro.setRepeat(false);
@@ -164,6 +167,10 @@ public class MacroEvent {
                 if (bind instanceof CountedRepeatMacro keybind) {
                     keybind.cancel();
                 }
+
+                if (bind instanceof AlternateMacro keybind) {
+                    keybind.reset();
+                }
             }
 
             MacroUtil.getServerKeybinds().clear();
@@ -186,6 +193,12 @@ public class MacroEvent {
                 if(isPress && modifierPressed) {
                     ((SimpleMacro) bind).setStartTime(System.currentTimeMillis());
                     ((SimpleMacro) bind).setStart(true);
+                }
+            }
+
+            if(bind instanceof AlternateMacro alternateMacro) {
+                if(isPress && modifierPressed) {
+                    alternateMacro.start();
                 }
             }
 

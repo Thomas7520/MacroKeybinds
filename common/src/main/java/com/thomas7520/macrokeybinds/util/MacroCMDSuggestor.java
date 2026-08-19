@@ -100,7 +100,7 @@ public class MacroCMDSuggestor {
         boolean bl = this.window != null;
         if (bl && this.window.keyPressed(input)) {
             return true;
-        } else if (this.owner.getFocused() != this.textField || input.key() != GLFW.GLFW_KEY_TAB || this.canLeave && !bl) {
+        } else if (!this.textField.isFocused() || input.key() != GLFW.GLFW_KEY_TAB || this.canLeave && !bl) {
             return false;
         } else {
             this.show(true);

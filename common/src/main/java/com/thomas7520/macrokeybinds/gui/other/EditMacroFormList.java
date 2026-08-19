@@ -1,0 +1,86 @@
+package com.thomas7520.macrokeybinds.gui.other;
+
+import com.google.common.collect.ImmutableList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFormList.Entry> {
+
+    private static final int FORM_WIDTH = 310;
+    private static final int ROW_HEIGHT = 40;
+    private static final int LABEL_COLOR = 0xFFE0E0E0;
+
+    private final Screen screen;
+
+    public EditMacroFormList(Screen screen, Minecraft client) {
+        super(client, screen.width, screen.height - 62, 30, ROW_HEIGHT);
+        this.screen = screen;
+        this.centerListVertically = false;
+    }
+
+    public void clearRows() {
+        clearEntries();
+    }
+
+    public void addRow(Field... fields) {
+        addEntry(new Entry(screen, fields));
+    }
+
+    @Override
+    public int getRowWidth() {
+        return FORM_WIDTH;
+    }
+
+    @Override
+    protected int scrollBarX() {
+        return screen.width / 2 + FORM_WIDTH / 2 + 6;
+    }
+
+    public record Field(Component label, AbstractWidget widget, int xOffset) {
+    }
+
+    public static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
+
+        private final Screen screen;
+        private final List<Field> fields;
+        private final List<AbstractWidget> widgets;
+
+        public Entry(Screen screen, Field... fields) {
+            this.screen = screen;
+            this.fields = Arrays.asList(fields);
+            this.widgets = Arrays.stream(fields).map(Field::widget).toList();
+        }
+
+        @Override
+        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int left = screen.width / 2 - FORM_WIDTH / 2;
+            int y = getY();
+
+            for(Field field : fields) {
+                int x = left + field.xOffset();
+                context.text(Minecraft.getInstance().font, field.label(), x, y, LABEL_COLOR, false);
+                field.widget().setPosition(x, y + 11);
+                field.widget().extractRenderState(context, mouseX, mouseY, tickDelta);
+            }
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children() {
+            return ImmutableList.copyOf(widgets);
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+            return ImmutableList.copyOf(widgets);
+        }
+    }
+}

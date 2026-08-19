@@ -6,5 +6,6 @@ public enum MacroType {
     TOGGLE,
     REPEAT,
     DELAYED,
-    COUNTED_REPEAT;
+    COUNTED_REPEAT,
+    ALTERNATE;
 }
