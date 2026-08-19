@@ -80,17 +80,21 @@ public class MacroUtil {
 
 
     public static boolean isCombinationAssigned(IMacro macro) {
+        return isCombinationAssigned(macro, macro.getKey(), macro.getModifier());
+    }
+
+    public static boolean isCombinationAssigned(IMacro macro, int key, MacroModifier modifier) {
         boolean serverKeyAssigned = false;
         boolean globalKeyAssigned = false;
         for (IMacro value : getServerKeybinds().values()) {
-            if(macro.getUUID() != value.getUUID() && value.getKey() == macro.getKey() && value.getModifier() == macro.getModifier() ) {
+            if(!macro.getUUID().equals(value.getUUID()) && value.getKey() == key && value.getModifier() == modifier) {
                 serverKeyAssigned = true;
                 break;
             }
         }
 
         for (IMacro value : getGlobalKeybindsMap().values()) {
-            if(macro.getUUID() != value.getUUID() && value.getKey() == macro.getKey() && value.getModifier() == macro.getModifier()) {
+            if(!macro.getUUID().equals(value.getUUID()) && value.getKey() == key && value.getModifier() == modifier) {
                 globalKeyAssigned = true;
                 break;
             }

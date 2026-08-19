@@ -146,19 +146,20 @@ public class EditMacroScreen extends Screen {
 
         addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), formLeft, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> {
                     UUID macroUUID = macroData == null ? UUID.randomUUID() : macroData.getUUID();
+                    boolean macroEnabled = macroData == null || macroData.isEnable();
                     IMacro macro = switch (macroTypeSelectId) {
                         case 0 ->
-                                new SimpleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new SimpleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 1 ->
-                                new ToggleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new ToggleMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 2 ->
-                                new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new RepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 3 ->
-                                new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new DelayedMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), keyName, macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 4 ->
-                                new CountedRepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), Integer.parseInt(countBox.getValue()), true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new CountedRepeatMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], Long.parseLong(timeBox.getValue()), Integer.parseInt(countBox.getValue()), macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         case 5 ->
-                                new AlternateMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), secondMacroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], KeyAction.values()[secondActionTypeSelectId], true, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
+                                new AlternateMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), secondMacroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], KeyAction.values()[secondActionTypeSelectId], macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
                     };
                     if(serverMacro) {
@@ -274,11 +275,6 @@ public class EditMacroScreen extends Screen {
             keyName = key.getDisplayName().getString();
             listenMacroBind = false;
 
-            if(macroData != null) {
-                macroData.setKey(keySelect);
-                macroData.setModifier(MacroModifier.NONE);
-            }
-
             macroModifierSelect = MacroModifier.NONE;
 
             if(hasConflictKey()) {
@@ -329,12 +325,6 @@ public class EditMacroScreen extends Screen {
                 if (!isKeyCodeModifier(inputSelected.getValue())) {
                     listenMacroBind = false;
 
-                    if (macroData != null) {
-                        macroData.setModifier(macroModifierSelect);
-                        macroData.setKey(keySelect);
-                    }
-
-
                     if (hasConflictKey()) {
                         macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
                     } else {
@@ -356,12 +346,6 @@ public class EditMacroScreen extends Screen {
     @Override
     public boolean keyReleased(KeyEvent input) {
         if(listenMacroBind) {
-
-            if (macroData != null) {
-                macroData.setKey(keySelect);
-                macroData.setModifier(macroModifierSelect);
-            }
-
 
             if (hasConflictKey()) {
                 macroKeyButton.setMessage(Component.literal(keyName).withStyle(ChatFormatting.RED));
@@ -513,7 +497,9 @@ public class EditMacroScreen extends Screen {
         return macroModifierSelect != MacroModifier.NONE ? macroModifierSelect.name() + " + " + keyName : keyName;
     }
     private boolean hasConflictKey() {
-        return macroData != null && MacroUtil.isCombinationAssigned(macroData) || macroData == null && MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect);
+        return macroData != null
+                ? MacroUtil.isCombinationAssigned(macroData, keySelect, macroModifierSelect)
+                : MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect);
     }
 
     private Button createButton(Component text, int x, int y, int width, int height, Button.OnPress pressSupplier) {
