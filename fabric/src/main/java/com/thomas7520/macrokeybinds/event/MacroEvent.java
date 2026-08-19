@@ -22,7 +22,7 @@ public class MacroEvent {
     public void onInputEvent() {
 
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-            if(MacroUtil.guiBinding.isDown()) {
+            if(MacroUtil.guiBinding.consumeClick()) {
                 Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
             }
 

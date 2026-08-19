@@ -23,7 +23,7 @@ public class MacroEvent {
 
     @SubscribeEvent
     public static void onKeyInputEvent(InputEvent.Key event) {
-        if(MacroUtil.guiBinding.isDown()) {
+        if(MacroUtil.guiBinding.consumeClick()) {
             Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
         }
 
