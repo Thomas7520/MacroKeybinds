@@ -16,21 +16,28 @@ public class MacroMod {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static void setup() {
-        try {
-            File directory = Services.PLATFORM.getConfigDirectory().resolve("global-macros").toFile();
+        File directory = Services.PLATFORM.getConfigDirectory().resolve("global-macros").toFile();
 
-            if (directory.mkdirs() || directory.listFiles() == null) return;
+        if(directory.mkdirs()) return;
 
-            for (File file : directory.listFiles()) {
+        File[] files = directory.listFiles(file -> file.isFile() && file.getName().endsWith(".json"));
+        if(files == null) {
+            LOGGER.error("Failed to list macros in {}", directory.getAbsolutePath());
+            return;
+        }
+
+        for(File file : files) {
+            try {
                 IMacro macro = MacroFlow.getMacroFromFile(file);
-                if (macro == null) {
-                    LOGGER.error(String.format("Macro from %s is null !", file.getAbsolutePath()));
+                if(macro == null) {
+                    LOGGER.error("Macro from {} is null", file.getAbsolutePath());
                     continue;
                 }
+
                 MacroUtil.getGlobalKeybindsMap().put(macro.getUUID(), macro);
+            } catch(IOException | RuntimeException e) {
+                LOGGER.error("Failed to load macro from {}", file.getAbsolutePath(), e);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         LOGGER.info(MacroUtil.getGlobalKeybindsMap().size() + " macros loaded");

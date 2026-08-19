@@ -23,23 +23,28 @@ public class MacroUtil {
 
     public static void initServerMacros(String ip) {
         MacroUtil.serverIP = ip;
-        try {
-            File directory = Services.PLATFORM.getConfigDirectory().resolve("servers-macros").resolve(serverIP).toFile();
+        File directory = Services.PLATFORM.getConfigDirectory().resolve("servers-macros").resolve(serverIP).toFile();
 
-            if(directory.mkdirs() || directory.listFiles() == null) return;
+        if(directory.mkdirs()) return;
 
-            for (File file : directory.listFiles()) {
+        File[] files = directory.listFiles(file -> file.isFile() && file.getName().endsWith(".json"));
+        if(files == null) {
+            MacroMod.LOGGER.error("Failed to list macros in {}", directory.getAbsolutePath());
+            return;
+        }
+
+        for(File file : files) {
+            try {
                 IMacro macro = MacroFlow.getMacroFromFile(file);
                 if(macro == null) {
-                    MacroMod.LOGGER.error(String.format("Macro from %s is null !", file.getAbsolutePath()));
+                    MacroMod.LOGGER.error("Macro from {} is null", file.getAbsolutePath());
                     continue;
                 }
 
                 MacroUtil.getServerKeybinds().put(macro.getUUID(), macro);
+            } catch(IOException | RuntimeException e) {
+                MacroMod.LOGGER.error("Failed to load macro from {}", file.getAbsolutePath(), e);
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

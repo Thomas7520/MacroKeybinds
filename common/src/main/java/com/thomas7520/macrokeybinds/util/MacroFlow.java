@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.thomas7520.macrokeybinds.object.*;
 
 import java.io.*;
@@ -23,6 +24,10 @@ public class MacroFlow {
             object = gson.fromJson(reader, JsonObject.class);
         }
 
+        if(object == null) {
+            throw new JsonParseException("Macro file is empty");
+        }
+
         boolean migrated = migrateLegacyMacroTo1_4_0(object);
 
         IMacro macro;
@@ -39,11 +44,21 @@ public class MacroFlow {
             default -> throw new IllegalStateException("Unexpected value: " + MacroType.valueOf(object.get("macroType").getAsString()));
         }
 
+        validateMacro(macro);
+
         if(migrated) {
             writeMacroFile(macro, file.toPath());
         }
 
         return macro;
+    }
+
+    private static void validateMacro(IMacro macro) {
+        if(macro == null || macro.getUUID() == null || macro.getType() == null || macro.getName() == null
+                || macro.getActionText() == null || macro.getAction() == null || macro.getKeyName() == null
+                || macro.getKey() < 0) {
+            throw new JsonParseException("Macro is missing required data");
+        }
     }
 
     private static boolean migrateLegacyMacroTo1_4_0(JsonObject object) {

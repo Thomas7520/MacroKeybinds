@@ -26,7 +26,7 @@ public class MainMacroScreen extends Screen {
     public MainMacroScreen() {
         this(null);
     }
-    
+
     public MainMacroScreen(Screen parent) {
         super(Component.translatable("text.config.mainscreen"));
         this.parent = parent;
