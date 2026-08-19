@@ -1,4 +1,5 @@
 {
+  "key.category.macrokeybinds.main": "Macro Keybinds",
   "text.config.mainscreen": "Keybinds Menu",
   "text.config.globalmacros": "Global Macros Options",
   "text.config.servermacros": "Serveur Macros Options",

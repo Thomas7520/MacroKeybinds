@@ -18,7 +18,7 @@ public class FabricMacroMod implements ClientModInitializer {
                 "key.macrokeybinds.openoptions.desc",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MacroMod.MODID, "key.categories.macrokeybinds"))
+                KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MacroMod.MODID, "main"))
         ));
 
         MacroEvent event = new MacroEvent();

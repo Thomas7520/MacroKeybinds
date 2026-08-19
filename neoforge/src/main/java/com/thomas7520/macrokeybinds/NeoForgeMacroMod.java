@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 @Mod(value = MacroMod.MODID, dist = Dist.CLIENT)
 public class NeoForgeMacroMod {
     private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(
-            Identifier.fromNamespaceAndPath(MacroMod.MODID, "key.categories.macrokeybinds")
+            Identifier.fromNamespaceAndPath(MacroMod.MODID, "main")
     );
 
     public NeoForgeMacroMod(IEventBus modEventBus, ModContainer modContainer) {
