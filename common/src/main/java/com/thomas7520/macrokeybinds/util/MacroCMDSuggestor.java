@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.renderer.Rect2i;
@@ -167,6 +168,16 @@ public class MacroCMDSuggestor {
     }
 
     public void refresh() {
+        ClientPacketListener connection = this.client.getConnection();
+        if(connection == null) {
+            this.parse = null;
+            this.pendingSuggestions = null;
+            this.window = null;
+            this.messages.clear();
+            this.textField.setSuggestion(null);
+            return;
+        }
+
         String string = this.textField.getValue();
         if (this.parse != null && !this.parse.getReader().getString().equals(string)) {
             this.parse = null;
@@ -188,16 +199,17 @@ public class MacroCMDSuggestor {
         int i = this.textField.getCursorPosition();
         int j;
         if (bl2) {
-            CommandDispatcher<ClientSuggestionProvider> commandDispatcher = this.client.player.connection.getCommands();
+            CommandDispatcher<ClientSuggestionProvider> commandDispatcher = connection.getCommands();
             if (this.parse == null) {
-                this.parse = commandDispatcher.parse(stringReader, this.client.player.connection.getSuggestionsProvider());
+                this.parse = commandDispatcher.parse(stringReader, connection.getSuggestionsProvider());
             }
 
             j = this.suggestingWhenEmpty ? stringReader.getCursor() : 1;
             if (i >= j && (this.window == null || !this.completingSuggestions)) {
-                this.pendingSuggestions = commandDispatcher.getCompletionSuggestions(this.parse, i);
-                this.pendingSuggestions.thenRun(() -> {
-                    if (this.pendingSuggestions.isDone()) {
+                CompletableFuture<Suggestions> suggestions = commandDispatcher.getCompletionSuggestions(this.parse, i);
+                this.pendingSuggestions = suggestions;
+                suggestions.thenRun(() -> {
+                    if (this.pendingSuggestions == suggestions) {
                         this.showCommandSuggestions();
                     }
                 });
@@ -205,7 +217,7 @@ public class MacroCMDSuggestor {
         } else {
             String string2 = string.substring(0, i);
             j = getStartOfCurrentWord(string2);
-            Collection<String> collection = this.client.player.connection.getSuggestionsProvider().getCustomTabSuggestions();
+            Collection<String> collection = connection.getSuggestionsProvider().getCustomTabSuggestions();
             this.pendingSuggestions = SharedSuggestionProvider.suggest(collection, new SuggestionsBuilder(string2, j));
         }
 

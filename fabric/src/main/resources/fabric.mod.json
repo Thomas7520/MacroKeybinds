@@ -13,6 +13,9 @@
     "entrypoints": {
         "client": [
             "com.thomas7520.macrokeybinds.FabricMacroMod"
+        ],
+        "modmenu": [
+            "com.thomas7520.macrokeybinds.compat.ModMenuIntegration"
         ]
     },
     "depends": {

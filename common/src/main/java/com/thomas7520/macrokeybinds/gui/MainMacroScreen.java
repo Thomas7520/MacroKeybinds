@@ -18,12 +18,18 @@ import java.util.function.Supplier;
 public class MainMacroScreen extends Screen {
 
 
+    private final Screen parent;
     private int guiLeft;
     private int guiTop;
     private Button serverMacrosButton;
 
     public MainMacroScreen() {
+        this(null);
+    }
+    
+    public MainMacroScreen(Screen parent) {
         super(Component.translatable("text.config.mainscreen"));
+        this.parent = parent;
     }
 
     @Override
@@ -76,6 +82,16 @@ public class MainMacroScreen extends Screen {
         return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(this, url))
                 .bounds(x,y,width,height)
                 .build();
+    }
+
+    @Override
+    public void onClose() {
+        if(parent == null) {
+            super.onClose();
+            return;
+        }
+
+        minecraft.setScreenAndShow(parent);
     }
 
     protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {
