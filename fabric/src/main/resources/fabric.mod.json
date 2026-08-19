@@ -7,6 +7,11 @@
     "authors": [
         "${mod_author}"
     ],
+    "contact": {
+        "homepage": "https://discord.gg/xTqj3ZSeH4",
+        "sources": "https://github.com/Thomas7520/MacroKeybinds",
+        "issues": "https://github.com/Thomas7520/MacroKeybinds/issues"
+    },
     "license": "${license}",
     "icon": "assets/macrokeybinds/icon.png",
     "environment": "client",
@@ -15,7 +20,7 @@
             "com.thomas7520.macrokeybinds.FabricMacroMod"
         ],
         "modmenu": [
-            "com.thomas7520.macrokeybinds.compat.ModMenuIntegration"
+            "com.thomas7520.macrokeybinds.modmenu.ModMenuIntegration"
         ]
     },
     "depends": {

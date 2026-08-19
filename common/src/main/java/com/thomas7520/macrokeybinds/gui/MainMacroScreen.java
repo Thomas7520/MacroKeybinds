@@ -5,11 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 import java.util.function.Supplier;
@@ -41,11 +43,19 @@ public class MainMacroScreen extends Screen {
         Component serverMacros = Component.translatable("text.config.servermacros");
         Component discordLink = Component.translatable("text.config.needhelp");
 
+        StringWidget titleWidget = new StringWidget(title, font);
+        titleWidget.setPosition(width / 2 - titleWidget.getWidth() / 2, 8);
+        addRenderableWidget(titleWidget);
+
         addRenderableWidget(createButton(globalMacros, guiLeft - 100, guiTop / 2, 200, 20, () -> new GlobalMacroScreen(this)));
 
         addRenderableWidget(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
 
         addRenderableWidget(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
+
+        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+                .bounds(guiLeft - 100, height - 27, 200, 20)
+                .build());
 
         super.init();
     }
@@ -54,8 +64,6 @@ public class MainMacroScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         super.extractRenderState(context, mouseX, mouseY, delta);
-
-        context.text(font, title, width / 2 - font.width(title) / 2, 8, 16777215, false);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
             context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
