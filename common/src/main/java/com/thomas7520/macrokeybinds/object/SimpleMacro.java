@@ -2,6 +2,7 @@ package com.thomas7520.macrokeybinds.object;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.network.chat.Component;
 
 import java.util.UUID;
 
@@ -131,6 +132,7 @@ public class SimpleMacro implements IMacro {
                 }
             }
             case FILL_CHAT -> Minecraft.getInstance().setScreenAndShow(new ChatScreen(getActionText(), false));
+            case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(getActionText()));
         }
     }
 }

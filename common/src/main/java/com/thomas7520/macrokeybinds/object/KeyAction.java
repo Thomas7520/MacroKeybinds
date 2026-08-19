@@ -5,4 +5,5 @@ public enum KeyAction {
     MESSAGE,
     COMMAND,
     FILL_CHAT,
+    LOCAL_MESSAGE,
 }

@@ -35,7 +35,9 @@ public class EditMacroScreen extends Screen {
 
     private final Screen lastScreen;
     private final String[] macrosType = {"text.type.simple", "text.type.toggle", "text.type.repeat", "text.type.delayed", "text.type.countedrepeat", "text.type.alternate"};
-    private final String[] actionsType = {"text.action.message", "text.action.command", "text.action.fillchat"};
+    private final String[] macrosTypeTooltip = {"text.tooltip.macrotype.simple", "text.tooltip.macrotype.toggle", "text.tooltip.macrotype.repeat", "text.tooltip.macrotype.delayed", "text.tooltip.macrotype.countedrepeat", "text.tooltip.macrotype.alternate"};
+    private final String[] actionsType = {"text.action.message", "text.action.command", "text.action.fillchat", "text.action.localmessage"};
+    private final String[] actionsTypeTooltip = {"text.tooltip.actiontype.message", "text.tooltip.actiontype.command", "text.tooltip.actiontype.fillchat", "text.tooltip.actiontype.localmessage"};
 
     private EditBox nameBox;
     private Button macroActionButton;
@@ -81,7 +83,7 @@ public class EditMacroScreen extends Screen {
         nameBox = new EditBox(font, 0, 0, FORM_WIDTH, WIDGET_HEIGHT, Component.empty());
 
         macroActionButton = createButton(Component.translatable(actionsType[0]), 0, 0, COLUMN_WIDTH, WIDGET_HEIGHT, button -> cycleActionType(false));
-        macroActionButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.actiontype")));
+        macroActionButton.setTooltip(Tooltip.create(Component.translatable(actionsTypeTooltip[0])));
         macroActionBox = new EditBox(font, 0, 0, COLUMN_WIDTH, WIDGET_HEIGHT, Component.empty());
 
         this.commandSuggestions = new MacroCMDSuggestor(this.minecraft, this, this.macroActionBox, this.font, false, false, 10, false, -805306368);
@@ -90,7 +92,7 @@ public class EditMacroScreen extends Screen {
         macroActionBox.setMaxLength(256);
 
         secondMacroActionButton = createButton(Component.translatable(actionsType[0]), 0, 0, COLUMN_WIDTH, WIDGET_HEIGHT, button -> cycleActionType(true));
-        secondMacroActionButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.actiontype")));
+        secondMacroActionButton.setTooltip(Tooltip.create(Component.translatable(actionsTypeTooltip[0])));
         secondMacroActionBox = new EditBox(font, 0, 0, COLUMN_WIDTH, WIDGET_HEIGHT, Component.empty());
         this.secondCommandSuggestions = new MacroCMDSuggestor(this.minecraft, this, this.secondMacroActionBox, this.font, false, false, 10, false, -805306368);
         this.secondCommandSuggestions.refresh();
@@ -110,7 +112,7 @@ public class EditMacroScreen extends Screen {
                     updateTimingFields();
                     rebuildFormRows();
                 });
-        macroTypeButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.macrotype")));
+        macroTypeButton.setTooltip(Tooltip.create(Component.translatable(macrosTypeTooltip[0])));
 
         timeBox = new EditBox(font, 0, 0, COLUMN_WIDTH, WIDGET_HEIGHT, Component.empty());
         timeBox.setResponder(value -> {
@@ -210,10 +212,12 @@ public class EditMacroScreen extends Screen {
         if(secondAction) {
             secondActionTypeSelectId = (byte) ((secondActionTypeSelectId + 1) % actionsType.length);
             secondMacroActionButton.setMessage(Component.translatable(actionsType[secondActionTypeSelectId]));
+            updateActionTypeTooltip(true);
             onSecondEdited(secondMacroActionBox.getValue());
         } else {
             actionTypeSelectId = (byte) ((actionTypeSelectId + 1) % actionsType.length);
             macroActionButton.setMessage(Component.translatable(actionsType[actionTypeSelectId]));
+            updateActionTypeTooltip(false);
             onEdited(macroActionBox.getValue());
         }
     }
@@ -415,6 +419,8 @@ public class EditMacroScreen extends Screen {
 
         macroActionButton.setMessage(Component.translatable(actionsType[actionTypeSelectId]));
         secondMacroActionButton.setMessage(Component.translatable(actionsType[secondActionTypeSelectId]));
+        updateActionTypeTooltip(false);
+        updateActionTypeTooltip(true);
         macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
         updateMacroTypeTooltip();
 
@@ -439,7 +445,13 @@ public class EditMacroScreen extends Screen {
     }
 
     private void updateMacroTypeTooltip() {
-        macroTypeButton.setTooltip(Tooltip.create(Component.translatable(macroTypeSelectId == 5 ? "text.tooltip.macrotype.alternate" : "text.tooltip.macrotype")));
+        macroTypeButton.setTooltip(Tooltip.create(Component.translatable(macrosTypeTooltip[macroTypeSelectId])));
+    }
+
+    private void updateActionTypeTooltip(boolean secondAction) {
+        byte actionType = secondAction ? secondActionTypeSelectId : actionTypeSelectId;
+        Button actionButton = secondAction ? secondMacroActionButton : macroActionButton;
+        actionButton.setTooltip(Tooltip.create(Component.translatable(actionsTypeTooltip[actionType])));
     }
 
     private void rebuildFormRows() {
