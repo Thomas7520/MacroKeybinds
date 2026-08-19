@@ -5,6 +5,7 @@ import com.thomas7520.macrokeybinds.gui.other.MacroList;
 import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
+import com.thomas7520.macrokeybinds.object.RepeatMacro;
 import com.thomas7520.macrokeybinds.object.ToggleMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -84,6 +85,10 @@ public class ServerMacroScreen extends Screen {
                 if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
                     countedRepeatMacro.cancel();
                 }
+
+                if(macro instanceof RepeatMacro repeatMacro) {
+                    repeatMacro.setRepeat(false);
+                }
             }
             stopMacroButton.active = false;
         }, Supplier::get) {
@@ -123,6 +128,13 @@ public class ServerMacroScreen extends Screen {
                     break;
                 }
             }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
         }
     }
 
@@ -147,6 +159,13 @@ public class ServerMacroScreen extends Screen {
 
             if(macro instanceof CountedRepeatMacro countedRepeatMacro) {
                 if(countedRepeatMacro.isRunning()) {
+                    stopMacroButton.active = true;
+                    break;
+                }
+            }
+
+            if(macro instanceof RepeatMacro repeatMacro) {
+                if(repeatMacro.isRepeat()) {
                     stopMacroButton.active = true;
                     break;
                 }

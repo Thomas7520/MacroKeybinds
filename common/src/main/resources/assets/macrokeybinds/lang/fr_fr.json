@@ -63,6 +63,7 @@
 
   "text.running": "L",
   "text.tooltip.running": "Lancé",
+  "text.tooltip.alternate.secondactionnext": "L'action B sera la prochaine action exécutée",
   "text.stopmacro": "Arrêter toutes les macros en cours",
 
   "text.editglobalmacro.title": "Modifier Macro Global",

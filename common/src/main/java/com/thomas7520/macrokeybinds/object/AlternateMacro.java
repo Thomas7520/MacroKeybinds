@@ -109,6 +109,10 @@ public class AlternateMacro implements IMacro {
         return start;
     }
 
+    public boolean isSecondActionNext() {
+        return secondActionNext;
+    }
+
     public void reset() {
         startTime = 0;
         start = false;

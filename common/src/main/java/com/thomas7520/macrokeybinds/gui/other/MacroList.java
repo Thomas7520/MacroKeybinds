@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.gui.other;
 import com.google.common.collect.ImmutableList;
 import com.thomas7520.macrokeybinds.gui.EditMacroScreen;
 import com.thomas7520.macrokeybinds.gui.ServerMacroScreen;
+import com.thomas7520.macrokeybinds.object.AlternateMacro;
 import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.DelayedMacro;
 import com.thomas7520.macrokeybinds.object.IMacro;
@@ -213,6 +214,13 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                     context.setTooltipForNextFrame(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
                 }
                 context.text(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
+            }
+
+            if(macro instanceof AlternateMacro alternateMacro && alternateMacro.isSecondActionNext()) {
+                if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
+                    context.setTooltipForNextFrame(minecraft.font, Component.translatable("text.tooltip.alternate.secondactionnext"), mouseX, mouseY);
+                }
+                context.text(minecraft.font, Component.literal("B"), x - 16, y + 6, 0xFFFFAA00, true);
             }
         }
 

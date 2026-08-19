@@ -63,6 +63,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Запущенно",
+  "text.tooltip.alternate.secondactionnext": "Следующим будет выполнено действие B",
   "text.stopmacro": "Остановить все запущенные макросы",
 
   "text.editglobalmacro.title": "Редакт. Гловальные макросы",

@@ -63,6 +63,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Running",
+  "text.tooltip.alternate.secondactionnext": "Action B will run next",
   "text.stopmacro": "Stop all running macros",
 
   "text.editglobalmacro.title": "Edit Global Macro",

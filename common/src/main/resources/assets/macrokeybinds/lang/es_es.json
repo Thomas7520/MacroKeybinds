@@ -63,6 +63,7 @@
 
   "text.running": "R",
   "text.tooltip.running": "Ejecutando",
+  "text.tooltip.alternate.secondactionnext": "La acción B se ejecutará a continuación",
   "text.stopmacro": "Detener todas las macros en ejecución",
 
   "text.editglobalmacro.title": "§3§nModificación de Macro Global",
