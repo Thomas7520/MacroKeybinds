@@ -115,7 +115,13 @@ public class CountedRepeatMacro implements IMacro {
         Minecraft client = Minecraft.getInstance();
         switch (action) {
             case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ? getActionText().substring(1) : getActionText()));
-            case MESSAGE -> client.player.connection.sendChat(getActionText());
+            case MESSAGE -> {
+                if(getActionText().startsWith("/")) {
+                    client.player.connection.sendCommand(getActionText().substring(1));
+                } else {
+                    client.player.connection.sendChat(getActionText());
+                }
+            }
             case FILL_CHAT -> Minecraft.getInstance().setScreenAndShow(new ChatScreen(getActionText(), false));
         }
 

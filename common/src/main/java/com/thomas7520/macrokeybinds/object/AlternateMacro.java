@@ -95,7 +95,13 @@ public class AlternateMacro implements IMacro {
         Minecraft client = Minecraft.getInstance();
         switch (actionToExecute) {
             case COMMAND -> client.player.connection.sendCommand(text.startsWith("/") ? text.substring(1) : text);
-            case MESSAGE -> client.player.connection.sendChat(text);
+            case MESSAGE -> {
+                if(text.startsWith("/")) {
+                    client.player.connection.sendCommand(text.substring(1));
+                } else {
+                    client.player.connection.sendChat(text);
+                }
+            }
             case FILL_CHAT -> client.setScreenAndShow(new ChatScreen(text, false));
         }
     }
