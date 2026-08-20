@@ -20,11 +20,11 @@ public class MacroInputHandler {
 
     public static void checkOpenGui() {
         if(MacroUtil.guiBinding != null && MacroUtil.guiBinding.consumeClick()) {
-            Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
+            Minecraft.getInstance().gui.setScreen(new MainMacroScreen());
         }
 
         if(MacroUtil.wheelBinding != null && MacroUtil.wheelBinding.consumeClick()) {
-            Minecraft.getInstance().setScreenAndShow(new WheelScreen(MacroUtil.getWheel()));
+            Minecraft.getInstance().gui.setScreen(new WheelScreen(MacroUtil.getWheel()));
         }
     }
 

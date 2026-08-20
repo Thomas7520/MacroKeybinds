@@ -103,7 +103,7 @@ public class AlternateMacro implements IMacro {
                     client.player.connection.sendChat(text);
                 }
             }
-            case FILL_CHAT -> client.setScreenAndShow(new ChatScreen(text, false));
+            case FILL_CHAT -> client.gui.setScreen(new ChatScreen(text, false));
             case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(text));
         }
     }

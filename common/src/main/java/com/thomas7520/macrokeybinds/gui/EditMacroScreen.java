@@ -142,7 +142,7 @@ public class EditMacroScreen extends Screen {
                         : Component.translatable("text.tooltip.keybind")));
 
         formList = addRenderableWidget(new EditMacroFormList(this, minecraft));
-        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.setScreenAndShow(this.lastScreen)));
+        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.gui.setScreen(this.lastScreen)));
 
 
         addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), formLeft, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> {
@@ -173,7 +173,7 @@ public class EditMacroScreen extends Screen {
                             : MacroUtil.getGlobalMacroDirectory().toString();
                     MacroFlow.writeMacro(macro, directory);
 
-                    minecraft.setScreenAndShow(this.lastScreen);
+                    minecraft.gui.setScreen(this.lastScreen);
                 }));
 
         if(macroData != null) {
@@ -377,7 +377,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
-        Minecraft.getInstance().setScreenAndShow(new EditMacroScreen(lastScreen, macroData, serverMacro));
+        Minecraft.getInstance().gui.setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
         super.resize(width, height);
     }
 
@@ -503,7 +503,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.setScreenAndShow(lastScreen);
+        minecraft.gui.setScreen(lastScreen);
     }
 
     private String getKeyName() {

@@ -81,7 +81,7 @@ public class MainMacroScreen extends Screen {
 
 
     private Button createButton(Component text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return Button.builder(text, button -> this.minecraft.setScreenAndShow(screenSupplier.get()))
+        return Button.builder(text, button -> this.minecraft.gui.setScreen(screenSupplier.get()))
                 .bounds(x,y,width,height)
                 .build();
     }
@@ -99,7 +99,7 @@ public class MainMacroScreen extends Screen {
             return;
         }
 
-        minecraft.setScreenAndShow(parent);
+        minecraft.gui.setScreen(parent);
     }
 
     protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {

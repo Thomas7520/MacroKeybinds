@@ -138,7 +138,7 @@ public class DelayedMacro implements IMacro {
                     client.player.connection.sendChat(getActionText());
                 }
             }
-            case FILL_CHAT -> Minecraft.getInstance().setScreenAndShow(new ChatScreen(getActionText(), false));
+            case FILL_CHAT -> Minecraft.getInstance().gui.setScreen(new ChatScreen(getActionText(), false));
             case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(getActionText()));
         }
     }
