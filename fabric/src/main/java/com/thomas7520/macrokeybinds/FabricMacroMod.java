@@ -14,12 +14,23 @@ public class FabricMacroMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         MacroMod.setup();
+
+        KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MacroMod.MODID, "main"));
+
         MacroUtil.guiBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MacroMod.MODID, "main"))
+                category
         ));
+
+        MacroUtil.wheelBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "key.macrokeybinds.openwheel.desc",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_J,
+                category
+        ));
+
 
         MacroEvent event = new MacroEvent();
         event.onInputEvent();

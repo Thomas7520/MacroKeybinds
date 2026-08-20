@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.object;
+package com.thomas7520.macrokeybinds.object.macro;
 
 public enum MacroType {
 

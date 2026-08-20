@@ -39,6 +39,14 @@ public class NeoForgeMacroMod {
                 GLFW.GLFW_KEY_N,
                 CATEGORY
         );
+
+        MacroUtil.wheelBinding = new KeyMapping(
+                "key.macrokeybinds.openwheel.desc",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_J,
+                CATEGORY
+        );
         event.register(MacroUtil.guiBinding);
+        event.register(MacroUtil.wheelBinding);
     }
 }

@@ -3,6 +3,7 @@ package com.thomas7520.macrokeybinds.util;
 import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.object.macro.IMacro;
 import com.thomas7520.macrokeybinds.object.macro.MacroModifier;
+import com.thomas7520.macrokeybinds.object.wheel.Wheel;
 import com.thomas7520.macrokeybinds.platform.Services;
 import net.minecraft.client.KeyMapping;
 
@@ -23,8 +24,11 @@ public class MacroUtil {
 
     private static final HashMap<UUID, IMacro> keybinds = new HashMap<>();
     private static final HashMap<UUID, IMacro> serverKeybinds = new HashMap<>();
+    private static Wheel wheel;
+
     private static String serverIP = "";
     public static KeyMapping guiBinding;
+    public static KeyMapping wheelBinding;
 
 
     public static void initMacroDirectories() throws IOException {
@@ -80,6 +84,14 @@ public class MacroUtil {
 
     public static HashMap<UUID, IMacro> getServerKeybinds() {
         return serverKeybinds;
+    }
+
+    public static Wheel getWheel() {
+        return wheel;
+    }
+
+    public static void setWheel(Wheel wheel) {
+        MacroUtil.wheel = wheel;
     }
 
     public static Collection<IMacro> getAllMacros() {
@@ -204,4 +216,5 @@ public class MacroUtil {
 
         return serverKeyAssigned || globalKeyAssigned;
     }
+
 }

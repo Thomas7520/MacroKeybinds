@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.object;
+package com.thomas7520.macrokeybinds.object.macro;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;

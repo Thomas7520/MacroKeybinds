@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.object;
+package com.thomas7520.macrokeybinds.object.macro;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -6,36 +6,33 @@ import net.minecraft.network.chat.Component;
 
 import java.util.UUID;
 
-public class DelayedMacro implements IMacro {
+public class SimpleMacro implements IMacro {
 
     private final UUID uuid;
     private final String name;
     private final String actionText;
     private int key;
-    private final KeyAction action;
-    private final long delayedTime;
     private final String keyName;
+    private final KeyAction action;
     private boolean enable;
-    private MacroType macroType = MacroType.DELAYED;
+    private final MacroType macroType = MacroType.SIMPLE;
+    private long createdTime;
 
     private transient long startTime;
     private transient boolean start;
-    private long createdTime;
     private MacroModifier modifier;
 
-    public DelayedMacro(UUID uuid, String name, String actionText, int key, KeyAction action, long delayedTime, String keyName, boolean enable, long createdTime, MacroModifier modifier) {
+    public SimpleMacro(UUID uuid, String name, String actionText, int key, String keyName, KeyAction action, boolean enable, long createdTime, MacroModifier modifier) {
         this.uuid = uuid;
         this.name = name;
         this.actionText = actionText;
         this.key = key;
-        this.action = action;
-        this.delayedTime = delayedTime;
         this.keyName = keyName;
+        this.action = action;
         this.enable = enable;
         this.createdTime = createdTime;
         this.modifier = modifier;
     }
-
 
     @Override
     public UUID getUUID() {
@@ -53,11 +50,6 @@ public class DelayedMacro implements IMacro {
     }
 
     @Override
-    public MacroType getType() {
-        return macroType;
-    }
-
-    @Override
     public String getActionText() {
         return actionText;
     }
@@ -71,27 +63,6 @@ public class DelayedMacro implements IMacro {
     public String getKeyName() {
         return keyName;
     }
-
-    public long getDelayedTime() {
-        return delayedTime;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public boolean isStart() {
-        return start;
-    }
-
-    public void setStart(boolean start) {
-        this.start = start;
-    }
-
 
     public boolean isEnable() {
         return enable;
@@ -122,8 +93,30 @@ public class DelayedMacro implements IMacro {
     }
 
     @Override
+    public MacroType getType() {
+        return macroType;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public boolean isStart() {
+        return start;
+    }
+
+    public void setStart(boolean start) {
+        this.start = start;
+    }
+
+
+    @Override
     public void doAction() {
-        if(startTime + getDelayedTime() > System.currentTimeMillis()) return;
+        if(startTime + 50 > System.currentTimeMillis()) return; // micro delay because key pressed is in chat without it
 
         setStart(false);
 
@@ -142,6 +135,4 @@ public class DelayedMacro implements IMacro {
             case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(getActionText()));
         }
     }
-
-
 }

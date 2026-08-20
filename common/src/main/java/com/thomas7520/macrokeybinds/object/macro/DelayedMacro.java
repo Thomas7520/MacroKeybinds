@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.object;
+package com.thomas7520.macrokeybinds.object.macro;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -6,36 +6,36 @@ import net.minecraft.network.chat.Component;
 
 import java.util.UUID;
 
-public class RepeatMacro implements IMacro {
+public class DelayedMacro implements IMacro {
 
     private final UUID uuid;
     private final String name;
     private final String actionText;
     private int key;
-    private final String keyName;
     private final KeyAction action;
-    private final long cooldownTime;
+    private final long delayedTime;
+    private final String keyName;
     private boolean enable;
-    private final MacroType macroType = MacroType.REPEAT;
-    private final long createdTime;
+    private MacroType macroType = MacroType.DELAYED;
 
-    private transient boolean doRepeat;
-    private transient long lastActionTime;
+    private transient long startTime;
+    private transient boolean start;
+    private long createdTime;
     private MacroModifier modifier;
 
-
-    public RepeatMacro(UUID uuid, String name, String actionText, int key, String keyName, KeyAction action, long cooldownTime, boolean enable, long createdTime, MacroModifier modifier) {
+    public DelayedMacro(UUID uuid, String name, String actionText, int key, KeyAction action, long delayedTime, String keyName, boolean enable, long createdTime, MacroModifier modifier) {
         this.uuid = uuid;
         this.name = name;
         this.actionText = actionText;
         this.key = key;
-        this.keyName = keyName;
         this.action = action;
-        this.cooldownTime = cooldownTime;
+        this.delayedTime = delayedTime;
+        this.keyName = keyName;
         this.enable = enable;
         this.createdTime = createdTime;
         this.modifier = modifier;
     }
+
 
     @Override
     public UUID getUUID() {
@@ -53,6 +53,11 @@ public class RepeatMacro implements IMacro {
     }
 
     @Override
+    public MacroType getType() {
+        return macroType;
+    }
+
+    @Override
     public String getActionText() {
         return actionText;
     }
@@ -67,6 +72,25 @@ public class RepeatMacro implements IMacro {
         return keyName;
     }
 
+    public long getDelayedTime() {
+        return delayedTime;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public boolean isStart() {
+        return start;
+    }
+
+    public void setStart(boolean start) {
+        this.start = start;
+    }
 
 
     public boolean isEnable() {
@@ -76,6 +100,7 @@ public class RepeatMacro implements IMacro {
     public void setEnable(boolean enable) {
         this.enable = enable;
     }
+
     @Override
     public void setKey(int key) {
         this.key = key;
@@ -92,26 +117,20 @@ public class RepeatMacro implements IMacro {
     }
 
     @Override
-    public MacroType getType() {
-        return macroType;
-    }
-    @Override
     public KeyAction getAction() {
         return action;
     }
 
     @Override
     public void doAction() {
-        if(lastActionTime + cooldownTime > System.currentTimeMillis()) return;
+        if(startTime + getDelayedTime() > System.currentTimeMillis()) return;
 
-        lastActionTime = System.currentTimeMillis();
+        setStart(false);
 
         Minecraft client = Minecraft.getInstance();
         switch (action) {
 
-
-            case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ?
-                    getActionText().substring(1) : getActionText()));
+            case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ? getActionText().substring(1) : getActionText()));
             case MESSAGE -> {
                 if(getActionText().startsWith("/")) {
                     client.player.connection.sendCommand(getActionText().substring(1));
@@ -124,16 +143,5 @@ public class RepeatMacro implements IMacro {
         }
     }
 
-    public long getCooldownTime() {
-        return cooldownTime;
-    }
-
-    public boolean isRepeat() {
-        return doRepeat;
-    }
-
-    public void setRepeat(boolean repeat) {
-        this.doRepeat = repeat;
-    }
 
 }

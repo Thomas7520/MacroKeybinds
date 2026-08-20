@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.util;
+package com.thomas7520.macrokeybinds.util.widget;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;

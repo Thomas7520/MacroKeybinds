@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.util;
+package com.thomas7520.macrokeybinds.util.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;

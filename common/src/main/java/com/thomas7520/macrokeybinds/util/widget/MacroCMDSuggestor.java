@@ -1,4 +1,4 @@
-package com.thomas7520.macrokeybinds.util;
+package com.thomas7520.macrokeybinds.util.widget;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;

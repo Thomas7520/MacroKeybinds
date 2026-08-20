@@ -1,6 +1,7 @@
 package com.thomas7520.macrokeybinds.util;
 
 import com.thomas7520.macrokeybinds.gui.MainMacroScreen;
+import com.thomas7520.macrokeybinds.gui.wheel.WheelScreen;
 import com.thomas7520.macrokeybinds.object.macro.AlternateMacro;
 import com.thomas7520.macrokeybinds.object.macro.CountedRepeatMacro;
 import com.thomas7520.macrokeybinds.object.macro.DelayedMacro;
@@ -20,6 +21,10 @@ public class MacroInputHandler {
     public static void checkOpenGui() {
         if(MacroUtil.guiBinding != null && MacroUtil.guiBinding.consumeClick()) {
             Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
+        }
+
+        if(MacroUtil.wheelBinding != null && MacroUtil.wheelBinding.consumeClick()) {
+            Minecraft.getInstance().setScreenAndShow(new WheelScreen(MacroUtil.getWheel()));
         }
     }
 
@@ -101,7 +106,10 @@ public class MacroInputHandler {
                 }
                 case CountedRepeatMacro countedRepeatMacro when isPress && modifierPressed -> countedRepeatMacro.start();
 
-                default -> throw new IllegalStateException("Unexpected value: " + macro);
+                default -> {
+                    // The macro type is known, but this input event does not trigger it
+                    // (for example, a SimpleMacro when the key is released).
+                }
             }
         }
     }

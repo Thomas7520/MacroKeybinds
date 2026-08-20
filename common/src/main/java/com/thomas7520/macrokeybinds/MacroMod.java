@@ -1,8 +1,9 @@
 package com.thomas7520.macrokeybinds;
 
-import com.thomas7520.macrokeybinds.object.IMacro;
+import com.thomas7520.macrokeybinds.object.macro.IMacro;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
+import com.thomas7520.macrokeybinds.util.WheelFlow;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,6 +45,12 @@ public class MacroMod {
             } catch(IOException | RuntimeException e) {
                 LOGGER.error("Failed to load macro from {}", file.getAbsolutePath(), e);
             }
+        }
+
+        try {
+            MacroUtil.setWheel(WheelFlow.getWheel());
+        } catch (IOException e) {
+            LOGGER.error("Failed to load wheel", e);
         }
 
         LOGGER.info(MacroUtil.getGlobalKeybindsMap().size() + " macros loaded");

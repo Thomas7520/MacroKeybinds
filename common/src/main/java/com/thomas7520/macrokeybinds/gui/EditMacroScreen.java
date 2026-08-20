@@ -2,8 +2,8 @@ package com.thomas7520.macrokeybinds.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.gui.other.EditMacroFormList;
-import com.thomas7520.macrokeybinds.object.*;
-import com.thomas7520.macrokeybinds.util.MacroCMDSuggestor;
+import com.thomas7520.macrokeybinds.object.macro.*;
+import com.thomas7520.macrokeybinds.util.widget.MacroCMDSuggestor;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;

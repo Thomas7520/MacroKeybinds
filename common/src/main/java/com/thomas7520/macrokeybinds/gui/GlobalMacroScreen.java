@@ -2,11 +2,11 @@ package com.thomas7520.macrokeybinds.gui;
 
 import com.thomas7520.macrokeybinds.MacroMod;
 import com.thomas7520.macrokeybinds.gui.other.MacroList;
-import com.thomas7520.macrokeybinds.object.CountedRepeatMacro;
-import com.thomas7520.macrokeybinds.object.DelayedMacro;
-import com.thomas7520.macrokeybinds.object.IMacro;
-import com.thomas7520.macrokeybinds.object.RepeatMacro;
-import com.thomas7520.macrokeybinds.object.ToggleMacro;
+import com.thomas7520.macrokeybinds.object.macro.CountedRepeatMacro;
+import com.thomas7520.macrokeybinds.object.macro.DelayedMacro;
+import com.thomas7520.macrokeybinds.object.macro.IMacro;
+import com.thomas7520.macrokeybinds.object.macro.RepeatMacro;
+import com.thomas7520.macrokeybinds.object.macro.ToggleMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
