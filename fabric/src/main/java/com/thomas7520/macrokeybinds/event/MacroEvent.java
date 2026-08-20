@@ -1,246 +1,37 @@
 package com.thomas7520.macrokeybinds.event;
 
-import com.thomas7520.macrokeybinds.gui.MainMacroScreen;
-import com.thomas7520.macrokeybinds.object.*;
-import com.thomas7520.macrokeybinds.util.MacroUtil;
+import com.thomas7520.macrokeybinds.util.MacroExecutor;
+import com.thomas7520.macrokeybinds.util.MacroInputHandler;
+import com.thomas7520.macrokeybinds.util.MacroSessionManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class MacroEvent {
 
-    private final Set<Integer> keysPressed = new HashSet<>();
+    private final Set<Integer> pressedKeys = new HashSet<>();
 
     public void onInputEvent() {
-
-        ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-            if(MacroUtil.guiBinding.consumeClick()) {
-                Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
-            }
-
-            if(Minecraft.getInstance().level == null || Minecraft.getInstance().gui.screen() != null) return;
-
-            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-            macros.addAll(MacroUtil.getServerKeybinds().values());
-
-            List<Integer> macroKeys = macros.stream().filter(IMacro::isEnable).map(IMacro::getKey).toList();
-
-            for (Integer key : macroKeys) {
-                MacroModifier modifier = switch (getAnyModifierKeyPressed()) {
-                    case 340, 344 -> MacroModifier.SHIFT;
-                    case 342, 346 -> MacroModifier.ALT;
-                    case 341, 345 -> MacroModifier.CONTROL;
-                    default -> MacroModifier.NONE;
-                };
-
-                int state;
-
-                if(key == 0 || key <= 7) {
-                    state = GLFW.glfwGetMouseButton(client.getWindow().handle(), key);
-                    modifier = MacroModifier.NONE;
-                } else {
-                    state = GLFW.glfwGetKey(client.getWindow().handle(), key);
-                }
-
-                boolean isPress = state == GLFW.GLFW_PRESS;
-                boolean isRelease = state == GLFW.GLFW_RELEASE;
-
-                if(isRelease) {
-                    keysPressed.remove(key);
-                }
-
-                if(isPress && !keysPressed.add(key)) continue;
-
-
-                onInputEvent(isPress, isRelease, key, modifier);
-            }
-        });
+        ClientTickEvents.END_CLIENT_TICK.register(client -> MacroInputHandler.checkInputs(pressedKeys));
     }
 
     public void onTick() {
-
-        ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-
-            if(Minecraft.getInstance().level == null) return;
-
-            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-            macros.addAll(MacroUtil.getServerKeybinds().values());
-
-            for (IMacro bind : macros) {
-
-                if(bind instanceof SimpleMacro && ((SimpleMacro) bind).isStart()) {
-                    bind.doAction();
-                }
-                if(bind instanceof AlternateMacro alternateMacro && alternateMacro.isStart()) {
-                    bind.doAction();
-                }
-                if(bind instanceof RepeatMacro repeatMacro && repeatMacro.isRepeat()) {
-                    if(!bind.isEnable()) {
-                        repeatMacro.setRepeat(false);
-                        continue;
-                    }
-
-                    bind.doAction();
-                }
-
-                if(bind instanceof ToggleMacro toggleMacro && toggleMacro.isToggled()) {
-                    if(!bind.isEnable()) {
-                        toggleMacro.setToggled(false);
-                        continue;
-                    }
-
-                    bind.doAction();
-                }
-
-                if(bind instanceof CountedRepeatMacro countedRepeatMacro && countedRepeatMacro.isRunning()) {
-                    if(!bind.isEnable()) {
-                        countedRepeatMacro.cancel();
-                        continue;
-                    }
-
-                    bind.doAction();
-                }
-
-                if(bind instanceof DelayedMacro keybind) {
-
-                    if(!keybind.isEnable()) {
-                        if(keybind.isStart()) {
-                            keybind.setStart(false);
-                        }
-                        continue;
-                    }
-
-                    if(!keybind.isStart()) continue;
-
-                    if(keybind.getStartTime() + keybind.getDelayedTime() < System.currentTimeMillis()) {
-                        keybind.setStart(true);
-                        keybind.doAction();
-                    }
-                }
-
-
-            }
-        });
+        ClientTickEvents.END_CLIENT_TICK.register(client -> MacroExecutor.tick());
     }
 
     public void onServerConnect() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            ClientPacketListener networkHandler = Minecraft.getInstance().getConnection();
+            ClientPacketListener connection = client.getConnection();
+            if(connection == null || connection.getServerData() == null || connection.getServerData().isLan()) return;
 
-            if(networkHandler == null || networkHandler.getServerData() == null) return;
-
-            if(networkHandler.getServerData().isLan()) return;
-
-            MacroUtil.initServerMacros(networkHandler.getServerData().ip);
+            MacroSessionManager.connectToServer(connection.getServerData().ip);
         });
-
-
     }
 
     public void onServerDisconnect() {
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-
-            Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-            macros.addAll(MacroUtil.getServerKeybinds().values());
-
-            for (IMacro bind : macros) {
-
-                if (bind instanceof ToggleMacro keybind) {
-                    keybind.setToggled(false);
-                }
-
-                if (bind instanceof RepeatMacro keybind) {
-                    keybind.setRepeat(false);
-                }
-
-                if (bind instanceof DelayedMacro keybind) {
-                    keybind.setStart(false);
-                }
-
-                if (bind instanceof CountedRepeatMacro keybind) {
-                    keybind.cancel();
-                }
-
-                if (bind instanceof AlternateMacro keybind) {
-                    keybind.reset();
-                }
-            }
-
-            MacroUtil.getServerKeybinds().clear();
-            MacroUtil.setServerIP("");
-        });
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> MacroSessionManager.disconnectFromServer());
     }
-
-    private void onInputEvent(boolean isPress, boolean isRelease, int key, MacroModifier modifier) {
-        Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-        macros.addAll(MacroUtil.getServerKeybinds().values());
-
-        for (IMacro bind : macros) {
-            if(!bind.isEnable()) continue;
-
-            if(key != bind.getKey()) continue;
-
-            boolean modifierPressed = bind.getModifier() == MacroModifier.NONE || bind.getModifier() == modifier;
-
-            if (bind instanceof SimpleMacro) {
-                if(isPress && modifierPressed) {
-                    ((SimpleMacro) bind).setStartTime(System.currentTimeMillis());
-                    ((SimpleMacro) bind).setStart(true);
-                }
-            }
-
-            if(bind instanceof AlternateMacro alternateMacro) {
-                if(isPress && modifierPressed) {
-                    alternateMacro.start();
-                }
-            }
-
-            if(bind instanceof RepeatMacro) {
-                if(isPress && modifierPressed) {
-                    ((RepeatMacro) bind).setRepeat(true);
-                } else if(isRelease || !modifierPressed) {
-                    ((RepeatMacro) bind).setRepeat(false);
-                }
-            }
-
-            if(bind instanceof ToggleMacro) {
-                if(isPress && modifierPressed) {
-                    ((ToggleMacro) bind).setToggled(!((ToggleMacro) bind).isToggled());
-                }
-            }
-
-            if(bind instanceof DelayedMacro) {
-                if(isPress && modifierPressed && !((DelayedMacro) bind).isStart()) {
-                    ((DelayedMacro) bind).setStartTime(System.currentTimeMillis());
-                    ((DelayedMacro) bind).setStart(true);
-                }
-            }
-
-            if(bind instanceof CountedRepeatMacro countedRepeatMacro) {
-                if(isPress && modifierPressed) {
-                    countedRepeatMacro.start();
-                }
-            }
-        }
-    }
-
-    private int getAnyModifierKeyPressed() {
-        int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
-
-        for (int key : modifierKeys) {
-            if (GLFW.glfwGetKey(Minecraft.getInstance().getWindow().handle(), key) == GLFW.GLFW_PRESS) {
-                return key;
-            }
-        }
-        return -1;
-    }
-
 }

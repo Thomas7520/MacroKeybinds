@@ -1,8 +1,8 @@
 package com.thomas7520.macrokeybinds.util;
 
 import com.thomas7520.macrokeybinds.MacroMod;
-import com.thomas7520.macrokeybinds.object.IMacro;
-import com.thomas7520.macrokeybinds.object.MacroModifier;
+import com.thomas7520.macrokeybinds.object.macro.IMacro;
+import com.thomas7520.macrokeybinds.object.macro.MacroModifier;
 import com.thomas7520.macrokeybinds.platform.Services;
 import net.minecraft.client.KeyMapping;
 
@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -78,6 +80,12 @@ public class MacroUtil {
 
     public static HashMap<UUID, IMacro> getServerKeybinds() {
         return serverKeybinds;
+    }
+
+    public static Collection<IMacro> getAllMacros() {
+        Collection<IMacro> macros = new ArrayList<>(keybinds.values());
+        macros.addAll(serverKeybinds.values());
+        return macros;
     }
 
     public static String getServerIP() {

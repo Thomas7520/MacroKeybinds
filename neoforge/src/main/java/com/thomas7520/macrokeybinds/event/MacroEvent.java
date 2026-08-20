@@ -1,9 +1,9 @@
 package com.thomas7520.macrokeybinds.event;
 
 import com.thomas7520.macrokeybinds.MacroMod;
-import com.thomas7520.macrokeybinds.gui.MainMacroScreen;
-import com.thomas7520.macrokeybinds.object.*;
-import com.thomas7520.macrokeybinds.util.MacroUtil;
+import com.thomas7520.macrokeybinds.util.MacroExecutor;
+import com.thomas7520.macrokeybinds.util.MacroInputHandler;
+import com.thomas7520.macrokeybinds.util.MacroSessionManager;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,203 +11,35 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
-import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = MacroMod.MODID)
 public class MacroEvent {
 
-
-
     @SubscribeEvent
     public static void onKeyInputEvent(InputEvent.Key event) {
-        if(MacroUtil.guiBinding.consumeClick()) {
-            Minecraft.getInstance().setScreenAndShow(new MainMacroScreen());
-        }
-
-        if(Minecraft.getInstance().level == null || Minecraft.getInstance().gui.screen() != null) return;
-
-        boolean isPress = event.getAction() == GLFW.GLFW_PRESS;
-        boolean isRelease = event.getAction() == GLFW.GLFW_RELEASE;
-
-        int key = event.getKey();
-
-        MacroModifier modifier = switch (event.getModifiers()) {
-            case 1 -> MacroModifier.SHIFT;
-            case 4, 6 -> MacroModifier.ALT;
-            case 2 -> MacroModifier.CONTROL;
-            default -> MacroModifier.NONE;
-        };
-
-        onInputEvent(isPress, isRelease, key, modifier);
+        MacroInputHandler.handleKeyAction(event.getAction(), event.getKey(), event.getModifiers());
     }
 
     @SubscribeEvent
     public static void onMouseInputEvent(InputEvent.MouseButton.Post event) {
-        if(Minecraft.getInstance().level == null || Minecraft.getInstance().gui.screen() != null) return;
-
-        boolean isPress = event.getAction() == GLFW.GLFW_PRESS;
-        boolean isRelease = event.getAction() == GLFW.GLFW_RELEASE;
-        int key = event.getButton();
-
-        // No modifier in mouse input
-        onInputEvent(isPress, isRelease, key, MacroModifier.NONE);
+        MacroInputHandler.handleMouseAction(event.getAction(), event.getButton());
     }
 
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Post event) {
-        if(Minecraft.getInstance().level == null) return;
-
-        Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-        macros.addAll(MacroUtil.getServerKeybinds().values());
-
-        for (IMacro bind : macros) {
-
-            if(bind instanceof SimpleMacro && ((SimpleMacro) bind).isStart()) {
-                bind.doAction();
-            }
-            if(bind instanceof AlternateMacro alternateMacro && alternateMacro.isStart()) {
-                bind.doAction();
-            }
-            if(bind instanceof RepeatMacro repeatMacro && repeatMacro.isRepeat()) {
-                if(!bind.isEnable()) {
-                    repeatMacro.setRepeat(false);
-                    continue;
-                }
-
-                bind.doAction();
-            }
-
-            if(bind instanceof ToggleMacro toggleMacro && toggleMacro.isToggled()) {
-                if(!bind.isEnable()) {
-                    toggleMacro.setToggled(false);
-                    continue;
-                }
-
-                bind.doAction();
-            }
-
-            if(bind instanceof CountedRepeatMacro countedRepeatMacro && countedRepeatMacro.isRunning()) {
-                if(!bind.isEnable()) {
-                    countedRepeatMacro.cancel();
-                    continue;
-                }
-
-                bind.doAction();
-            }
-
-            if(bind instanceof DelayedMacro) {
-                DelayedMacro keybind = (DelayedMacro) bind;
-
-                if(!keybind.isEnable()) {
-                    if(keybind.isStart()) {
-                        keybind.setStart(false);
-                    }
-                    continue;
-                }
-
-                if(!keybind.isStart()) continue;
-
-                if(keybind.getStartTime() + keybind.getDelayedTime() < System.currentTimeMillis()) {
-                    keybind.setStart(true);
-                    keybind.doAction();
-                }
-            }
-
-
-        }
+        MacroExecutor.tick();
     }
 
     @SubscribeEvent
     public static void onServerConnect(ClientPlayerNetworkEvent.LoggingIn event) {
-        if(Minecraft.getInstance().getCurrentServer() == null) return;
-        if(Minecraft.getInstance().getCurrentServer().isLan()) return;
-        MacroUtil.initServerMacros(Minecraft.getInstance().getCurrentServer().ip);
+        Minecraft client = Minecraft.getInstance();
+        if(client.getCurrentServer() == null || client.getCurrentServer().isLan()) return;
+
+        MacroSessionManager.connectToServer(client.getCurrentServer().ip);
     }
 
     @SubscribeEvent
     public static void onServerDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-        for (IMacro bind : MacroUtil.getGlobalKeybindsMap().values()) {
-
-            if(bind instanceof ToggleMacro keybind) {
-                keybind.setToggled(false);
-            }
-
-            if(bind instanceof RepeatMacro keybind) {
-                keybind.setRepeat(false);
-            }
-
-            if(bind instanceof DelayedMacro keybind) {
-                keybind.setStart(false);
-            }
-
-            if(bind instanceof CountedRepeatMacro keybind) {
-                keybind.cancel();
-            }
-
-            if(bind instanceof AlternateMacro keybind) {
-                keybind.reset();
-            }
-        }
-
-        MacroUtil.getServerKeybinds().clear();
-        MacroUtil.setServerIP("");
-    }
-
-    private static void onInputEvent(boolean isPress, boolean isRelease, int key, MacroModifier modifier) {
-        Collection<IMacro> macros = new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values());
-        macros.addAll(MacroUtil.getServerKeybinds().values());
-
-        for (IMacro bind : macros) {
-            if(!bind.isEnable()) continue;
-
-
-
-            if(key != bind.getKey()) continue;
-
-            boolean modifierPressed = bind.getModifier() == MacroModifier.NONE || bind.getModifier() == modifier;
-
-            if (bind instanceof SimpleMacro) {
-                if(isPress && modifierPressed) {
-                    ((SimpleMacro) bind).setStartTime(System.currentTimeMillis());
-                    ((SimpleMacro) bind).setStart(true);
-                }
-            }
-
-            if(bind instanceof AlternateMacro alternateMacro) {
-                if(isPress && modifierPressed) {
-                    alternateMacro.start();
-                }
-            }
-
-            if(bind instanceof RepeatMacro) {
-                if(isPress && modifierPressed) {
-                    ((RepeatMacro) bind).setRepeat(true);
-                } else if(isRelease || !modifierPressed) {
-                    ((RepeatMacro) bind).setRepeat(false);
-                }
-            }
-
-            if(bind instanceof ToggleMacro) {
-                if(isPress && modifierPressed) {
-                    ((ToggleMacro) bind).setToggled(!((ToggleMacro) bind).isToggled());
-                }
-            }
-
-            if(bind instanceof DelayedMacro) {
-                if(isPress && modifierPressed && !((DelayedMacro) bind).isStart()) {
-                    ((DelayedMacro) bind).setStartTime(System.currentTimeMillis());
-                    ((DelayedMacro) bind).setStart(true);
-                }
-            }
-
-            if(bind instanceof CountedRepeatMacro countedRepeatMacro) {
-                if(isPress && modifierPressed) {
-                    countedRepeatMacro.start();
-                }
-            }
-        }
+        MacroSessionManager.disconnectFromServer();
     }
 }
