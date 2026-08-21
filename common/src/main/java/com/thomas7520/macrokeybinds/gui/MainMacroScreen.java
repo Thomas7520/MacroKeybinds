@@ -1,5 +1,6 @@
 package com.thomas7520.macrokeybinds.gui;
 
+import com.thomas7520.macrokeybinds.gui.wheel.WheelOptionScreen;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -41,6 +42,7 @@ public class MainMacroScreen extends Screen {
 
         Component globalMacros = Component.translatable("text.config.globalmacros");
         Component serverMacros = Component.translatable("text.config.servermacros");
+        Component wheelOptions = Component.translatable("text.config.wheeloptions");
         Component discordLink = Component.translatable("text.config.needhelp");
 
         StringWidget titleWidget = new StringWidget(title, font);
@@ -51,7 +53,10 @@ public class MainMacroScreen extends Screen {
 
         addRenderableWidget(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
 
-        addRenderableWidget(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 70, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
+        addRenderableWidget(createButton(wheelOptions, guiLeft - 100, guiTop / 2 + 70, 200, 20,
+                () -> new WheelOptionScreen(this)));
+
+        addRenderableWidget(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 105, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
 
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(guiLeft - 100, height - 27, 200, 20)

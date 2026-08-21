@@ -3,10 +3,12 @@
   "text.config.mainscreen": "§3§nMenú de Macros",
   "text.config.globalmacros": "Macros Globales",
   "text.config.servermacros": "Macros de Servidor",
+  "text.config.wheeloptions": "Opciones de la rueda",
   "text.config.needhelp": "§8Discord de Ayuda",
   "text.tooltip.main.noserver": "§4❗ §cNo te encuentras en un servidor.",
 
   "key.macrokeybinds.openoptions.desc": "Abrir la Configuración",
+  "key.macrokeybinds.openwheel.desc": "Abrir la rueda de macros",
   "key.categories.macrokeybinds": "§3§lMacroKeybinds",
 
   "text.globalmacros.title": "§3§nMacros Globales",
@@ -78,5 +80,23 @@
   "text.editglobalmacro.title": "§3§nModificación de Macro Global",
   "text.editservermacro.title": "§3§nModificación de Macro de Servidor",
 
-  "text.searchbox.shadow": "Buscar una Macro"
+  "text.searchbox.shadow": "Buscar una Macro",
+
+  "text.wheel.options.title": "Opciones de la rueda",
+  "text.wheel.title": "Rueda de macros",
+  "text.wheel.empty": "Vacío",
+  "text.wheel.unknown": "Desconocida",
+  "text.wheel.disabled": "Desactivada",
+  "text.wheel.add": "Añadir",
+  "text.wheel.remove": "Quitar macro",
+  "text.wheel.icon": "Icono",
+  "text.wheel.change.icon": "Cambiar icono",
+  "text.wheel.add.icon": "Añadir icono",
+  "text.wheel.remove.icon": "Quitar icono",
+  "text.wheel.mode": "Modo: %s",
+  "text.wheel.mode.click": "Clic",
+  "text.wheel.mode.hold": "Mantener",
+  "text.wheel.select.macro": "Seleccionar una macro",
+  "text.wheel.select.icon": "Seleccionar un icono",
+  "text.wheel.no.macros": "No hay macros disponibles"
 }

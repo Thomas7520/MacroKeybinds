@@ -3,10 +3,12 @@
   "text.config.mainscreen": "Keybinds Menu",
   "text.config.globalmacros": "Global Macros Options",
   "text.config.servermacros": "Serveur Macros Options",
+  "text.config.wheeloptions": "Options de la roue",
   "text.config.needhelp": "Besoin d'aide? Bug? Lien Discord",
   "text.tooltip.main.noserver": "Vous n'êtes pas sur un serveur",
 
   "key.macrokeybinds.openoptions.desc": "Ouvrir Gui Option" ,
+  "key.macrokeybinds.openwheel.desc": "Ouvrir la roue de macros",
   "key.categories.macrokeybinds": "MacroKeybinds",
 
   "text.globalmacros.title": "Global Macros",
@@ -78,5 +80,23 @@
   "text.editglobalmacro.title": "Modifier Macro Global",
   "text.editservermacro.title": "Modifier Macro Server",
 
-  "text.searchbox.shadow": "Rechercher une macro"
+  "text.searchbox.shadow": "Rechercher une macro",
+
+  "text.wheel.options.title": "Options de la roue",
+  "text.wheel.title": "Roue de macros",
+  "text.wheel.empty": "Vide",
+  "text.wheel.unknown": "Inconnue",
+  "text.wheel.disabled": "Désactivée",
+  "text.wheel.add": "Ajouter",
+  "text.wheel.remove": "Retirer la macro",
+  "text.wheel.icon": "Icone",
+  "text.wheel.change.icon": "Changer l'icone",
+  "text.wheel.add.icon": "Ajouter une icone",
+  "text.wheel.remove.icon": "Retirer l'icone",
+  "text.wheel.mode": "Mode : %s",
+  "text.wheel.mode.click": "Clic",
+  "text.wheel.mode.hold": "Maintenir",
+  "text.wheel.select.macro": "Selectionner une macro",
+  "text.wheel.select.icon": "Selectionner une icone",
+  "text.wheel.no.macros": "Aucune macro disponible"
 }

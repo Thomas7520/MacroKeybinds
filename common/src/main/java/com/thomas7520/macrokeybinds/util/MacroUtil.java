@@ -100,6 +100,11 @@ public class MacroUtil {
         return macros;
     }
 
+    public static IMacro getMacro(UUID macroId) {
+        IMacro macro = keybinds.get(macroId);
+        return macro != null ? macro : serverKeybinds.get(macroId);
+    }
+
     public static String getServerIP() {
         return serverIP;
     }

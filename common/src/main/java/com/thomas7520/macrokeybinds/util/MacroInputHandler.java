@@ -1,5 +1,6 @@
 package com.thomas7520.macrokeybinds.util;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.gui.MainMacroScreen;
 import com.thomas7520.macrokeybinds.gui.wheel.WheelScreen;
 import com.thomas7520.macrokeybinds.object.macro.AlternateMacro;
@@ -31,6 +32,31 @@ public class MacroInputHandler {
     public static boolean canReceiveInput() {
         Minecraft client = Minecraft.getInstance();
         return client.level != null && client.gui.screen() == null;
+    }
+
+    public static boolean isWheelBindingDown() {
+        if(MacroUtil.wheelBinding == null || MacroUtil.wheelBinding.isUnbound()) return false;
+
+        Minecraft client = Minecraft.getInstance();
+        InputConstants.Key key = InputConstants.getKey(MacroUtil.wheelBinding.saveString());
+        long window = client.getWindow().handle();
+
+        if(key.getType() == InputConstants.Type.MOUSE) {
+            return GLFW.glfwGetMouseButton(window, key.getValue()) == GLFW.GLFW_PRESS;
+        }
+
+        if(key.getType() == InputConstants.Type.KEYSYM) {
+            return InputConstants.isKeyDown(client.getWindow(), key.getValue());
+        }
+
+        for(int keyCode = GLFW.GLFW_KEY_SPACE; keyCode <= GLFW.GLFW_KEY_LAST; keyCode++) {
+            if(GLFW.glfwGetKeyScancode(keyCode) == key.getValue()
+                    && GLFW.glfwGetKey(window, keyCode) == GLFW.GLFW_PRESS) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void checkInputs(Set<Integer> pressedKeys) {
@@ -74,6 +100,7 @@ public class MacroInputHandler {
     }
 
     public static void handleMouseAction(int action, int button) {
+        checkOpenGui();
         if(!canReceiveInput()) return;
 
         // No modifier in mouse input

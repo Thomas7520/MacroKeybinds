@@ -3,10 +3,12 @@
   "text.config.mainscreen": "MacroKeybinds",
   "text.config.globalmacros": "Глобальные макросы",
   "text.config.servermacros": "Серверные макросы",
+  "text.config.wheeloptions": "Настройки колеса",
   "text.config.needhelp": "Нужна помощь? Баги? Ссылка на Дискорд",
   "text.tooltip.main.noserver": "Вы не на сервере",
 
   "key.macrokeybinds.openoptions.desc": "Открыть настройки макросов" ,
+  "key.macrokeybinds.openwheel.desc": "Открыть колесо макросов",
   "key.categories.macrokeybinds": "MacroKeybinds",
 
   "text.globalmacros.title": "Глобальные макросы",
@@ -78,5 +80,23 @@
   "text.editglobalmacro.title": "Редакт. Гловальные макросы",
   "text.editservermacro.title": "Редакт. Серверные макросы",
 
-  "text.searchbox.shadow": "Поиск макросов"
+  "text.searchbox.shadow": "Поиск макросов",
+
+  "text.wheel.options.title": "Настройки колеса",
+  "text.wheel.title": "Колесо макросов",
+  "text.wheel.empty": "Пусто",
+  "text.wheel.unknown": "Неизвестно",
+  "text.wheel.disabled": "Отключено",
+  "text.wheel.add": "Добавить",
+  "text.wheel.remove": "Удалить макрос",
+  "text.wheel.icon": "Значок",
+  "text.wheel.change.icon": "Изменить значок",
+  "text.wheel.add.icon": "Добавить значок",
+  "text.wheel.remove.icon": "Удалить значок",
+  "text.wheel.mode": "Режим: %s",
+  "text.wheel.mode.click": "Нажатие",
+  "text.wheel.mode.hold": "Удержание",
+  "text.wheel.select.macro": "Выберите макрос",
+  "text.wheel.select.icon": "Выберите значок",
+  "text.wheel.no.macros": "Нет доступных макросов"
 }

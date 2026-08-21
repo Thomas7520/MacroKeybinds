@@ -6,12 +6,14 @@ import java.util.List;
 
 public class Wheel {
 
+    public static final int MAX_MACROS = 6;
+
     private WheelMode mode;
     private List<WheelSlot> macros;
 
     public Wheel() {
         this.mode = WheelMode.CLICK;
-        this.macros = new ArrayList<>(Collections.nCopies(6, null));
+        this.macros = new ArrayList<>(Collections.nCopies(MAX_MACROS, null));
     }
 
     public Wheel(WheelMode mode, List<WheelSlot> macros) {
