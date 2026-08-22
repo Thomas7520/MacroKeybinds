@@ -116,7 +116,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void openMacroSelector(int slotIndex) {
-        minecraft.gui.setScreen(new WheelSelectMacroScreen(this, macro -> {
+        minecraft.setScreen(new WheelSelectMacroScreen(this, macro -> {
             setWheelSlot(slotIndex, new WheelSlot(macro.getUUID(), null));
             saveWheel();
         }));
@@ -152,7 +152,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void changeIcon(WheelSlot slot) {
-        minecraft.gui.setScreen(new WheelSelectIconScreen(this, iconId -> {
+        minecraft.setScreen(new WheelSelectIconScreen(this, iconId -> {
             slot.setIconId(iconId);
             saveWheel();
         }));
@@ -173,7 +173,7 @@ public class WheelOptionScreen extends Screen {
         if(parent == null) {
             super.onClose();
         } else {
-            minecraft.gui.setScreen(parent);
+            minecraft.setScreen(parent);
         }
     }
 

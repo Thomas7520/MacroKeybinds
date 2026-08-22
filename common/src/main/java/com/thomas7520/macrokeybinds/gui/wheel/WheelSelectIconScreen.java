@@ -85,7 +85,7 @@ public class WheelSelectIconScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     private class IconGrid extends ContainerObjectSelectionList<IconRow> {

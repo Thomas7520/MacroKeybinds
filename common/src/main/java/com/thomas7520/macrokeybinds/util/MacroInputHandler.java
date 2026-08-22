@@ -21,17 +21,17 @@ public class MacroInputHandler {
 
     public static void checkOpenGui() {
         if(MacroUtil.guiBinding != null && MacroUtil.guiBinding.consumeClick()) {
-            Minecraft.getInstance().gui.setScreen(new MainMacroScreen());
+            Minecraft.getInstance().setScreen(new MainMacroScreen());
         }
 
         if(MacroUtil.wheelBinding != null && MacroUtil.wheelBinding.consumeClick()) {
-            Minecraft.getInstance().gui.setScreen(new WheelScreen(MacroUtil.getWheel()));
+            Minecraft.getInstance().setScreen(new WheelScreen(MacroUtil.getWheel()));
         }
     }
 
     public static boolean canReceiveInput() {
         Minecraft client = Minecraft.getInstance();
-        return client.level != null && client.gui.screen() == null;
+        return client.level != null && client.screen == null;
     }
 
     public static boolean isWheelBindingDown() {

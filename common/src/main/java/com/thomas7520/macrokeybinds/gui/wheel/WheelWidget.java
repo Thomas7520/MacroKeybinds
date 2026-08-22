@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -57,7 +58,7 @@ public class WheelWidget extends AbstractContainerWidget {
 
     public WheelWidget(int x, int y, int radius, List<WheelSlot> slots, boolean showIcons, boolean hoverEnabled,
                        boolean clickEnabled, int hoverDeadZone, Consumer<WheelSlot> onSlotClicked) {
-        super(x, y, radius*2, radius*2, Component.empty());
+        super(x, y, radius*2, radius*2, Component.empty(), AbstractScrollArea.defaultSettings(0));
 
         this.onSlotClicked = onSlotClicked;
         this.radius = radius;
