@@ -111,7 +111,7 @@ public class MacroInputHandler {
         for(IMacro macro : MacroUtil.getAllMacros()) {
             if(!macro.isEnable() || key != macro.getKey()) continue;
 
-            boolean modifierPressed = macro.getModifier() == MacroModifier.NONE || macro.getModifier() == modifier;
+            boolean modifierPressed = macro.getModifier() == modifier;
 
             switch (macro) {
                 case SimpleMacro simpleMacro when isPress && modifierPressed -> {
