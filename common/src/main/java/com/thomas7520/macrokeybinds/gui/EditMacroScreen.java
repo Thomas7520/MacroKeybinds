@@ -460,18 +460,6 @@ public class EditMacroScreen extends Screen {
 
         formList.clearRows();
         formList.addRow(new EditMacroFormList.Field(Component.translatable("text.editmacro.field.name"), nameBox, 0));
-        formList.addRow(
-                new EditMacroFormList.Field(Component.translatable(alternate ? "text.editmacro.field.actiontype.first" : "text.editmacro.field.actiontype"), macroActionButton, 0),
-                new EditMacroFormList.Field(Component.translatable(alternate ? "text.editmacro.field.action.first" : "text.editmacro.field.action"), macroActionBox, COLUMN_WIDTH + COLUMN_GAP)
-        );
-
-        if(alternate) {
-            formList.addRow(
-                    new EditMacroFormList.Field(Component.translatable("text.editmacro.field.actiontype.second"), secondMacroActionButton, 0),
-                    new EditMacroFormList.Field(Component.translatable("text.editmacro.field.action.second"), secondMacroActionBox, COLUMN_WIDTH + COLUMN_GAP)
-            );
-        }
-
         if(macroTypeSelectId == 4) {
             formList.addRow(
                     new EditMacroFormList.Field(Component.translatable("text.editmacro.field.macrotype"), macroTypeButton, 0),
@@ -485,6 +473,18 @@ public class EditMacroScreen extends Screen {
             );
         } else {
             formList.addRow(new EditMacroFormList.Field(Component.translatable("text.editmacro.field.macrotype"), macroTypeButton, 0));
+        }
+
+        formList.addRow(
+                new EditMacroFormList.Field(Component.translatable(alternate ? "text.editmacro.field.actiontype.first" : "text.editmacro.field.actiontype"), macroActionButton, 0),
+                new EditMacroFormList.Field(Component.translatable(alternate ? "text.editmacro.field.action.first" : "text.editmacro.field.action"), macroActionBox, COLUMN_WIDTH + COLUMN_GAP)
+        );
+
+        if(alternate) {
+            formList.addRow(
+                    new EditMacroFormList.Field(Component.translatable("text.editmacro.field.actiontype.second"), secondMacroActionButton, 0),
+                    new EditMacroFormList.Field(Component.translatable("text.editmacro.field.action.second"), secondMacroActionBox, COLUMN_WIDTH + COLUMN_GAP)
+            );
         }
 
         formList.addRow(new EditMacroFormList.Field(Component.translatable("text.editmacro.field.keybind"), macroKeyButton, 0));
