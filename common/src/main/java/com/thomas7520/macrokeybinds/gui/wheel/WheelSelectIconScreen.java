@@ -1,7 +1,7 @@
 package com.thomas7520.macrokeybinds.gui.wheel;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -10,11 +10,10 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -29,13 +28,13 @@ public class WheelSelectIconScreen extends Screen {
     private static final int ICON_GAP = 4;
 
     private final Screen parent;
-    private final Consumer<Identifier> onIconSelected;
+    private final Consumer<ResourceLocation> onIconSelected;
 
     private IconButton selectedIcon;
     private IconButton hoveredIcon;
     private Button doneButton;
 
-    public WheelSelectIconScreen(Screen parent, Consumer<Identifier> onIconSelected) {
+    public WheelSelectIconScreen(Screen parent, Consumer<ResourceLocation> onIconSelected) {
         super(Component.translatable("text.wheel.select.icon"));
         this.parent = parent;
         this.onIconSelected = Objects.requireNonNull(onIconSelected);
@@ -61,16 +60,16 @@ public class WheelSelectIconScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         hoveredIcon = null;
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         IconButton preview = hoveredIcon != null ? hoveredIcon : selectedIcon;
         if(preview == null) return;
 
         int previewY = height - 55;
-        graphics.item(preview.stack, width / 2 - 60, previewY - 4);
-        graphics.text(font, preview.stack.getHoverName(), width / 2 - 38, previewY, 0xFFFFFFFF);
+        graphics.renderItem(preview.stack, width / 2 - 60, previewY - 4);
+        graphics.drawString(font, preview.stack.getHoverName(), width / 2 - 38, previewY, 0xFFFFFFFF);
     }
 
     private void selectIcon(IconButton icon) {
@@ -85,7 +84,7 @@ public class WheelSelectIconScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     private class IconGrid extends ContainerObjectSelectionList<IconRow> {
@@ -97,8 +96,8 @@ public class WheelSelectIconScreen extends Screen {
             this.columns = Math.max(1, Math.min(12, (width - 40) / (ICON_SIZE + ICON_GAP)));
 
             List<IconButton> icons = BuiltInRegistries.ITEM.entrySet().stream()
-                    .sorted(Comparator.comparing(entry -> entry.getKey().identifier()))
-                    .map(entry -> new IconButton(entry.getValue().getDefaultInstance(), entry.getKey().identifier()))
+                    .sorted(Comparator.comparing(entry -> entry.getKey().location()))
+                    .map(entry -> new IconButton(entry.getValue().getDefaultInstance(), entry.getKey().location()))
                     .filter(icon -> !icon.stack.isEmpty())
                     .toList();
 
@@ -123,11 +122,12 @@ public class WheelSelectIconScreen extends Screen {
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+        public void render(GuiGraphics graphics, int rowIndex, int top, int left, int width, int height,
+                           int mouseX, int mouseY, boolean hovered, float partialTick) {
             for(int index = 0; index < icons.size(); index++) {
                 IconButton icon = icons.get(index);
-                icon.setPosition(getX() + index * (ICON_SIZE + ICON_GAP), getY() + 2);
-                icon.extractRenderState(graphics, mouseX, mouseY, partialTick);
+                icon.setPosition(left + index * (ICON_SIZE + ICON_GAP), top + 2);
+                icon.render(graphics, mouseX, mouseY, partialTick);
             }
         }
 
@@ -145,16 +145,16 @@ public class WheelSelectIconScreen extends Screen {
     private class IconButton extends AbstractWidget {
 
         private final ItemStack stack;
-        private final Identifier iconId;
+        private final ResourceLocation iconId;
 
-        public IconButton(ItemStack stack, Identifier iconId) {
+        public IconButton(ItemStack stack, ResourceLocation iconId) {
             super(0, 0, ICON_SIZE, ICON_SIZE, stack.getHoverName());
             this.stack = stack;
             this.iconId = iconId;
         }
 
         @Override
-        protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             if(isHovered()) {
                 hoveredIcon = this;
             }
@@ -163,12 +163,12 @@ public class WheelSelectIconScreen extends Screen {
             int borderColor = selectedIcon == this ? 0xFFFFFF55 : isHovered() ? 0xFFFFFFFF : 0xFF777777;
 
             graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
-            graphics.outline(getX(), getY(), getWidth(), getHeight(), borderColor);
-            graphics.item(stack, getX() + 2, getY() + 2);
+            graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), borderColor);
+            graphics.renderItem(stack, getX() + 2, getY() + 2);
         }
 
         @Override
-        public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        public void onClick(double mouseX, double mouseY) {
             selectIcon(this);
         }
 

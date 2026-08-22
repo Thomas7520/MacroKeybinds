@@ -21,17 +21,17 @@ public class MacroInputHandler {
 
     public static void checkOpenGui() {
         if(MacroUtil.guiBinding != null && MacroUtil.guiBinding.consumeClick()) {
-            Minecraft.getInstance().gui.setScreen(new MainMacroScreen());
+            Minecraft.getInstance().setScreen(new MainMacroScreen());
         }
 
         if(MacroUtil.wheelBinding != null && MacroUtil.wheelBinding.consumeClick()) {
-            Minecraft.getInstance().gui.setScreen(new WheelScreen(MacroUtil.getWheel()));
+            Minecraft.getInstance().setScreen(new WheelScreen(MacroUtil.getWheel()));
         }
     }
 
     public static boolean canReceiveInput() {
         Minecraft client = Minecraft.getInstance();
-        return client.level != null && client.gui.screen() == null;
+        return client.level != null && client.screen == null;
     }
 
     public static boolean isWheelBindingDown() {
@@ -39,14 +39,14 @@ public class MacroInputHandler {
 
         Minecraft client = Minecraft.getInstance();
         InputConstants.Key key = InputConstants.getKey(MacroUtil.wheelBinding.saveString());
-        long window = client.getWindow().handle();
+        long window = client.getWindow().getWindow();
 
         if(key.getType() == InputConstants.Type.MOUSE) {
             return GLFW.glfwGetMouseButton(window, key.getValue()) == GLFW.GLFW_PRESS;
         }
 
         if(key.getType() == InputConstants.Type.KEYSYM) {
-            return InputConstants.isKeyDown(client.getWindow(), key.getValue());
+            return InputConstants.isKeyDown(window, key.getValue());
         }
 
         for(int keyCode = GLFW.GLFW_KEY_SPACE; keyCode <= GLFW.GLFW_KEY_LAST; keyCode++) {
@@ -64,7 +64,7 @@ public class MacroInputHandler {
         if(!canReceiveInput()) return;
 
         Minecraft client = Minecraft.getInstance();
-        long window = client.getWindow().handle();
+        long window = client.getWindow().getWindow();
 
         for(int key : getEnabledMacroKeys()) {
             MacroModifier modifier = getPressedModifier(window);

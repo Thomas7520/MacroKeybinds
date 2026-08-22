@@ -1,15 +1,15 @@
 package com.thomas7520.macrokeybinds.object.wheel;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.UUID;
 
 public class WheelSlot {
 
     private UUID macroId;
-    private Identifier iconId;
+    private ResourceLocation iconId;
 
-    public WheelSlot(UUID macroId, Identifier iconId) {
+    public WheelSlot(UUID macroId, ResourceLocation iconId) {
         this.macroId = macroId;
         this.iconId = iconId;
     }
@@ -22,11 +22,11 @@ public class WheelSlot {
         this.macroId = macroId;
     }
 
-    public Identifier getIconId() {
+    public ResourceLocation getIconId() {
         return iconId;
     }
 
-    public void setIconId(Identifier iconId) {
+    public void setIconId(ResourceLocation iconId) {
         this.iconId = iconId;
     }
 }

@@ -2,13 +2,12 @@ package com.thomas7520.macrokeybinds.gui.other;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
@@ -42,16 +41,16 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
     }
 
     @Override
-    protected int scrollBarX() {
+    protected int getScrollbarPosition() {
         return screen.width / 2 + FORM_WIDTH / 2 + 6;
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-        Entry entry = getEntryAtPosition(click.x(), click.y());
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        Entry entry = getEntryAtPosition(mouseX, mouseY);
         boolean clickedWidget = entry != null && entry.children().stream()
-                .anyMatch(widget -> widget.isMouseOver(click.x(), click.y()));
-        boolean handled = super.mouseClicked(click, doubled);
+                .anyMatch(widget -> widget.isMouseOver(mouseX, mouseY));
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
 
         if(!clickedWidget) setFocused(null);
 
@@ -74,15 +73,16 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            int left = screen.width / 2 - FORM_WIDTH / 2;
-            int y = getY();
+        public void render(GuiGraphics context, int index, int top, int left, int width, int height,
+                           int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int formLeft = screen.width / 2 - FORM_WIDTH / 2;
+            int y = top;
 
             for(Field field : fields) {
-                int x = left + field.xOffset();
-                context.text(Minecraft.getInstance().font, field.label(), x, y, LABEL_COLOR, false);
+                int x = formLeft + field.xOffset();
+                context.drawString(Minecraft.getInstance().font, field.label(), x, y, LABEL_COLOR, false);
                 field.widget().setPosition(x, y + 11);
-                field.widget().extractRenderState(context, mouseX, mouseY, tickDelta);
+                field.widget().render(context, mouseX, mouseY, tickDelta);
             }
         }
 

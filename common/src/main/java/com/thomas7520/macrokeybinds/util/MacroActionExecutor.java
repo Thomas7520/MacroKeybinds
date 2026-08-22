@@ -22,8 +22,8 @@ public final class MacroActionExecutor {
                     client.player.connection.sendChat(text);
                 }
             }
-            case FILL_CHAT -> client.gui.setScreen(new ChatScreen(text, false));
-            case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(text));
+            case FILL_CHAT -> client.setScreen(new ChatScreen(text));
+            case LOCAL_MESSAGE -> client.gui.getChat().addMessage(Component.literal(text));
         }
     }
 }

@@ -8,7 +8,7 @@ import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,8 +17,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -142,7 +140,7 @@ public class EditMacroScreen extends Screen {
                         : Component.translatable("text.tooltip.keybind")));
 
         formList = addRenderableWidget(new EditMacroFormList(this, minecraft));
-        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.gui.setScreen(this.lastScreen)));
+        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.setScreen(this.lastScreen)));
 
 
         addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), formLeft, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> {
@@ -173,7 +171,7 @@ public class EditMacroScreen extends Screen {
                             : MacroUtil.getGlobalMacroDirectory().toString();
                     MacroFlow.writeMacro(macro, directory);
 
-                    minecraft.gui.setScreen(this.lastScreen);
+                    minecraft.setScreen(this.lastScreen);
                 }));
 
         if(macroData != null) {
@@ -225,10 +223,10 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
-        context.text(font, this.title, this.width / 2 - font.width(title) / 2, 15, TITLE_COLOR, false);
+        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 15, TITLE_COLOR, false);
 
         boolean showingCommandSuggestions = actionTypeSelectId == KeyAction.COMMAND.ordinal()
                 && macroActionBox.isFocused()
@@ -248,7 +246,7 @@ public class EditMacroScreen extends Screen {
                 && keySelect != -1;
 
         if(!confirmButton.active && confirmButton.isHovered()) {
-            context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150), mouseX, mouseY);
+            this.setTooltipForNextRenderPass(font.split(Component.translatable("text.tooltip.editmacro.forgotvalue").withStyle(ChatFormatting.RED), 150));
         }
 
         if(showingCommandSuggestions) {
@@ -262,11 +260,7 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
-        double mouseX = click.x();
-        double mouseY = click.y();
-        int button = click.button();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.commandSuggestions.mouseClicked((int)mouseX, (int)mouseY, button)) {
             return true;
         }
@@ -289,7 +283,7 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            boolean handled = super.mouseClicked(click, doubled);
+            boolean handled = super.mouseClicked(mouseX, mouseY, button);
             if (!handled) {
                 this.setFocused(null);
             }
@@ -301,15 +295,15 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public boolean keyPressed(KeyEvent input) {
-        if (this.commandSuggestions.keyPressed(input)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.commandSuggestions.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (macroTypeSelectId == 5 && this.secondCommandSuggestions.keyPressed(input)) {
+        if (macroTypeSelectId == 5 && this.secondCommandSuggestions.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         if (this.listenMacroBind) {
-            if (input.isEscape()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 if (hasConflictKey()) {
                     macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
                 } else {
@@ -317,7 +311,7 @@ public class EditMacroScreen extends Screen {
                 }
                 listenMacroBind = false;
             } else {
-                InputConstants.Key key = InputConstants.getKey(input);
+                InputConstants.Key key = InputConstants.getKey(keyCode, scanCode);
 
                 inputSelected = key;
 
@@ -342,14 +336,14 @@ public class EditMacroScreen extends Screen {
             }
             return true;
         } else {
-            return super.keyPressed(input);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
 
 
 
     @Override
-    public boolean keyReleased(KeyEvent input) {
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if(listenMacroBind) {
 
             if (hasConflictKey()) {
@@ -360,7 +354,7 @@ public class EditMacroScreen extends Screen {
 
             listenMacroBind = false;
         }
-        return super.keyReleased(input);
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -376,9 +370,9 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public void resize(int width, int height) {
-        Minecraft.getInstance().gui.setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
-        super.resize(width, height);
+    public void resize(Minecraft minecraft, int width, int height) {
+        minecraft.setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
+        super.resize(minecraft, width, height);
     }
 
     public void initDataMacro() {
@@ -455,7 +449,7 @@ public class EditMacroScreen extends Screen {
     }
 
     private void rebuildFormRows() {
-        double scrollAmount = formList.scrollAmount();
+        double scrollAmount = formList.getScrollAmount();
         boolean alternate = macroTypeSelectId == 5;
 
         formList.clearRows();
@@ -503,7 +497,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(lastScreen);
+        minecraft.setScreen(lastScreen);
     }
 
     private String getKeyName() {

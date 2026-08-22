@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.gui.MainMacroScreen;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -16,9 +15,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Mod(value = MacroMod.MODID, dist = Dist.CLIENT)
 public class NeoForgeMacroMod {
-    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(
-            Identifier.fromNamespaceAndPath(MacroMod.MODID, "main")
-    );
+    private static final String CATEGORY = "key.category.macrokeybinds.main";
 
     public NeoForgeMacroMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::setup);
@@ -32,7 +29,6 @@ public class NeoForgeMacroMod {
     }
 
     private void registerKeybindingEvent(RegisterKeyMappingsEvent event) {
-        event.registerCategory(CATEGORY);
         MacroUtil.guiBinding = new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
                 InputConstants.Type.KEYSYM,

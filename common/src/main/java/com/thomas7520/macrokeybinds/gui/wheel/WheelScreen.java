@@ -7,7 +7,6 @@ import com.thomas7520.macrokeybinds.object.wheel.WheelSlot;
 import com.thomas7520.macrokeybinds.util.MacroExecutor;
 import com.thomas7520.macrokeybinds.util.MacroInputHandler;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -54,7 +53,7 @@ public class WheelScreen extends Screen {
         super.onClose();
 
         if(macro != null) {
-            AbstractWidget.playButtonClickSound(minecraft.getSoundManager());
+            wheelWidget.playDownSound(minecraft.getSoundManager());
             MacroExecutor.trigger(macro);
         }
     }

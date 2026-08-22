@@ -7,18 +7,17 @@ import com.thomas7520.macrokeybinds.object.wheel.WheelSlot;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import com.thomas7520.macrokeybinds.util.WheelFlow;
 import com.thomas7520.macrokeybinds.util.widget.ButtonImageWidget;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -26,7 +25,7 @@ import java.io.IOException;
 
 public class WheelOptionScreen extends Screen {
 
-    private static final Identifier DELETE_ICON = Identifier.fromNamespaceAndPath("macrokeybinds", "textures/delete_button.png");
+    private static final ResourceLocation DELETE_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/delete_button.png");
 
     private static final int MAX_PREVIEW_RADIUS = 70;
     private static final int CONTROLS_DISTANCE_FROM_CIRCLE = 14;
@@ -116,7 +115,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void openMacroSelector(int slotIndex) {
-        minecraft.gui.setScreen(new WheelSelectMacroScreen(this, macro -> {
+        minecraft.setScreen(new WheelSelectMacroScreen(this, macro -> {
             setWheelSlot(slotIndex, new WheelSlot(macro.getUUID(), null));
             saveWheel();
         }));
@@ -152,7 +151,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void changeIcon(WheelSlot slot) {
-        minecraft.gui.setScreen(new WheelSelectIconScreen(this, iconId -> {
+        minecraft.setScreen(new WheelSelectIconScreen(this, iconId -> {
             slot.setIconId(iconId);
             saveWheel();
         }));
@@ -173,7 +172,7 @@ public class WheelOptionScreen extends Screen {
         if(parent == null) {
             super.onClose();
         } else {
-            minecraft.gui.setScreen(parent);
+            minecraft.setScreen(parent);
         }
     }
 
@@ -188,19 +187,19 @@ public class WheelOptionScreen extends Screen {
         }
 
         @Override
-        public void onPress(InputWithModifiers input) {
+        public void onPress() {
             changeIcon(slot);
         }
 
         @Override
-        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            extractDefaultSprite(graphics);
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            super.renderWidget(graphics, mouseX, mouseY, partialTick);
 
             ItemStack icon = getIcon(slot);
             if(icon.isEmpty()) {
-                graphics.centeredText(font, Component.literal("..."), getX() + getWidth() / 2, getY() + (getHeight() - font.lineHeight) / 2, 0xFFFFFFFF);
+                graphics.drawCenteredString(font, Component.literal("..."), getX() + getWidth() / 2, getY() + (getHeight() - font.lineHeight) / 2, 0xFFFFFFFF);
             } else {
-                graphics.item(icon, getX() + 2, getY() + 2);
+                graphics.renderItem(icon, getX() + 2, getY() + 2);
             }
         }
 

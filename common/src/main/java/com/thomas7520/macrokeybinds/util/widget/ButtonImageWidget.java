@@ -1,15 +1,12 @@
 package com.thomas7520.macrokeybinds.util.widget;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -24,13 +21,13 @@ public class ButtonImageWidget
     protected final ButtonImageWidget.PressAction onPress;
     protected final ButtonImageWidget.NarrationSupplier narrationSupplier;
 
-    private final Identifier icon;
+    private final ResourceLocation icon;
 
     public static ButtonImageWidget.Builder builder(Component message, ButtonImageWidget.PressAction onPress) {
         return new ButtonImageWidget.Builder(message, onPress);
     }
 
-    protected ButtonImageWidget(int x, int y, int width, int height, Component message, ButtonImageWidget.PressAction onPress, ButtonImageWidget.NarrationSupplier narrationSupplier, Identifier icon) {
+    protected ButtonImageWidget(int x, int y, int width, int height, Component message, ButtonImageWidget.PressAction onPress, ButtonImageWidget.NarrationSupplier narrationSupplier, ResourceLocation icon) {
         super(x, y, width, height, message);
         this.onPress = onPress;
         this.narrationSupplier = narrationSupplier;
@@ -51,13 +48,13 @@ public class ButtonImageWidget
 
 
     @Override
-    public void onPress(InputWithModifiers input) {
+    public void onPress() {
         this.onPress.onPress(this);
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        this.extractDefaultSprite(context);
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.renderWidget(context, mouseX, mouseY, delta);
 
         if (icon != null) {
             int i = 0;
@@ -65,7 +62,9 @@ public class ButtonImageWidget
                 i = getHeight();
             }
 
-            context.blit(RenderPipelines.GUI_TEXTURED, icon, this.getX(), this.getY(), 0, i, getWidth(), getHeight(), 256, 256, ARGB.white(this.getAlpha()));
+            context.setColor(1.0F, 1.0F, 1.0F, this.alpha);
+            context.blit(icon, this.getX(), this.getY(), 0, (float)i, getWidth(), getHeight(), 256, 256);
+            context.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
@@ -79,7 +78,7 @@ public class ButtonImageWidget
         private int width = 150;
         private int height = 20;
         private ButtonImageWidget.NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
-        private Identifier icon;
+        private ResourceLocation icon;
 
         public Builder(Component message, ButtonImageWidget.PressAction onPress) {
             this.message = message;
@@ -107,7 +106,7 @@ public class ButtonImageWidget
             return this.position(x, y).size(width, height);
         }
 
-        public ButtonImageWidget.Builder icon(Identifier icon) {
+        public ButtonImageWidget.Builder icon(ResourceLocation icon) {
             this.icon = icon;
             return this;
         }
