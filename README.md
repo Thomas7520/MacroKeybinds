@@ -1,32 +1,53 @@
-# MultiLoader Template
+<p align="center">
+  <img src="common/src/main/resources/assets/macrokeybinds/icon.png" alt="Macro Keybinds" width="225">
+</p>
 
-This project provides a Gradle project template that can compile Minecraft mods for multiple modloaders using a common project for the sources. This project does not require any third party libraries or dependencies. If you have any questions or want to discuss the project, please join our [Discord](https://discord.myceliummod.network).
+![](docs/images/main.png)
 
-## Getting Started
+![](docs/images/macro_list.png)
 
-### IntelliJ IDEA
-This guide will show how to import the MultiLoader Template into IntelliJ IDEA. The setup process is roughly equivalent to setting up the modloaders independently and should be very familiar to anyone who has worked with their MDKs.
+![](docs/images/example.png)
 
-1. Clone or download this repository to your computer.
-2. Configure the project by setting the properties in the `gradle.properties` file. You will also need to change the `rootProject.name`  property in `settings.gradle`, this should match the folder name of your project, or else IDEA may complain.
-3. Open the template's root folder as a new project in IDEA. This is the folder that contains this README.md file and the gradlew executable.
-4. If your default JVM/JDK is not Java 25 you will encounter an error when opening the project. This error is fixed by going to `File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM` and changing the value to a valid Java 25 JVM. You will also need to set the Project SDK to Java 25. This can be done by going to `File > Project Structure > Project SDK`. Once both have been set open the Gradle tab in IDEA and click the refresh button to reload the project.
-5. Open your Run/Debug Configurations. Under the `Application` category there should now be options to run Fabric and NeoForge projects. Select one of the client options and try to run it.
-6. Assuming you were able to run the game in step 5 your workspace should now be set up.
+![](docs/images/type_macro.png)
 
-### Eclipse
-While it is possible to use this template in Eclipse it is not recommended. During the development of this template multiple critical bugs and quirks related to Eclipse were found at nearly every level of the required build tools. While we continue to work with these tools to report and resolve issues support for projects like these are not there yet. For now Eclipse is considered unsupported by this project. The development cycle for build tools is notoriously slow so there are no ETAs available.
+![](docs/images/wheel.png)
 
-## Development Guide
-When using this template the majority of your mod should be developed in the `common` project. The `common` project is compiled against the vanilla game and is used to hold code that is shared between the different loader-specific versions of your mod. The `common` project has no knowledge or access to ModLoader specific code, apis, or concepts. Code that requires something from a specific loader must be done through the project that is specific to that loader, such as the `fabric` or `neoforge` projects.
+Welcome to the Macro Keybinds mod. MacroKeybinds is a mod that allows the user to create macros in order to execute a task faster.
 
-Loader specific projects such as the `fabric` and `neoforge` project are used to load the `common` project into the game. These projects also define code that is specific to that loader. Loader specific projects can access all the code in the `common` project. It is important to remember that the `common` project can not access code from loader specific projects.
+_If you encounter a bug, have a question, a suggestion, join my discord: [https://discord.gg/xTqj3ZSeH4](https://discord.gg/xTqj3ZSeH4)_
 
-## Removing Platforms and Loaders
-While this template has support for many modloaders, new loaders may appear in the future, and existing loaders may become less relevant.
+**__MacroKeybinds has 4 types of actions:__**
 
-Removing loader specific projects is as easy as deleting the folder, and removing the `include("projectname")` line from the `settings.gradle` file.
-For example if you wanted to remove support for `forge` you would follow the following steps:
+* Execute Command : Executes a Minecraft or server command
+* Fill Chat Without Send : Opens the chat and fills it with the selected text without sending it
+* Send Message : Sends the selected message in the chat
+* Display Local Message : Displays a message in the chat only visible by the client
 
-1. Delete the subproject folder. For example, delete `MultiLoader-Template/forge`.
-2. Remove the project from `settings.gradle`. For example, remove `include("forge")`. 
+__**MacroKeybinds has 6 modes:**__
+
+* Simple : One press allows the execution of the macro
+* Toggle : One press activates a timer that will run every x time, another press stops it
+* Repeat : A long press allows the macro to be executed every x time
+* Delayed : Pressing this button activates a timer that will run the macro after x time
+* Counted Repeat : One press allows the macro to be executed x times at a selected interval
+* Alternate : Each press alternates between two actions
+
+__**Macro Wheel:**__
+
+The macro wheel allows you to quickly access up to 6 global macros. Each slot can have its own Minecraft item icon.
+
+* Click : Open the wheel and click on a macro to execute it
+* Hold : Hold the wheel key, move the mouse over a macro and release the key to execute it
+
+**You can create macros that will be available in all servers.**
+**However you can create macros for each server, useful when you play on more than one server.**
+**You can assign several macros to the same key.**
+**You can combine a key with Shift, Control or Alt.**
+
+DOWNLOAD LINK:
+
+https://www.curseforge.com/minecraft/mc-mods/macrokeybinds/files
+
+https://modrinth.com/mod/macrokeybinds/versions
+
+**Be careful! Some servers do not tolerate this type of mod. Make sure you don't get banned for cheating! I won't be held responsible for your actions.**
