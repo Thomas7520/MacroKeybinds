@@ -2,7 +2,7 @@ package com.thomas7520.macrokeybinds.gui.other;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -74,15 +74,15 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int left = screen.width / 2 - FORM_WIDTH / 2;
             int y = getY();
 
             for(Field field : fields) {
                 int x = left + field.xOffset();
-                context.text(Minecraft.getInstance().font, field.label(), x, y, LABEL_COLOR, false);
+                context.drawString(Minecraft.getInstance().font, field.label(), x, y, LABEL_COLOR, false);
                 field.widget().setPosition(x, y + 11);
-                field.widget().extractRenderState(context, mouseX, mouseY, tickDelta);
+                field.widget().render(context, mouseX, mouseY, tickDelta);
             }
         }
 

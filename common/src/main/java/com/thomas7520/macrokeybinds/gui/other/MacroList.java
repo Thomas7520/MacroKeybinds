@@ -13,7 +13,7 @@ import com.thomas7520.macrokeybinds.util.widget.CheckboxEdited;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -117,7 +117,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
             this.macro = bind;
 
 
-            this.editButton = ButtonImageWidget.builder(Component.empty(), button -> MacroList.this.minecraft.gui.setScreen(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
+            this.editButton = ButtonImageWidget.builder(Component.empty(), button -> MacroList.this.minecraft.setScreen(new EditMacroScreen(MacroList.this.parent, macro, parent instanceof ServerMacroScreen)))
                     .dimensions(0,0,20,20)
                     .icon(EDIT_ICON)
                     .build();
@@ -135,7 +135,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                     .checked(macro.isEnable())
                     .build();
 
-            this.deleteButton = ButtonImageWidget.builder(Component.empty(), button -> minecraft.gui.setScreen(new ConfirmScreen((p_170322_)-> {
+            this.deleteButton = ButtonImageWidget.builder(Component.empty(), button -> minecraft.setScreen(new ConfirmScreen((p_170322_)-> {
 
                 if (p_170322_) {
                     if(isMacroServer) {
@@ -150,7 +150,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                     new File(directory, macro.getUUID().toString() + ".json").delete();
                 }
 
-                minecraft.gui.setScreen(parent);
+                minecraft.setScreen(parent);
             }, Component.translatable("text.macro.deleteQuestion"), Component.translatable("text.macro.deleteWarning"), Component.translatable("text.macro.deleteButton"), CommonComponents.GUI_CANCEL)))
                     .dimensions(20,0,20,20)
                     .icon(DELETE_ICON)
@@ -159,22 +159,22 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
 
 
         @Override
-        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void renderContent(GuiGraphics context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int x = getX();
             int y = getY();
 
             float f = (float) (x - MacroList.this.maxKeyNameLength);
 
-            context.text(minecraft.font, Component.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
+            context.drawString(minecraft.font, Component.literal(this.macro.getName()), (int) f, y + 6, 0xffffffff);
             this.deleteButton.setX(x + 190 + 20);
             this.deleteButton.setY(y);
             this.editButton.setX(x + 190);
             this.editButton.setY(y);
             this.stateButton.setX(x + 170);
             this.stateButton.setY(y);
-            this.editButton.extractRenderState(context, mouseX, mouseY, tickDelta);
-            this.stateButton.extractRenderState(context, mouseX, mouseY, tickDelta);
-            this.deleteButton.extractRenderState(context, mouseX, mouseY, tickDelta);
+            this.editButton.render(context, mouseX, mouseY, tickDelta);
+            this.stateButton.render(context, mouseX, mouseY, tickDelta);
+            this.deleteButton.render(context, mouseX, mouseY, tickDelta);
             if(stateButton.isHovered()) {
                 context.fill(stateButton.getX(), stateButton.getY(), stateButton.getX() + 20, stateButton.getY() + 1, Color.WHITE.getRGB());
                 context.fill(stateButton.getX(), stateButton.getY() + 19, stateButton.getX() + 20, stateButton.getY() + 20, Color.WHITE.getRGB());
@@ -216,14 +216,14 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
                     context.setTooltipForNextFrame(minecraft.font, Component.translatable("text.tooltip.running"), mouseX, mouseY);
                 }
-                context.text(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
+                context.drawString(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
             }
 
             if(macro instanceof AlternateMacro alternateMacro && alternateMacro.isSecondActionNext()) {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
                     context.setTooltipForNextFrame(minecraft.font, Component.translatable("text.tooltip.alternate.secondactionnext"), mouseX, mouseY);
                 }
-                context.text(minecraft.font, Component.literal("B"), x - 16, y + 6, 0xFFFFAA00, true);
+                context.drawString(minecraft.font, Component.literal("B"), x - 16, y + 6, 0xFFFFAA00, true);
             }
         }
 

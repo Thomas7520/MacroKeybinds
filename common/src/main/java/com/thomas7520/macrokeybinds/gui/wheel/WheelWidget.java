@@ -10,7 +10,7 @@ import com.thomas7520.macrokeybinds.object.wheel.WheelSlot;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -90,7 +90,12 @@ public class WheelWidget extends AbstractContainerWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    protected double scrollRate() {
+        return 0.0d;
+    }
+
+    @Override
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // Render at a higher resolution then we scale it down to reduce visible pixel steps.
         if(hoverEnabled) {
             updateHoveredSlot(mouseX, mouseY);
@@ -126,7 +131,7 @@ public class WheelWidget extends AbstractContainerWidget {
         renderDisabledOverlay(graphics, centerX, centerY, renderRadius, renderThickness);
     }
 
-    private void renderDisabledOverlay(GuiGraphicsExtractor graphics, int centerX, int centerY,
+    private void renderDisabledOverlay(GuiGraphics graphics, int centerX, int centerY,
                                        int renderRadius, int renderThickness) {
         graphics.pose().pushMatrix();
         graphics.pose().translate(centerX, centerY);
@@ -147,7 +152,7 @@ public class WheelWidget extends AbstractContainerWidget {
         graphics.pose().popMatrix();
     }
 
-    private void renderSlotContents(GuiGraphicsExtractor graphics) {
+    private void renderSlotContents(GuiGraphics graphics) {
         Font font = Minecraft.getInstance().font;
         int centerX = getX() + getWidth() / 2;
         int centerY = getY() + getHeight() / 2;
@@ -169,7 +174,7 @@ public class WheelWidget extends AbstractContainerWidget {
             boolean iconRendered = showIcons && !icon.isEmpty();
 
             if(iconRendered) {
-                graphics.item(icon, contentX - 8, contentY - 15);
+                graphics.renderItem(icon, contentX - 8, contentY - 15);
             }
 
             int nameY;
@@ -182,7 +187,7 @@ public class WheelWidget extends AbstractContainerWidget {
             int nameColor = unknownMacro ? 0xFFFF5555 : 0xFFFFFFFF;
             int maxNameWidth = getMaxNameWidth(slot, contentX, nameY, font.lineHeight, centerX, centerY);
 
-            graphics.centeredText(font, trimName(font, name, maxNameWidth), contentX, nameY, nameColor);
+            graphics.drawCenteredString(font, trimName(font, name, maxNameWidth), contentX, nameY, nameColor);
 
             if(!unknownMacro) {
                 renderMacroState(graphics, font, macro, contentX, nameY, iconRendered);
@@ -192,12 +197,12 @@ public class WheelWidget extends AbstractContainerWidget {
                 int disabledY = nameY + font.lineHeight + 1;
                 int disabledWidth = getMaxNameWidth(slot, contentX, disabledY, font.lineHeight, centerX, centerY);
                 String disabledText = Component.translatable("text.wheel.disabled").getString();
-                graphics.centeredText(font, trimName(font, disabledText, disabledWidth), contentX, disabledY, 0xFFFFAAAA);
+                graphics.drawCenteredString(font, trimName(font, disabledText, disabledWidth), contentX, disabledY, 0xFFFFAAAA);
             }
         }
     }
 
-    private void renderMacroState(GuiGraphicsExtractor graphics, Font font, IMacro macro,
+    private void renderMacroState(GuiGraphics graphics, Font font, IMacro macro,
                                   int contentX, int nameY, boolean iconRendered) {
         Component stateText = null;
         int stateColor = 0xFFFFFFFF;
@@ -220,7 +225,7 @@ public class WheelWidget extends AbstractContainerWidget {
 
         int stateX = iconRendered ? contentX + 10 : contentX - font.width(stateText) / 2;
         int stateY = iconRendered ? nameY - 23 : nameY - font.lineHeight - 1;
-        graphics.text(font, stateText, stateX, stateY, stateColor, true);
+        graphics.drawString(font, stateText, stateX, stateY, stateColor, true);
     }
 
     private IMacro findMacro(WheelSlot wheelSlot) {
@@ -291,7 +296,7 @@ public class WheelWidget extends AbstractContainerWidget {
     }
 
 
-    private void fillArc(GuiGraphicsExtractor graphics, double innerRadius, double outerRadius, double startAngle, double endAngle, int color) {
+    private void fillArc(GuiGraphics graphics, double innerRadius, double outerRadius, double startAngle, double endAngle, int color) {
         int bound = (int) Math.ceil(outerRadius);
         double innerSquared = innerRadius * innerRadius;
         double outerSquared = outerRadius * outerRadius;
@@ -327,7 +332,7 @@ public class WheelWidget extends AbstractContainerWidget {
         }
     }
 
-    private void drawSeparator(GuiGraphicsExtractor graphics, double angle, int radius, int thickness) {
+    private void drawSeparator(GuiGraphics graphics, double angle, int radius, int thickness) {
         double radians = Math.toRadians(angle);
         int halfThickness = thickness / 2;
         int lineLength = radius - halfThickness;
@@ -445,7 +450,7 @@ public class WheelWidget extends AbstractContainerWidget {
         }
 
         @Override
-        protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         }
 
         @Override

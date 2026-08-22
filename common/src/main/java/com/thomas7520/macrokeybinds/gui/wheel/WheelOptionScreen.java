@@ -7,7 +7,7 @@ import com.thomas7520.macrokeybinds.object.wheel.WheelSlot;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import com.thomas7520.macrokeybinds.util.WheelFlow;
 import com.thomas7520.macrokeybinds.util.widget.ButtonImageWidget;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -116,7 +116,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void openMacroSelector(int slotIndex) {
-        minecraft.gui.setScreen(new WheelSelectMacroScreen(this, macro -> {
+        minecraft.setScreen(new WheelSelectMacroScreen(this, macro -> {
             setWheelSlot(slotIndex, new WheelSlot(macro.getUUID(), null));
             saveWheel();
         }));
@@ -152,7 +152,7 @@ public class WheelOptionScreen extends Screen {
     }
 
     private void changeIcon(WheelSlot slot) {
-        minecraft.gui.setScreen(new WheelSelectIconScreen(this, iconId -> {
+        minecraft.setScreen(new WheelSelectIconScreen(this, iconId -> {
             slot.setIconId(iconId);
             saveWheel();
         }));
@@ -173,7 +173,7 @@ public class WheelOptionScreen extends Screen {
         if(parent == null) {
             super.onClose();
         } else {
-            minecraft.gui.setScreen(parent);
+            minecraft.setScreen(parent);
         }
     }
 
@@ -193,14 +193,14 @@ public class WheelOptionScreen extends Screen {
         }
 
         @Override
-        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-            extractDefaultSprite(graphics);
+        protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            renderDefaultSprite(graphics);
 
             ItemStack icon = getIcon(slot);
             if(icon.isEmpty()) {
-                graphics.centeredText(font, Component.literal("..."), getX() + getWidth() / 2, getY() + (getHeight() - font.lineHeight) / 2, 0xFFFFFFFF);
+                graphics.drawCenteredString(font, Component.literal("..."), getX() + getWidth() / 2, getY() + (getHeight() - font.lineHeight) / 2, 0xFFFFFFFF);
             } else {
-                graphics.item(icon, getX() + 2, getY() + 2);
+                graphics.renderItem(icon, getX() + 2, getY() + 2);
             }
         }
 

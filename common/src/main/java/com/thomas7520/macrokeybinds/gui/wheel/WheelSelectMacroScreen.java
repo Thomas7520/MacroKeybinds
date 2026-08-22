@@ -3,7 +3,7 @@ package com.thomas7520.macrokeybinds.gui.wheel;
 import com.thomas7520.macrokeybinds.object.macro.IMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -75,15 +75,15 @@ public class WheelSelectMacroScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         if(macroList.children().isEmpty()) {
-            graphics.centeredText(font, Component.translatable("text.wheel.no.macros"), width / 2, height / 2 - 5, 0xFFAAAAAA);
+            graphics.drawCenteredString(font, Component.translatable("text.wheel.no.macros"), width / 2, height / 2 - 5, 0xFFAAAAAA);
         }
     }
 
@@ -125,11 +125,11 @@ public class WheelSelectMacroScreen extends Screen {
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+        public void renderContent(GuiGraphics graphics, int mouseX, int mouseY,
                                    boolean hovered, float partialTick) {
             selectButton.setPosition(getX(), getY());
             selectButton.setWidth(getWidth());
-            selectButton.extractRenderState(graphics, mouseX, mouseY, partialTick);
+            selectButton.render(graphics, mouseX, mouseY, partialTick);
         }
 
         @Override

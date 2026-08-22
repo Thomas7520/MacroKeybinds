@@ -1,6 +1,6 @@
 package com.thomas7520.macrokeybinds.util.widget;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -56,8 +56,8 @@ public class ButtonImageWidget
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        this.extractDefaultSprite(context);
+    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        this.renderDefaultSprite(context);
 
         if (icon != null) {
             int i = 0;

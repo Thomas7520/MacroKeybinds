@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.thomas7520.macrokeybinds.event.MacroEvent;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -17,14 +17,14 @@ public class FabricMacroMod implements ClientModInitializer {
 
         KeyMapping.Category category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MacroMod.MODID, "main"));
 
-        MacroUtil.guiBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        MacroUtil.guiBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
                 category
         ));
 
-        MacroUtil.wheelBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        MacroUtil.wheelBinding = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.macrokeybinds.openwheel.desc",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_J,

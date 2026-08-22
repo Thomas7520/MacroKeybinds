@@ -8,7 +8,7 @@ import com.thomas7520.macrokeybinds.object.macro.IMacro;
 import com.thomas7520.macrokeybinds.object.macro.RepeatMacro;
 import com.thomas7520.macrokeybinds.object.macro.ToggleMacro;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -52,11 +52,11 @@ public class ServerMacroScreen extends Screen {
 
         this.addRenderableWidget(this.macroList);
 
-        addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), button -> minecraft.gui.setScreen(new EditMacroScreen(this, null, true)))
+        addRenderableWidget(Button.builder(Component.translatable("text.createmacro"), button -> minecraft.setScreen(new EditMacroScreen(this, null, true)))
                 .bounds(this.width / 2 - 155, this.height - 25, 150, 20)
                 .build());
 
-        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> minecraft.gui.setScreen(parent))
+        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> minecraft.setScreen(parent))
                 .bounds(this.width / 2 - 155 + 160, this.height - 25, 150, 20)
                 .build());
 
@@ -94,8 +94,8 @@ public class ServerMacroScreen extends Screen {
         }, Supplier::get) {
 
             @Override
-            protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-                this.extractDefaultSprite(context);
+            protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+                this.renderDefaultSprite(context);
                 int i = 16;
                 int j = 16;
                 context.blit(RenderPipelines.GUI_TEXTURED, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
@@ -174,10 +174,10 @@ public class ServerMacroScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
-        context.text(font, this.title, this.width / 2 - font.width(title) / 2, 8, 16777215, false);
+        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 8, 16777215, false);
     }
 
 

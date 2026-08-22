@@ -19,7 +19,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -217,7 +217,7 @@ public class MacroCMDSuggestor {
         } else {
             String string2 = string.substring(0, i);
             j = getStartOfCurrentWord(string2);
-            Collection<String> collection = connection.getSuggestionsProvider().getCustomTabSuggestions();
+            Collection<String> collection = connection.getSuggestionsProvider().getCustomTabSugggestions();
             this.pendingSuggestions = SharedSuggestionProvider.suggest(collection, new SuggestionsBuilder(string2, j));
         }
 
@@ -361,13 +361,13 @@ public class MacroCMDSuggestor {
         return FormattedCharSequence.composite(list);
     }
 
-    public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    public void render(GuiGraphics context, int mouseX, int mouseY) {
         if (!this.tryRenderWindow(context, mouseX, mouseY)) {
             this.renderMessages(context);
         }
     }
 
-    public boolean tryRenderWindow(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    public boolean tryRenderWindow(GuiGraphics context, int mouseX, int mouseY) {
         if (this.window != null) {
             this.window.render(context, mouseX, mouseY);
             return true;
@@ -375,14 +375,14 @@ public class MacroCMDSuggestor {
         return false;
     }
 
-    public void renderMessages(GuiGraphicsExtractor context) {
+    public void renderMessages(GuiGraphics context) {
         int i = 0;
         for (FormattedCharSequence orderedText : this.messages) {
             int j = this.suggestionsAbove
                     ? textField.getY() - 20 - i * 12
                     : textField.getY() + textField.getHeight() + 2 + i * 12;
             context.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-            context.text(this.textRenderer, orderedText, this.x, j + 2, -1);
+            context.drawString(this.textRenderer, orderedText, this.x, j + 2, -1);
             ++i;
         }
     }
@@ -423,7 +423,7 @@ public class MacroCMDSuggestor {
             this.select(0);
         }
 
-        public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+        public void render(GuiGraphics context, int mouseX, int mouseY) {
             Message message;
             boolean bl4;
             int i = this.visibleSuggestionCount;
@@ -462,7 +462,7 @@ public class MacroCMDSuggestor {
                     }
                     bl52 = true;
                 }
-                context.text(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
+                context.drawString(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
             }
             if (bl52 && (message = this.suggestions.get(this.selection).getTooltip()) != null) {
                 context.setTooltipForNextFrame(MacroCMDSuggestor.this.textRenderer, ComponentUtils.fromMessage(message), mouseX, mouseY);

@@ -3,7 +3,7 @@ package com.thomas7520.macrokeybinds.gui;
 import com.thomas7520.macrokeybinds.gui.wheel.WheelOptionScreen;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -76,8 +76,8 @@ public class MainMacroScreen extends Screen {
 
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
             context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
@@ -87,7 +87,7 @@ public class MainMacroScreen extends Screen {
 
 
     private Button createButton(Component text, int x, int y, int width, int height, Supplier<Screen> screenSupplier) {
-        return Button.builder(text, button -> this.minecraft.gui.setScreen(screenSupplier.get()))
+        return Button.builder(text, button -> this.minecraft.setScreen(screenSupplier.get()))
                 .bounds(x,y,width,height)
                 .build();
     }
@@ -105,7 +105,7 @@ public class MainMacroScreen extends Screen {
             return;
         }
 
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     protected ClientTooltipPositioner createPositioner(boolean hovered, boolean focused, AbstractWidget focus) {

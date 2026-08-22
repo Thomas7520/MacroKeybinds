@@ -3,7 +3,7 @@ package com.thomas7520.macrokeybinds.util.widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -67,7 +67,7 @@ public class CheckboxEdited
     }
 
     @Override
-    protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
         Minecraft minecraftClient = Minecraft.getInstance();
         Font textRenderer = minecraftClient.font;
         Identifier identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
@@ -76,7 +76,7 @@ public class CheckboxEdited
         int k = this.getY() + (this.height >> 1) - (textRenderer.lineHeight >> 1);
 
         context.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, this.getX(), this.getY(), i, i);
-        context.text(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.getAlpha() * 255.0f) << 24);
+        context.drawString(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.getAlpha() * 255.0f) << 24);
     }
 
 

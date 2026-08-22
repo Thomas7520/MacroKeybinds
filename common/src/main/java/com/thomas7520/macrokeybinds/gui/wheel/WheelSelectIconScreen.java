@@ -1,7 +1,7 @@
 package com.thomas7520.macrokeybinds.gui.wheel;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -61,16 +61,16 @@ public class WheelSelectIconScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         hoveredIcon = null;
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
 
         IconButton preview = hoveredIcon != null ? hoveredIcon : selectedIcon;
         if(preview == null) return;
 
         int previewY = height - 55;
-        graphics.item(preview.stack, width / 2 - 60, previewY - 4);
-        graphics.text(font, preview.stack.getHoverName(), width / 2 - 38, previewY, 0xFFFFFFFF);
+        graphics.renderItem(preview.stack, width / 2 - 60, previewY - 4);
+        graphics.drawString(font, preview.stack.getHoverName(), width / 2 - 38, previewY, 0xFFFFFFFF);
     }
 
     private void selectIcon(IconButton icon) {
@@ -85,7 +85,7 @@ public class WheelSelectIconScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(parent);
+        minecraft.setScreen(parent);
     }
 
     private class IconGrid extends ContainerObjectSelectionList<IconRow> {
@@ -123,11 +123,11 @@ public class WheelSelectIconScreen extends Screen {
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+        public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
             for(int index = 0; index < icons.size(); index++) {
                 IconButton icon = icons.get(index);
                 icon.setPosition(getX() + index * (ICON_SIZE + ICON_GAP), getY() + 2);
-                icon.extractRenderState(graphics, mouseX, mouseY, partialTick);
+                icon.render(graphics, mouseX, mouseY, partialTick);
             }
         }
 
@@ -154,7 +154,7 @@ public class WheelSelectIconScreen extends Screen {
         }
 
         @Override
-        protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             if(isHovered()) {
                 hoveredIcon = this;
             }
@@ -163,8 +163,8 @@ public class WheelSelectIconScreen extends Screen {
             int borderColor = selectedIcon == this ? 0xFFFFFF55 : isHovered() ? 0xFFFFFFFF : 0xFF777777;
 
             graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
-            graphics.outline(getX(), getY(), getWidth(), getHeight(), borderColor);
-            graphics.item(stack, getX() + 2, getY() + 2);
+            graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), borderColor);
+            graphics.renderItem(stack, getX() + 2, getY() + 2);
         }
 
         @Override

@@ -8,7 +8,7 @@ import com.thomas7520.macrokeybinds.util.MacroFlow;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -142,7 +142,7 @@ public class EditMacroScreen extends Screen {
                         : Component.translatable("text.tooltip.keybind")));
 
         formList = addRenderableWidget(new EditMacroFormList(this, minecraft));
-        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.gui.setScreen(this.lastScreen)));
+        addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.setScreen(this.lastScreen)));
 
 
         addRenderableWidget(confirmButton = createButton(Component.translatable(macroData == null ? "text.createmacro" : "text.editmacro"), formLeft, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> {
@@ -173,7 +173,7 @@ public class EditMacroScreen extends Screen {
                             : MacroUtil.getGlobalMacroDirectory().toString();
                     MacroFlow.writeMacro(macro, directory);
 
-                    minecraft.gui.setScreen(this.lastScreen);
+                    minecraft.setScreen(this.lastScreen);
                 }));
 
         if(macroData != null) {
@@ -225,10 +225,10 @@ public class EditMacroScreen extends Screen {
 
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
 
-        context.text(font, this.title, this.width / 2 - font.width(title) / 2, 15, TITLE_COLOR, false);
+        context.drawString(font, this.title, this.width / 2 - font.width(title) / 2, 15, TITLE_COLOR, false);
 
         boolean showingCommandSuggestions = actionTypeSelectId == KeyAction.COMMAND.ordinal()
                 && macroActionBox.isFocused()
@@ -377,7 +377,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void resize(int width, int height) {
-        Minecraft.getInstance().gui.setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
+        Minecraft.getInstance().setScreen(new EditMacroScreen(lastScreen, macroData, serverMacro));
         super.resize(width, height);
     }
 
@@ -503,7 +503,7 @@ public class EditMacroScreen extends Screen {
 
     @Override
     public void onClose() {
-        minecraft.gui.setScreen(lastScreen);
+        minecraft.setScreen(lastScreen);
     }
 
     private String getKeyName() {
