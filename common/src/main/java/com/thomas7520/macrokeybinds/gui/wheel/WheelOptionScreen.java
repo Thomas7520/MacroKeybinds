@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class WheelOptionScreen extends Screen {
 
-    private static final ResourceLocation DELETE_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/delete_button.png");
+    private static final ResourceLocation DELETE_ICON = new ResourceLocation("macrokeybinds", "textures/delete_button.png");
 
     private static final int MAX_PREVIEW_RADIUS = 70;
     private static final int CONTROLS_DISTANCE_FROM_CIRCLE = 14;

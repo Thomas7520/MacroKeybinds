@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 public class GlobalMacroScreen extends Screen {
 
-    public static final ResourceLocation STOP_ICON = ResourceLocation.fromNamespaceAndPath(MacroMod.MODID, "textures/stop_icon.png");
+    public static final ResourceLocation STOP_ICON = new ResourceLocation(MacroMod.MODID, "textures/stop_icon.png");
     private final Screen parent;
     private MacroList macroList;
     private EditBox searchBox;

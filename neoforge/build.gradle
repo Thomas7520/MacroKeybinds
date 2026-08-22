@@ -1,61 +1,34 @@
 plugins {
     id 'multiloader-loader'
-    id 'net.neoforged.moddev'
+    id 'net.neoforged.gradle.userdev' version '7.0.133'
 }
 
-neoForge {
-    version = neoforge_version
-    // Automatically enable neoforge AccessTransformers if the file exists
-    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
-    if (at.exists()) {
-        accessTransformers.from(at.absolutePath)
+def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+if (at.exists()) {
+    minecraft.accessTransformers.file at
+}
+
+runs {
+    configureEach {
+        modSource project.sourceSets.main
     }
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
+    client {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
     }
-    runs {
-        configureEach {
-            systemProperty('neoforge.enabledGameTestNamespaces', mod_id)
-            ideName = "NeoForge ${it.name.capitalize()} (${project.path})" // Unify the run config names with fabric
-        }
-        client {
-            client()
-        }
-        data {
-            data()
-            // DataGen can be run by - "./gradlew :neoforge:runData" in Terminal.
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-        server {
-            server()
-        }
+    server {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
     }
-    mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
-        }
+    gameTestServer {
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+    }
+    data {
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-// Implement mcgradleconventions loader attribute
-def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
-['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
-    configurations.named(variant) {
-        attributes {
-            attribute(loaderAttribute, 'neoforge')
-        }
-    }
-}
-sourceSets.configureEach {
-    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName, it.getTaskName(null, 'jarJar')].each { variant ->
-        configurations.named(variant) {
-            attributes {
-                attribute(loaderAttribute, 'neoforge')
-            }
-        }
-    }
+dependencies {
+    implementation "net.neoforged:neoforge:${neoforge_version}"
 }

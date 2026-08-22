@@ -1,8 +1,8 @@
 {
     "pack": {
         "description": "${mod_name}",
-        "pack_format": 34,
-        "min_format": 34,
-        "max_format": 34
+        "pack_format": 32,
+        "min_format": 32,
+        "max_format": 32
     }
 }

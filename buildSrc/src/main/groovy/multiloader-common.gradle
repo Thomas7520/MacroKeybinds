@@ -24,18 +24,21 @@ repositories {
         }
         filter { includeGroupAndSubgroups('org.spongepowered') }
     }
-    exclusiveContent {
-        forRepositories(
-                maven {
-                    name = 'ParchmentMC'
-                    url = 'https://maven.parchmentmc.org/'
-                },
-                maven {
-                    name = 'NeoForge'
-                    url = 'https://maven.neoforged.net/releases'
-                }
-        )
-        filter { includeGroup('org.parchmentmc.data') }
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
+// Declare capabilities on the outgoing configurations for the loader projects.
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+    configurations."$variant".outgoing {
+        capability("$group:${base.archivesName.get()}:$version")
+        capability("$group:$mod_id-${project.name}-${minecraft_version}:$version")
+        capability("$group:$mod_id:$version")
+    }
+    publishing.publications.configureEach {
+        suppressPomMetadataWarningsFor(variant)
     }
 }
 
@@ -46,7 +49,6 @@ tasks.withType(Jar).configureEach {
 }
 
 jar {
-
     manifest {
         attributes([
                 'Specification-Title'   : mod_name,
@@ -63,7 +65,7 @@ jar {
 processResources {
     var expandProps = [
             'version'                      : version,
-            'group'                        : project.group, //Else we target the task's group.
+            'group'                        : project.group,
             'minecraft_version'            : minecraft_version,
             'minecraft_version_range'      : minecraft_version_range,
             'fabric_version'               : fabric_version,

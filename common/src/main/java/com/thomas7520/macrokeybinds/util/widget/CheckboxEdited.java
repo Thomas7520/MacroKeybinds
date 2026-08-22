@@ -15,10 +15,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class CheckboxEdited
         extends AbstractButton {
-    private static final ResourceLocation SELECTED_HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected_highlighted");
-    private static final ResourceLocation SELECTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_selected");
-    private static final ResourceLocation HIGHLIGHTED_TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox_highlighted");
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("widget/checkbox");
+    private static final ResourceLocation SELECTED_HIGHLIGHTED_TEXTURE = new ResourceLocation("widget/checkbox_selected_highlighted");
+    private static final ResourceLocation SELECTED_TEXTURE = new ResourceLocation("widget/checkbox_selected");
+    private static final ResourceLocation HIGHLIGHTED_TEXTURE = new ResourceLocation("widget/checkbox_highlighted");
+    private static final ResourceLocation TEXTURE = new ResourceLocation("widget/checkbox");
     private static final int TEXT_COLOR = 0xE0E0E0;
     private static final int field_47105 = 4;
     private static final int field_47106 = 8;

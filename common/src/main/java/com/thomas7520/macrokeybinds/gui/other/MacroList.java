@@ -42,8 +42,8 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
     private final boolean isServer;
     int maxKeyNameLength;
 
-    private static final ResourceLocation EDIT_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/edit_button.png");
-    private static final ResourceLocation DELETE_ICON = ResourceLocation.fromNamespaceAndPath("macrokeybinds", "textures/delete_button.png");
+    private static final ResourceLocation EDIT_ICON = new ResourceLocation("macrokeybinds", "textures/edit_button.png");
+    private static final ResourceLocation DELETE_ICON = new ResourceLocation("macrokeybinds", "textures/delete_button.png");
 
     private String searchBoxInput = "";
 
