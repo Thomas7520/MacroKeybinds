@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
@@ -43,6 +44,18 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
     @Override
     protected int scrollBarX() {
         return screen.width / 2 + FORM_WIDTH / 2 + 6;
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
+        Entry entry = getEntryAtPosition(click.x(), click.y());
+        boolean clickedWidget = entry != null && entry.children().stream()
+                .anyMatch(widget -> widget.isMouseOver(click.x(), click.y()));
+        boolean handled = super.mouseClicked(click, doubled);
+
+        if(!clickedWidget) setFocused(null);
+
+        return handled;
     }
 
     public record Field(Component label, AbstractWidget widget, int xOffset) {
