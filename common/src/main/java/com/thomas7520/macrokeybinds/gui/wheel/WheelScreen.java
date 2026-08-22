@@ -31,7 +31,7 @@ public class WheelScreen extends Screen {
     protected void init() {
         addRenderableWidget(wheelWidget = new WheelWidget(this.width / 2 - 100, this.height / 2 - 100, 100,
                 wheel.getMacros(), true, true, wheel.getMode() == WheelMode.CLICK,
-                wheel.getMode() == WheelMode.HOLD ? HOLD_HOVER_DEAD_ZONE : 0, wheelSlot -> {
+                wheel.getMode() == WheelMode.HOLD ? HOLD_HOVER_DEAD_ZONE : 5, wheelSlot -> {
             this.onClose();
             MacroExecutor.trigger(MacroUtil.getMacro(wheelSlot.getMacroId()));
         }));
