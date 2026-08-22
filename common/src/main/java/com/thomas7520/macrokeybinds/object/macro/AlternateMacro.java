@@ -1,8 +1,6 @@
 package com.thomas7520.macrokeybinds.object.macro;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.network.chat.Component;
+import com.thomas7520.macrokeybinds.util.MacroActionExecutor;
 
 import java.util.UUID;
 
@@ -84,28 +82,12 @@ public class AlternateMacro implements IMacro {
         start = false;
 
         if(secondActionNext) {
-            executeAction(secondAction, secondActionText);
+            MacroActionExecutor.execute(secondAction, secondActionText);
         } else {
-            executeAction(action, actionText);
+            MacroActionExecutor.execute(action, actionText);
         }
 
         secondActionNext = !secondActionNext;
-    }
-
-    private void executeAction(KeyAction actionToExecute, String text) {
-        Minecraft client = Minecraft.getInstance();
-        switch (actionToExecute) {
-            case COMMAND -> client.player.connection.sendCommand(text.startsWith("/") ? text.substring(1) : text);
-            case MESSAGE -> {
-                if(text.startsWith("/")) {
-                    client.player.connection.sendCommand(text.substring(1));
-                } else {
-                    client.player.connection.sendChat(text);
-                }
-            }
-            case FILL_CHAT -> client.gui.setScreen(new ChatScreen(text, false));
-            case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(text));
-        }
     }
 
     public void start() {

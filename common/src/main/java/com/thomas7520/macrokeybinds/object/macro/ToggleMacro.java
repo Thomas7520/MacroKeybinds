@@ -1,8 +1,6 @@
 package com.thomas7520.macrokeybinds.object.macro;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.network.chat.Component;
+import com.thomas7520.macrokeybinds.util.MacroActionExecutor;
 
 import java.util.UUID;
 
@@ -105,20 +103,7 @@ public class ToggleMacro implements IMacro {
 
         lastActionTime = System.currentTimeMillis();
 
-        Minecraft client = Minecraft.getInstance();
-        switch (action) {
-
-            case COMMAND -> client.player.connection.sendCommand((getActionText().startsWith("/") ? getActionText().substring(1) : getActionText()));
-            case MESSAGE -> {
-                if(getActionText().startsWith("/")) {
-                    client.player.connection.sendCommand(getActionText().substring(1));
-                } else {
-                    client.player.connection.sendChat(getActionText());
-                }
-            }
-            case FILL_CHAT -> Minecraft.getInstance().gui.setScreen(new ChatScreen(getActionText(), false));
-            case LOCAL_MESSAGE -> client.gui.hud.getChat().addClientSystemMessage(Component.literal(getActionText()));
-        }
+        MacroActionExecutor.execute(action, actionText);
     }
 
     public long getCooldownTime() {
