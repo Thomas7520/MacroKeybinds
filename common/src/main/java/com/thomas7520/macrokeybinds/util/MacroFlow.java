@@ -13,7 +13,7 @@ import java.nio.file.Path;
 
 public class MacroFlow {
 
-    private static final String CURRENT_VERSION = "1.5.0";
+    private static final String CURRENT_VERSION = "2.0.0";
 
     public static IMacro getMacroFromFile(File file) throws IOException {
 
