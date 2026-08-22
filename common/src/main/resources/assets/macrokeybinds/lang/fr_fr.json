@@ -1,4 +1,5 @@
 {
+  "text.tooltip.main.wheel.no_world": "Les options de la roue sont disponibles uniquement lorsqu'un monde est chargé.",
   "key.category.macrokeybinds.main": "Macro Keybinds",
   "text.config.mainscreen": "Keybinds Menu",
   "text.config.globalmacros": "Global Macros Options",

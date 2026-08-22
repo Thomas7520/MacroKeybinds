@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
@@ -53,8 +54,16 @@ public class MainMacroScreen extends Screen {
 
         addRenderableWidget(serverMacrosButton = createButton(serverMacros, guiLeft - 100, guiTop / 2 + 35, 200, 20, () -> new ServerMacroScreen(this)));
 
-        addRenderableWidget(createButton(wheelOptions, guiLeft - 100, guiTop / 2 + 70, 200, 20,
-                () -> new WheelOptionScreen(this)));
+        serverMacrosButton.active = !MacroUtil.getServerIP().isEmpty();
+
+        Button wheelOptionsButton = createButton(wheelOptions, guiLeft - 100, guiTop / 2 + 70, 200, 20,
+                () -> new WheelOptionScreen(this));
+
+        wheelOptionsButton.active = minecraft.level != null;
+        if(!wheelOptionsButton.active) {
+            wheelOptionsButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.main.wheel.no_world")));
+        }
+        addRenderableWidget(wheelOptionsButton);
 
         addRenderableWidget(createUrlButton(discordLink, guiLeft - 100, guiTop / 2 + 105, 200, 20, "https://discord.gg/xTqj3ZSeH4"));
 
@@ -72,14 +81,6 @@ public class MainMacroScreen extends Screen {
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
             context.setTooltipForNextFrame(font, font.split(Component.translatable("text.tooltip.main.noserver"), 150), mouseX, mouseY);
-        }
-
-        if(serverMacrosButton.active && MacroUtil.getServerIP().isEmpty()) {
-            serverMacrosButton.active = false;
-        }
-
-        if(!serverMacrosButton.active && !MacroUtil.getServerIP().isEmpty()) {
-            serverMacrosButton.active = true;
         }
     }
 

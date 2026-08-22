@@ -1,4 +1,5 @@
 {
+  "text.tooltip.main.wheel.no_world": "Wheel options are only available while a world is loaded",
   "key.category.macrokeybinds.main": "Macro Keybinds",
   "text.config.mainscreen": "Keybinds Menu",
   "text.config.globalmacros": "Global Macros Options",
