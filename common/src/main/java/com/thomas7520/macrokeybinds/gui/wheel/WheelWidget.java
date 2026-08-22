@@ -9,12 +9,14 @@ import com.thomas7520.macrokeybinds.object.wheel.Wheel;
 import com.thomas7520.macrokeybinds.object.wheel.WheelSlot;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractContainerWidget;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WheelWidget extends AbstractContainerWidget {
+public class WheelWidget extends AbstractWidget implements ContainerEventHandler {
 
     public static final int SLOTS_MAX = Wheel.MAX_MACROS;
     public static final int SLOT_SIZE = 360 / SLOTS_MAX;
@@ -53,6 +55,8 @@ public class WheelWidget extends AbstractContainerWidget {
     private final Consumer<WheelSlot> onSlotClicked;
 
     private Slot hoveredSlot;
+    private GuiEventListener focused;
+    private boolean dragging;
 
     public WheelWidget(int x, int y, int radius, List<WheelSlot> slots, boolean showIcons, boolean hoverEnabled,
                        boolean clickEnabled, int hoverDeadZone, Consumer<WheelSlot> onSlotClicked) {
@@ -81,6 +85,62 @@ public class WheelWidget extends AbstractContainerWidget {
     @Override
     public List<? extends GuiEventListener> children() {
         return slots;
+    }
+
+    @Override
+    public boolean isDragging() {
+        return dragging;
+    }
+
+    @Override
+    public void setDragging(boolean dragging) {
+        this.dragging = dragging;
+    }
+
+    @Override
+    public GuiEventListener getFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(GuiEventListener focused) {
+        if(this.focused != null) {
+            this.focused.setFocused(false);
+        }
+        if(focused != null) {
+            focused.setFocused(true);
+        }
+        this.focused = focused;
+    }
+
+    @Override
+    public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+        return ContainerEventHandler.super.nextFocusPath(event);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return ContainerEventHandler.super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        return ContainerEventHandler.super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean isFocused() {
+        return ContainerEventHandler.super.isFocused();
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        ContainerEventHandler.super.setFocused(focused);
     }
 
     @Override

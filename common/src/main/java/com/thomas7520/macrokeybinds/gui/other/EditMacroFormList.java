@@ -22,7 +22,7 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
     private final Screen screen;
 
     public EditMacroFormList(Screen screen, Minecraft client) {
-        super(client, screen.width, screen.height - 62, 30, ROW_HEIGHT);
+        super(client, screen.width, screen.height, 30, screen.height - 32, ROW_HEIGHT);
         this.screen = screen;
         this.centerListVertically = false;
     }

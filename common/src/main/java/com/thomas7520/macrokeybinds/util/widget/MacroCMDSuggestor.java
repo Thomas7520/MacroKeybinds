@@ -34,7 +34,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.awt.*;
 import java.util.*;
@@ -463,7 +463,8 @@ public class MacroCMDSuggestor {
                 context.drawString(MacroCMDSuggestor.this.textRenderer, suggestion.getText(), this.area.getX() + 1, this.area.getY() + 2 + 12 * l, l + this.inWindowIndex == this.selection ? Color.YELLOW.getRGB() : -5592406);
             }
             if (bl52 && (message = this.suggestions.get(this.selection).getTooltip()) != null) {
-                MacroCMDSuggestor.this.owner.setTooltipForNextRenderPass(ComponentUtils.fromMessage(message));
+                context.renderTooltip(MacroCMDSuggestor.this.textRenderer,
+                        ComponentUtils.fromMessage(message), mouseX, mouseY);
             }
         }
 

@@ -92,7 +92,7 @@ public class WheelSelectIconScreen extends Screen {
         private final int columns;
 
         public IconGrid(Minecraft minecraft, int width, int height, int y) {
-            super(minecraft, width, height, y, ICON_SIZE + ICON_GAP);
+            super(minecraft, width, WheelSelectIconScreen.this.height, y, y + height, ICON_SIZE + ICON_GAP);
             this.columns = Math.max(1, Math.min(12, (width - 40) / (ICON_SIZE + ICON_GAP)));
 
             List<IconButton> icons = BuiltInRegistries.ITEM.entrySet().stream()
@@ -162,7 +162,7 @@ public class WheelSelectIconScreen extends Screen {
             int backgroundColor = selectedIcon == this ? 0xA0FFFFFF : 0x60000000;
             int borderColor = selectedIcon == this ? 0xFFFFFF55 : isHovered() ? 0xFFFFFFFF : 0xFF777777;
 
-            graphics.fill(getX(), getY(), getRight(), getBottom(), backgroundColor);
+            graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), backgroundColor);
             graphics.renderOutline(getX(), getY(), getWidth(), getHeight(), borderColor);
             graphics.renderItem(stack, getX() + 2, getY() + 2);
         }

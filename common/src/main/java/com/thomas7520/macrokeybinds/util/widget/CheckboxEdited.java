@@ -11,14 +11,11 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 public class CheckboxEdited
         extends AbstractButton {
-    private static final ResourceLocation SELECTED_HIGHLIGHTED_TEXTURE = new ResourceLocation("widget/checkbox_selected_highlighted");
-    private static final ResourceLocation SELECTED_TEXTURE = new ResourceLocation("widget/checkbox_selected");
-    private static final ResourceLocation HIGHLIGHTED_TEXTURE = new ResourceLocation("widget/checkbox_highlighted");
-    private static final ResourceLocation TEXTURE = new ResourceLocation("widget/checkbox");
+    private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/checkbox.png");
     private static final int TEXT_COLOR = 0xE0E0E0;
     private static final int field_47105 = 4;
     private static final int field_47106 = 8;
@@ -68,12 +65,12 @@ public class CheckboxEdited
     protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         Minecraft minecraftClient = Minecraft.getInstance();
         Font textRenderer = minecraftClient.font;
-        ResourceLocation identifier = this.checked ? (this.isHovered() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE) : (this.isHovered() ? HIGHLIGHTED_TEXTURE : TEXTURE);
         int i = CheckboxEdited.getSize(textRenderer) + 3;
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (textRenderer.lineHeight >> 1);
 
-        context.blitSprite(identifier, this.getX(), this.getY(), i, i);
+        context.blit(TEXTURE, this.getX(), this.getY(), this.isHovered() ? 20.0F : 0.0F,
+                this.checked ? 20.0F : 0.0F, i, i, 64, 64);
         context.drawString(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.alpha * 255.0f) << 24);
     }
 

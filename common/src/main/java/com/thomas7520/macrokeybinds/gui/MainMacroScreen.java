@@ -93,7 +93,7 @@ public class MainMacroScreen extends Screen {
     }
 
     private Button createUrlButton(Component text, int x, int y, int width, int height, String url) {
-        return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(this, url))
+        return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(url, this, true))
                 .bounds(x,y,width,height)
                 .build();
     }
@@ -113,6 +113,6 @@ public class MainMacroScreen extends Screen {
             return DefaultTooltipPositioner.INSTANCE;
         }
 
-        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
+        return new BelowOrAboveWidgetTooltipPositioner(focus);
     }
 }

@@ -113,29 +113,44 @@ public class MacroInputHandler {
 
             boolean modifierPressed = macro.getModifier() == modifier;
 
-            switch (macro) {
-                case SimpleMacro simpleMacro when isPress && modifierPressed -> {
-                    simpleMacro.setStartTime(System.currentTimeMillis());
-                    simpleMacro.setStart(true);
+            switch (macro.getType()) {
+                case SIMPLE -> {
+                    if (isPress && modifierPressed) {
+                        SimpleMacro simpleMacro = (SimpleMacro) macro;
+                        simpleMacro.setStartTime(System.currentTimeMillis());
+                        simpleMacro.setStart(true);
+                    }
                 }
-                case AlternateMacro alternateMacro when isPress && modifierPressed -> alternateMacro.start();
-                case RepeatMacro repeatMacro -> {
+                case ALTERNATE -> {
+                    if (isPress && modifierPressed) {
+                        ((AlternateMacro) macro).start();
+                    }
+                }
+                case REPEAT -> {
+                    RepeatMacro repeatMacro = (RepeatMacro) macro;
                     if (isPress && modifierPressed) {
                         repeatMacro.setRepeat(true);
                     } else if (isRelease || !modifierPressed) {
                         repeatMacro.setRepeat(false);
                     }
                 }
-                case ToggleMacro toggleMacro when isPress && modifierPressed -> toggleMacro.setToggled(!toggleMacro.isToggled());
-                case DelayedMacro delayedMacro when isPress && modifierPressed && !delayedMacro.isStart() -> {
-                    delayedMacro.setStartTime(System.currentTimeMillis());
-                    delayedMacro.setStart(true);
+                case TOGGLE -> {
+                    if (isPress && modifierPressed) {
+                        ToggleMacro toggleMacro = (ToggleMacro) macro;
+                        toggleMacro.setToggled(!toggleMacro.isToggled());
+                    }
                 }
-                case CountedRepeatMacro countedRepeatMacro when isPress && modifierPressed -> countedRepeatMacro.start();
-
-                default -> {
-                    // The macro type is known, but this input event does not trigger it
-                    // (for example, a SimpleMacro when the key is released).
+                case DELAYED -> {
+                    DelayedMacro delayedMacro = (DelayedMacro) macro;
+                    if (isPress && modifierPressed && !delayedMacro.isStart()) {
+                        delayedMacro.setStartTime(System.currentTimeMillis());
+                        delayedMacro.setStart(true);
+                    }
+                }
+                case COUNTED_REPEAT -> {
+                    if (isPress && modifierPressed) {
+                        ((CountedRepeatMacro) macro).start();
+                    }
                 }
             }
         }

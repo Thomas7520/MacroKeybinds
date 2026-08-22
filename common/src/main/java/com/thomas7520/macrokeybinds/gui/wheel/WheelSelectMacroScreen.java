@@ -92,7 +92,7 @@ public class WheelSelectMacroScreen extends Screen {
         private final List<IMacro> macros;
 
         private MacroSelectionList(Minecraft minecraft, int width, int height, int y, List<IMacro> macros) {
-            super(minecraft, width, height, y, 22);
+            super(minecraft, width, WheelSelectMacroScreen.this.height, y, y + height, 22);
             this.macros = new ArrayList<>(macros);
             update("");
         }

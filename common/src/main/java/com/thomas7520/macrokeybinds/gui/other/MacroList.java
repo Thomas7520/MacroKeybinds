@@ -26,7 +26,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 
 import java.awt.*;
 import java.io.File;
@@ -51,7 +51,7 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
     private List<IMacro> cachedList;
 
     public MacroList(Screen parent, Minecraft client, List<IMacro> macros, boolean isServer) {
-        super(client, parent.width, parent.height - 20 - 53, 43, 20);
+        super(client, parent.width, parent.height, 43, parent.height - 30, 20);
         this.parent = parent;
         this.macroList = macros;
         this.isServer = isServer;
@@ -215,14 +215,16 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
 
             if(running) {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
-                    parent.setTooltipForNextRenderPass(Component.translatable("text.tooltip.running"));
+                    parent.setTooltipForNextRenderPass(minecraft.font.split(
+                            Component.translatable("text.tooltip.running"), 150));
                 }
                 context.drawString(minecraft.font, Component.translatable("text.running"), x - 16, y + 6, Color.GREEN.getRGB(), true);
             }
 
             if(macro instanceof AlternateMacro alternateMacro && alternateMacro.isSecondActionNext()) {
                 if(mouseX >= x - 20 && mouseX <= x - 5 && mouseY >= y + 3 && mouseY < y+12) {
-                    parent.setTooltipForNextRenderPass(Component.translatable("text.tooltip.alternate.secondactionnext"));
+                    parent.setTooltipForNextRenderPass(minecraft.font.split(
+                            Component.translatable("text.tooltip.alternate.secondactionnext"), 150));
                 }
                 context.drawString(minecraft.font, Component.literal("B"), x - 16, y + 6, 0xFFFFAA00, true);
             }
@@ -254,6 +256,6 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
         if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
             return DefaultTooltipPositioner.INSTANCE;
         }
-        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
+        return new BelowOrAboveWidgetTooltipPositioner(focus);
     }
 }

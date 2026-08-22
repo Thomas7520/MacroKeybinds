@@ -358,14 +358,14 @@ public class EditMacroScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        if (this.commandSuggestions.mouseScrolled(verticalAmount)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (this.commandSuggestions.mouseScrolled(amount)) {
             return true;
         }
-        if (macroTypeSelectId == 5 && this.secondCommandSuggestions.mouseScrolled(verticalAmount)) {
+        if (macroTypeSelectId == 5 && this.secondCommandSuggestions.mouseScrolled(amount)) {
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
 
@@ -519,7 +519,7 @@ public class EditMacroScreen extends Screen {
         if (!hovered && focused && Minecraft.getInstance().getLastInputType().isKeyboard()) {
             return DefaultTooltipPositioner.INSTANCE;
         }
-        return new BelowOrAboveWidgetTooltipPositioner(focus.getRectangle());
+        return new BelowOrAboveWidgetTooltipPositioner(focus);
     }
 
     private boolean isKeyCodeModifier(int key) {
