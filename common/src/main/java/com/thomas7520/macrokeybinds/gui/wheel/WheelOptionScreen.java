@@ -168,6 +168,12 @@ public class WheelOptionScreen extends Screen {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
     public void onClose() {
         if(parent == null) {
             super.onClose();
