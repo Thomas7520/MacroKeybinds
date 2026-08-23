@@ -77,6 +77,10 @@ public class MainMacroScreen extends Screen {
 
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        if (parent != null) {
+            this.renderBackground(context);
+        }
+
         super.render(context, mouseX, mouseY, delta);
 
         if(serverMacrosButton.isHovered() && MacroUtil.getServerIP().isEmpty()) {
