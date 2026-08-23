@@ -105,7 +105,7 @@ public class WheelOptionScreen extends Screen {
         int iconCenterX = controlsCenterX + (int) Math.round(tangentX * controlsOffset);
         int iconCenterY = controlsCenterY + (int) Math.round(tangentY * controlsOffset);
 
-        addRenderableWidget(ButtonImageWidget.builder(Component.translatable("text.wheel.remove"), button -> removeMacro(slotIndex))
+        addRenderableWidget(ButtonImageWidget.builder(Component.empty(), button -> removeMacro(slotIndex))
                 .dimensions(deleteCenterX - DELETE_BUTTON_SIZE / 2, deleteCenterY - DELETE_BUTTON_SIZE / 2, DELETE_BUTTON_SIZE, DELETE_BUTTON_SIZE)
                 .icon(DELETE_ICON)
                 .tooltip(Tooltip.create(Component.translatable("text.wheel.remove")))
@@ -181,9 +181,9 @@ public class WheelOptionScreen extends Screen {
         private final WheelSlot slot;
 
         private SlotIconButton(int x, int y, int width, int height, WheelSlot slot) {
-            super(x, y, width, height, iconActionText(slot));
+            super(x, y, width, height, Component.empty());
             this.slot = slot;
-            setTooltip(Tooltip.create(getMessage()));
+            setTooltip(Tooltip.create(iconActionText(slot)));
         }
 
         @Override
