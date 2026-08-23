@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
@@ -290,6 +291,13 @@ public class EditMacroScreen extends Screen {
             return handled;
         }
 
+    }
+
+    @Override
+    public void setFocused(GuiEventListener focused) {
+        if(getFocused() != focused) {
+            super.setFocused(focused);
+        }
     }
 
 
