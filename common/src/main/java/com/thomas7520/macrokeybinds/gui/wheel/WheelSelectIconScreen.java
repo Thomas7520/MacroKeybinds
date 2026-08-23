@@ -111,6 +111,11 @@ public class WheelSelectIconScreen extends Screen {
         public int getRowWidth() {
             return columns * (ICON_SIZE + ICON_GAP);
         }
+
+        @Override
+        protected int getScrollbarPosition() {
+            return getRowRight() + ICON_GAP;
+        }
     }
 
     private class IconRow extends ContainerObjectSelectionList.Entry<IconRow> {
