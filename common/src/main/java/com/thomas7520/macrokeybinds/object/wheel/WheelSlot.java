@@ -7,11 +7,11 @@ import java.util.UUID;
 public class WheelSlot {
 
     private UUID macroId;
-    private ResourceLocation iconId;
+    private String iconId;
 
     public WheelSlot(UUID macroId, ResourceLocation iconId) {
         this.macroId = macroId;
-        this.iconId = iconId;
+        setIconId(iconId);
     }
 
     public UUID getMacroId() {
@@ -23,10 +23,10 @@ public class WheelSlot {
     }
 
     public ResourceLocation getIconId() {
-        return iconId;
+        return iconId == null ? null : ResourceLocation.tryParse(iconId);
     }
 
     public void setIconId(ResourceLocation iconId) {
-        this.iconId = iconId;
+        this.iconId = iconId == null ? null : iconId.toString();
     }
 }
