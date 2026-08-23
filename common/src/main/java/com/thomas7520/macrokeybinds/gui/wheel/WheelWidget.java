@@ -431,11 +431,14 @@ public class WheelWidget extends AbstractContainerWidget {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             IMacro macro = findMacro(wheelSlot);
 
-            if(!clickEnabled || macro == null || !macro.isEnable()) {
+            if(!clickEnabled || button != 0 || !isMouseOver(mouseX, mouseY)
+                    || macro == null || !macro.isEnable()) {
                 return false;
             }
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            playDownSound(Minecraft.getInstance().getSoundManager());
+            onClick(mouseX, mouseY);
+            return true;
         }
 
         @Override
