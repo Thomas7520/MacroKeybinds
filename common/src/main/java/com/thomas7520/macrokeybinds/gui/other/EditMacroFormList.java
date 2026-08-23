@@ -46,6 +46,21 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
     }
 
     @Override
+    public void setFocused(GuiEventListener focused) {
+        Entry previousFocused = getFocused();
+        if(previousFocused != focused && previousFocused != null) {
+            previousFocused.setFocused(null);
+        }
+        super.setFocused(focused);
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        if(!focused) setFocused((GuiEventListener) null);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Entry entry = getEntryAtPosition(mouseX, mouseY);
         boolean clickedWidget = entry != null && entry.children().stream()
