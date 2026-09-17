@@ -12,6 +12,7 @@ import com.thomas7520.macrokeybinds.object.macro.RepeatMacro;
 import com.thomas7520.macrokeybinds.object.macro.SimpleMacro;
 import com.thomas7520.macrokeybinds.object.macro.ToggleMacro;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashSet;
@@ -66,7 +67,7 @@ public class MacroInputHandler {
         Minecraft client = Minecraft.getInstance();
         long window = client.getWindow().handle();
 
-        for(int key : getEnabledMacroKeys()) {
+        for(int key : getObservedMacroKeys()) {
             MacroModifier modifier = getPressedModifier(window);
             int state;
 
@@ -109,6 +110,12 @@ public class MacroInputHandler {
 
     private static void handleInput(boolean isPress, boolean isRelease, int key, MacroModifier modifier) {
         for(IMacro macro : MacroUtil.getAllMacros()) {
+            // The enable/disable binding must remain active while the macro itself is disabled.
+            if(isPress && MacroToggleBindings.matches(macro, key, modifier)) {
+                toggleMacroEnabled(macro);
+                continue;
+            }
+
             if(!macro.isEnable() || key != macro.getKey()) continue;
 
             boolean modifierPressed = macro.getModifier() == modifier;
@@ -141,10 +148,42 @@ public class MacroInputHandler {
         }
     }
 
-    private static Set<Integer> getEnabledMacroKeys() {
+    private static void toggleMacroEnabled(IMacro macro) {
+        boolean enabled = !macro.isEnable();
+        macro.setEnable(enabled);
+
+        if(!enabled) stopRunningMacro(macro);
+
+        String directory = MacroUtil.getServerKeybinds().containsKey(macro.getUUID())
+                ? MacroUtil.getServerMacroDirectory().toString()
+                : MacroUtil.getGlobalMacroDirectory().toString();
+        MacroFlow.writeMacro(macro, directory);
+
+        Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(
+                Component.translatable(enabled ? "text.macro.enabled" : "text.macro.disabled", macro.getName())
+        );
+    }
+
+    private static void stopRunningMacro(IMacro macro) {
+        switch(macro) {
+            case SimpleMacro simpleMacro -> simpleMacro.setStart(false);
+            case AlternateMacro alternateMacro -> alternateMacro.reset();
+            case RepeatMacro repeatMacro -> repeatMacro.setRepeat(false);
+            case ToggleMacro toggleMacro -> toggleMacro.setToggled(false);
+            case DelayedMacro delayedMacro -> delayedMacro.setStart(false);
+            case CountedRepeatMacro countedRepeatMacro -> countedRepeatMacro.cancel();
+            default -> {
+            }
+        }
+    }
+
+    private static Set<Integer> getObservedMacroKeys() {
         Set<Integer> keys = new HashSet<>();
         for(IMacro macro : MacroUtil.getAllMacros()) {
             if(macro.isEnable()) keys.add(macro.getKey());
+
+            MacroToggleBindings.Binding toggleBinding = MacroToggleBindings.get(macro.getUUID());
+            if(toggleBinding != null) keys.add(toggleBinding.key());
         }
         return keys;
     }

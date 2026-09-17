@@ -45,6 +45,7 @@ public class MacroFlow {
         }
 
         validateMacro(macro);
+        MacroToggleBindings.readFromJson(macro, object);
 
         if(migrated) {
             writeMacroFile(macro, file.toPath());
@@ -87,6 +88,7 @@ public class MacroFlow {
     private static void writeMacroFile(IMacro macro, Path macroFile) throws IOException {
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject object = gson.toJsonTree(macro).getAsJsonObject();
+        MacroToggleBindings.writeToJson(macro, object);
         object.addProperty("version", CURRENT_VERSION);
 
         try (Writer writer = Files.newBufferedWriter(macroFile, StandardCharsets.UTF_8)) {

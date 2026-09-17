@@ -5,6 +5,7 @@ import com.thomas7520.macrokeybinds.gui.other.EditMacroFormList;
 import com.thomas7520.macrokeybinds.object.macro.*;
 import com.thomas7520.macrokeybinds.util.widget.MacroCMDSuggestor;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
+import com.thomas7520.macrokeybinds.util.MacroToggleBindings;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -49,15 +50,19 @@ public class EditMacroScreen extends Screen {
     private EditBox timeBox;
     private EditBox countBox;
     private Button macroKeyButton;
+    private Button toggleKeyButton;
 
     private Button confirmButton;
 
     private boolean listenMacroBind;
+    private boolean listenToggleBind;
     private int keySelect = -1;
+    private int toggleKeySelect = -1;
     private byte macroTypeSelectId;
     private byte actionTypeSelectId;
     private byte secondActionTypeSelectId;
     private String keyName;
+    private String toggleKeyName;
 
     private int formLeft;
     private final IMacro macroData;
@@ -67,6 +72,7 @@ public class EditMacroScreen extends Screen {
     private EditMacroFormList formList;
 
     private MacroModifier macroModifierSelect = MacroModifier.NONE;
+    private MacroModifier toggleModifierSelect = MacroModifier.NONE;
     private InputConstants.Key inputSelected;
 
     public EditMacroScreen(Screen lastScreen, IMacro macro, boolean serverMacro) {
@@ -131,15 +137,22 @@ public class EditMacroScreen extends Screen {
 
 
         macroKeyButton = createButton(Component.translatable("text.key"), 0, 0, FORM_WIDTH, WIDGET_HEIGHT, onPress -> {
-                    if(listenMacroBind) return;
+                    if(listenMacroBind || listenToggleBind) return;
                     listenMacroBind = true;
 
                     macroKeyButton.setMessage((Component.literal("> ")).append(macroKeyButton.getMessage().copy().withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
 
                 });
-        macroKeyButton.setTooltip(Tooltip.create((macroData != null && MacroUtil.isCombinationAssigned(macroData) || macroData == null && MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect)) ?
-                        Component.translatable("text.tooltip.editmacro.keyalreadyassigned").withStyle(ChatFormatting.RED)
-                        : Component.translatable("text.tooltip.keybind")));
+
+        toggleKeyButton = createButton(Component.translatable("text.key.unbound"), 0, 0, FORM_WIDTH, WIDGET_HEIGHT, onPress -> {
+                    if(listenMacroBind || listenToggleBind) return;
+                    listenToggleBind = true;
+
+                    toggleKeyButton.setMessage((Component.literal("> ")).append(toggleKeyButton.getMessage().copy().withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
+                });
+
+        updateMacroKeyButton();
+        updateToggleKeyButton();
 
         formList = addRenderableWidget(new EditMacroFormList(this, minecraft));
         addRenderableWidget(createButton(Component.translatable("text.globalmacros.back"), formLeft + COLUMN_WIDTH + COLUMN_GAP, this.height - 28, COLUMN_WIDTH, WIDGET_HEIGHT, p_93751_ -> minecraft.gui.setScreen(this.lastScreen)));
@@ -163,6 +176,13 @@ public class EditMacroScreen extends Screen {
                                 new AlternateMacro(macroUUID, nameBox.getValue(), macroActionBox.getValue(), secondMacroActionBox.getValue(), keySelect, keyName, KeyAction.values()[actionTypeSelectId], KeyAction.values()[secondActionTypeSelectId], macroEnabled, macroData == null ? System.currentTimeMillis() : macroData.getCreatedTime(), macroModifierSelect);
                         default -> throw new IllegalStateException("Unexpected value: " + macroTypeSelectId);
                     };
+
+                    if(toggleKeySelect >= 0) {
+                        MacroToggleBindings.set(macroUUID, toggleKeySelect, toggleKeyName, toggleModifierSelect);
+                    } else {
+                        MacroToggleBindings.clear(macroUUID);
+                    }
+
                     if(serverMacro) {
                         MacroUtil.getServerKeybinds().put(macroUUID, macro);
                     } else {
@@ -279,23 +299,28 @@ public class EditMacroScreen extends Screen {
             keySelect = key.getValue();
             keyName = key.getDisplayName().getString();
             listenMacroBind = false;
-
             macroModifierSelect = MacroModifier.NONE;
-
-            if(hasConflictKey()) {
-                macroKeyButton.setMessage(Component.literal(keyName).withStyle(ChatFormatting.RED));
-            } else {
-                macroKeyButton.setMessage(Component.literal(keyName));
-            }
+            updateMacroKeyButton();
+            updateToggleKeyButton();
             return true;
-        } else {
-            boolean handled = super.mouseClicked(click, doubled);
-            if (!handled) {
-                this.setFocused(null);
-            }
-            return handled;
         }
 
+        if(this.listenToggleBind) {
+            InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(button);
+            toggleKeySelect = key.getValue();
+            toggleKeyName = key.getDisplayName().getString();
+            listenToggleBind = false;
+            toggleModifierSelect = MacroModifier.NONE;
+            updateMacroKeyButton();
+            updateToggleKeyButton();
+            return true;
+        }
+
+        boolean handled = super.mouseClicked(click, doubled);
+        if (!handled) {
+            this.setFocused(null);
+        }
+        return handled;
     }
 
 
@@ -310,11 +335,7 @@ public class EditMacroScreen extends Screen {
         }
         if (this.listenMacroBind) {
             if (input.isEscape()) {
-                if (hasConflictKey()) {
-                    macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
-                } else {
-                    macroKeyButton.setMessage(Component.literal(getKeyName()));
-                }
+                updateMacroKeyButton();
                 listenMacroBind = false;
             } else {
                 InputConstants.Key key = InputConstants.getKey(input);
@@ -329,21 +350,50 @@ public class EditMacroScreen extends Screen {
 
                 if (!isKeyCodeModifier(inputSelected.getValue())) {
                     listenMacroBind = false;
-
-                    if (hasConflictKey()) {
-                        macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
-                    } else {
-                        macroKeyButton.setMessage(Component.literal(getKeyName()));
-                    }
-
+                    updateMacroKeyButton();
+                    updateToggleKeyButton();
                 } else {
                     macroKeyButton.setMessage(Component.literal("> ").append(Component.literal(keyName).withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
                 }
             }
             return true;
-        } else {
-            return super.keyPressed(input);
         }
+
+        if(this.listenToggleBind) {
+            if(input.isEscape()) {
+                updateToggleKeyButton();
+                listenToggleBind = false;
+                return true;
+            }
+
+            InputConstants.Key key = InputConstants.getKey(input);
+            inputSelected = key;
+
+            if(key.getValue() == GLFW.GLFW_KEY_BACKSPACE || key.getValue() == GLFW.GLFW_KEY_DELETE) {
+                toggleKeySelect = -1;
+                toggleKeyName = null;
+                toggleModifierSelect = MacroModifier.NONE;
+                listenToggleBind = false;
+                updateMacroKeyButton();
+                updateToggleKeyButton();
+                return true;
+            }
+
+            toggleKeySelect = key.getValue();
+            toggleKeyName = key.getDisplayName().getString();
+            toggleModifierSelect = getPressedModifierKeyCode();
+
+            if(!isKeyCodeModifier(inputSelected.getValue())) {
+                listenToggleBind = false;
+                updateMacroKeyButton();
+                updateToggleKeyButton();
+            } else {
+                toggleKeyButton.setMessage(Component.literal("> ").append(Component.literal(toggleKeyName).withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
+            }
+            return true;
+        }
+
+        return super.keyPressed(input);
     }
 
 
@@ -351,14 +401,15 @@ public class EditMacroScreen extends Screen {
     @Override
     public boolean keyReleased(KeyEvent input) {
         if(listenMacroBind) {
-
-            if (hasConflictKey()) {
-                macroKeyButton.setMessage(Component.literal(keyName).withStyle(ChatFormatting.RED));
-            } else {
-                macroKeyButton.setMessage(Component.literal(keyName));
-            }
-
+            updateMacroKeyButton();
+            updateToggleKeyButton();
             listenMacroBind = false;
+        }
+
+        if(listenToggleBind) {
+            updateMacroKeyButton();
+            updateToggleKeyButton();
+            listenToggleBind = false;
         }
         return super.keyReleased(input);
     }
@@ -389,6 +440,13 @@ public class EditMacroScreen extends Screen {
         keyName = macroData.getKeyName();
         macroTypeSelectId = 0;
         macroModifierSelect = macroData.getModifier();
+
+        MacroToggleBindings.Binding toggleBinding = MacroToggleBindings.get(macroData.getUUID());
+        if(toggleBinding != null) {
+            toggleKeySelect = toggleBinding.key();
+            toggleKeyName = toggleBinding.keyName();
+            toggleModifierSelect = toggleBinding.modifier();
+        }
 
         if(macroData instanceof ToggleMacro) {
             timeBox.setValue(String.valueOf(((ToggleMacro) macroData).getCooldownTime()));
@@ -423,12 +481,8 @@ public class EditMacroScreen extends Screen {
         updateActionTypeTooltip(true);
         macroTypeButton.setMessage(Component.translatable(macrosType[macroTypeSelectId]));
         updateMacroTypeTooltip();
-
-        if (MacroUtil.isCombinationAssigned(macroData)){
-            macroKeyButton.setMessage(Component.literal(getKeyName()).withStyle(ChatFormatting.RED));
-        } else {
-            macroKeyButton.setMessage(Component.literal(getKeyName()));
-        }
+        updateMacroKeyButton();
+        updateToggleKeyButton();
 
         updateTimingFields();
         rebuildFormRows();
@@ -488,6 +542,7 @@ public class EditMacroScreen extends Screen {
         }
 
         formList.addRow(new EditMacroFormList.Field(Component.translatable("text.editmacro.field.keybind"), macroKeyButton, 0));
+        formList.addRow(new EditMacroFormList.Field(Component.translatable("text.editmacro.field.togglekeybind"), toggleKeyButton, 0));
         formList.setScrollAmount(scrollAmount);
     }
 
@@ -509,10 +564,64 @@ public class EditMacroScreen extends Screen {
     private String getKeyName() {
         return macroModifierSelect != MacroModifier.NONE ? macroModifierSelect.name() + " + " + keyName : keyName;
     }
+
+    private String getToggleKeyName() {
+        if(toggleKeySelect < 0 || toggleKeyName == null) return Component.translatable("text.key.unbound").getString();
+        return toggleModifierSelect != MacroModifier.NONE ? toggleModifierSelect.name() + " + " + toggleKeyName : toggleKeyName;
+    }
+
+    private void updateMacroKeyButton() {
+        if(keySelect < 0 || keyName == null) {
+            macroKeyButton.setMessage(Component.translatable("text.key"));
+            macroKeyButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.keybind")));
+            return;
+        }
+
+        boolean conflict = hasConflictKey();
+        macroKeyButton.setMessage(conflict
+                ? Component.literal(getKeyName()).withStyle(ChatFormatting.RED)
+                : Component.literal(getKeyName()));
+        macroKeyButton.setTooltip(Tooltip.create(conflict
+                ? Component.translatable("text.tooltip.editmacro.keyalreadyassigned").withStyle(ChatFormatting.RED)
+                : Component.translatable("text.tooltip.keybind")));
+    }
+
+    private void updateToggleKeyButton() {
+        if(toggleKeySelect < 0 || toggleKeyName == null) {
+            toggleKeyButton.setMessage(Component.translatable("text.key.unbound"));
+            toggleKeyButton.setTooltip(Tooltip.create(Component.translatable("text.tooltip.togglekeybind")));
+            return;
+        }
+
+        boolean conflict = hasConflictToggleKey();
+        toggleKeyButton.setMessage(conflict
+                ? Component.literal(getToggleKeyName()).withStyle(ChatFormatting.RED)
+                : Component.literal(getToggleKeyName()));
+        toggleKeyButton.setTooltip(Tooltip.create(conflict
+                ? Component.translatable("text.tooltip.editmacro.keyalreadyassigned").withStyle(ChatFormatting.RED)
+                : Component.translatable("text.tooltip.togglekeybind")));
+    }
+
     private boolean hasConflictKey() {
-        return macroData != null
-                ? MacroUtil.isCombinationAssigned(macroData, keySelect, macroModifierSelect)
-                : MacroUtil.isCombinationAssigned(keySelect, macroModifierSelect);
+        if(keySelect < 0) return false;
+        if(toggleKeySelect >= 0 && keySelect == toggleKeySelect && macroModifierSelect == toggleModifierSelect) return true;
+
+        return MacroToggleBindings.isCombinationAssigned(
+                macroData == null ? null : macroData.getUUID(),
+                keySelect,
+                macroModifierSelect
+        );
+    }
+
+    private boolean hasConflictToggleKey() {
+        if(toggleKeySelect < 0) return false;
+        if(keySelect == toggleKeySelect && macroModifierSelect == toggleModifierSelect) return true;
+
+        return MacroToggleBindings.isCombinationAssigned(
+                macroData == null ? null : macroData.getUUID(),
+                toggleKeySelect,
+                toggleModifierSelect
+        );
     }
 
     private Button createButton(Component text, int x, int y, int width, int height, Button.OnPress pressSupplier) {
