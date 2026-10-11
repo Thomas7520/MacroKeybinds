@@ -4,9 +4,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -62,9 +64,8 @@ public class ButtonImageWidget
                 i = getHeight();
             }
 
-            context.setColor(1.0F, 1.0F, 1.0F, this.alpha);
-            context.blit(icon, this.getX(), this.getY(), 0, (float)i, getWidth(), getHeight(), 256, 256);
-            context.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+            context.blit(RenderType::guiTextured, icon, this.getX(), this.getY(), 0, (float)i,
+                    getWidth(), getHeight(), 256, 256, ARGB.white(this.alpha));
         }
     }
 

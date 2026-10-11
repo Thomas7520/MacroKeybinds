@@ -84,6 +84,16 @@ public class WheelWidget extends AbstractContainerWidget {
     }
 
     @Override
+    protected int contentHeight() {
+        return height;
+    }
+
+    @Override
+    protected double scrollRate() {
+        return 0.0d;
+    }
+
+    @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // Render at a higher resolution then we scale it down to reduce visible pixel steps.
         if(hoverEnabled) {

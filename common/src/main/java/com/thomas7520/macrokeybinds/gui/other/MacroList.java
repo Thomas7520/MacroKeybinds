@@ -100,8 +100,8 @@ extends ContainerObjectSelectionList<MacroList.Entry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 15 + 20;
+    protected int scrollBarX() {
+        return super.scrollBarX() + 15 + 20;
     }
 
 

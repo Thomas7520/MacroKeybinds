@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -73,7 +74,7 @@ public class CheckboxEdited
         int j = this.getX() + i + 4;
         int k = this.getY() + (this.height >> 1) - (textRenderer.lineHeight >> 1);
 
-        context.blitSprite(identifier, this.getX(), this.getY(), i, i);
+        context.blitSprite(RenderType::guiTextured, identifier, this.getX(), this.getY(), i, i);
         context.drawString(textRenderer, this.getMessage(), j, k, 0xE0E0E0 | Mth.ceil(this.alpha * 255.0f) << 24);
     }
 

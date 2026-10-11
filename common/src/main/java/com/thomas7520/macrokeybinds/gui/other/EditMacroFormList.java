@@ -41,7 +41,7 @@ public class EditMacroFormList extends ContainerObjectSelectionList<EditMacroFor
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         return screen.width / 2 + FORM_WIDTH / 2 + 6;
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +39,7 @@ public class GlobalMacroScreen extends Screen {
         double scrollAmount = 0;
 
         if(macroList != null) {
-            scrollAmount = macroList.getScrollAmount();
+            scrollAmount = macroList.scrollAmount();
         }
 
         this.macroList = new MacroList(this, minecraft, new ArrayList<>(MacroUtil.getGlobalKeybindsMap().values()), false);
@@ -97,7 +98,7 @@ public class GlobalMacroScreen extends Screen {
                 super.renderWidget(context, mouseX, mouseY, delta);
                 int i = 16;
                 int j = 16;
-                context.blit(STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
+                context.blit(RenderType::guiTextured, STOP_ICON, this.getX() + 2, this.getY() + 2, 0.0F, 0.0F, i, j, i, j);
             }
         });
 

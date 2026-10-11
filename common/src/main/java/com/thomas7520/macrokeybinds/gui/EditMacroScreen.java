@@ -457,7 +457,7 @@ public class EditMacroScreen extends Screen {
     }
 
     private void rebuildFormRows() {
-        double scrollAmount = formList.getScrollAmount();
+        double scrollAmount = formList.scrollAmount();
         boolean alternate = macroTypeSelectId == 5;
 
         formList.clearRows();
