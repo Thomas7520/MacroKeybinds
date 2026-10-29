@@ -12,7 +12,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import org.lwjgl.glfw.GLFW;
 
 @Mod(value = MacroMod.MODID, dist = Dist.CLIENT)
 public class NeoForgeMacroMod {
@@ -35,15 +34,15 @@ public class NeoForgeMacroMod {
         event.registerCategory(CATEGORY);
         MacroUtil.guiBinding = new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_N,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_N,
                 CATEGORY
         );
 
         MacroUtil.wheelBinding = new KeyMapping(
                 "key.macrokeybinds.openwheel.desc",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_J,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_J,
                 CATEGORY
         );
         event.register(MacroUtil.guiBinding);

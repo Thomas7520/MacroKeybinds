@@ -5,6 +5,7 @@ import com.thomas7520.macrokeybinds.gui.other.EditMacroFormList;
 import com.thomas7520.macrokeybinds.object.macro.*;
 import com.thomas7520.macrokeybinds.util.widget.MacroCMDSuggestor;
 import com.thomas7520.macrokeybinds.util.MacroFlow;
+import com.thomas7520.macrokeybinds.util.MacroInputHandler;
 import com.thomas7520.macrokeybinds.util.MacroUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPosition
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
 
@@ -276,7 +276,7 @@ public class EditMacroScreen extends Screen {
 
         if (this.listenMacroBind) {
             InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(button);
-            keySelect = key.getValue();
+            keySelect = MacroInputHandler.encodeMouseButton(key.getValue());
             keyName = key.getDisplayName().getString();
             listenMacroBind = false;
 
@@ -321,7 +321,7 @@ public class EditMacroScreen extends Screen {
 
                 inputSelected = key;
 
-                keySelect = key.getValue();
+                keySelect = MacroInputHandler.encodeKeyboardKey(key.getValue());
                 keyName = key.getDisplayName().getString();
 
                 macroModifierSelect = getPressedModifierKeyCode();
@@ -529,7 +529,7 @@ public class EditMacroScreen extends Screen {
     }
 
     private boolean isKeyCodeModifier(int key) {
-        int[] modifierKeys = {GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL};
+        int[] modifierKeys = {InputConstants.KEY_LSHIFT, InputConstants.KEY_RSHIFT, InputConstants.KEY_LALT, InputConstants.KEY_RALT, InputConstants.KEY_LCONTROL, InputConstants.KEY_RCONTROL};
 
         for (int modifierKey : modifierKeys) {
             if (key == modifierKey) {
@@ -540,16 +540,14 @@ public class EditMacroScreen extends Screen {
     }
 
     public static MacroModifier getPressedModifierKeyCode() {
-        long window = GLFW.glfwGetCurrentContext();
-
-        if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS ||
-                GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS) {
+        if (InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) ||
+                InputConstants.isKeyDown(InputConstants.KEY_RSHIFT)) {
             return MacroModifier.SHIFT;
-        } else if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS ||
-                GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS) {
+        } else if (InputConstants.isKeyDown(InputConstants.KEY_LCONTROL) ||
+                InputConstants.isKeyDown(InputConstants.KEY_RCONTROL)) {
             return MacroModifier.CONTROL;
-        } else if (GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS ||
-                GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS) {
+        } else if (InputConstants.isKeyDown(InputConstants.KEY_LALT) ||
+                InputConstants.isKeyDown(InputConstants.KEY_RALT)) {
             return MacroModifier.ALT;
         }
 

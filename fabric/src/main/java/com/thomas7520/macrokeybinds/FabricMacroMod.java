@@ -7,7 +7,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 public class FabricMacroMod implements ClientModInitializer {
 
@@ -19,15 +18,15 @@ public class FabricMacroMod implements ClientModInitializer {
 
         MacroUtil.guiBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.macrokeybinds.openoptions.desc",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_N,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_N,
                 category
         ));
 
         MacroUtil.wheelBinding = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.macrokeybinds.openwheel.desc",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_J,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.KEY_J,
                 category
         ));
 

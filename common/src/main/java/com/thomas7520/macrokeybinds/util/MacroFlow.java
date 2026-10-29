@@ -29,6 +29,7 @@ public class MacroFlow {
         }
 
         boolean migrated = migrateLegacyMacroTo1_4_0(object);
+        migrated |= migrateInputToSdl(object);
 
         IMacro macro;
         switch (MacroType.valueOf(object.get("macroType").getAsString())) {
@@ -74,6 +75,14 @@ public class MacroFlow {
         return true;
     }
 
+    private static boolean migrateInputToSdl(JsonObject object) {
+        if(object.has("inputFormat")) return false;
+
+        object.addProperty("key", MacroInputHandler.migrateLegacyKey(object.get("key").getAsInt()));
+        object.addProperty("inputFormat", "sdl3");
+        return true;
+    }
+
     public static void writeMacro(IMacro macro, String path) {
         try {
             Path macroFile = new File(path, macro.getUUID().toString() + ".json").toPath();
@@ -88,6 +97,7 @@ public class MacroFlow {
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject object = gson.toJsonTree(macro).getAsJsonObject();
         object.addProperty("version", CURRENT_VERSION);
+        object.addProperty("inputFormat", "sdl3");
 
         try (Writer writer = Files.newBufferedWriter(macroFile, StandardCharsets.UTF_8)) {
             gson.toJson(object, writer);

@@ -16,6 +16,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,7 +26,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -101,7 +101,7 @@ public class MacroCMDSuggestor {
         boolean bl = this.window != null;
         if (bl && this.window.keyPressed(input)) {
             return true;
-        } else if (!this.textField.isFocused() || input.key() != GLFW.GLFW_KEY_TAB || this.canLeave && !bl) {
+        } else if (!this.textField.isFocused() || input.key() != InputConstants.KEY_TAB || this.canLeave && !bl) {
             return false;
         } else {
             this.show(true);
@@ -501,7 +501,7 @@ public class MacroCMDSuggestor {
                 this.scroll(1);
                 this.completed = false;
                 return true;
-            } else if (input.key() == GLFW.GLFW_KEY_TAB) {
+            } else if (input.key() == InputConstants.KEY_TAB) {
                 if (this.completed) {
                     this.scroll(input.hasShiftDown() ? -1 : 1);
                 }

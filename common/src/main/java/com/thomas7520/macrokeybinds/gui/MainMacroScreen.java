@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTool
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
+import java.net.URI;
 import java.util.function.Supplier;
 
 
@@ -93,7 +94,7 @@ public class MainMacroScreen extends Screen {
     }
 
     private Button createUrlButton(Component text, int x, int y, int width, int height, String url) {
-        return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(this, url))
+        return Button.builder(text, button -> ConfirmLinkScreen.confirmLinkNow(this, URI.create(url)))
                 .bounds(x,y,width,height)
                 .build();
     }
